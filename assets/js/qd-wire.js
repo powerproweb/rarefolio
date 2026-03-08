@@ -1,0 +1,612 @@
+/* ============================================================
+   qd-wire.js — Data-driven wiring for QuantumDrive CNFT pages
+
+   Key upgrade (Feb 2026):
+   - Block-driven routing (block00..block14) with stable image folder slugs
+   - Image folders should NOT carry numeric prefixes; order lives in config/rules
+   - Story mode supports: shared (1 story per block) OR per_item (8 stories per block)
+
+   URL params on nft.html:
+     nft=qd-silver-0000001&bar=E101837&set=1&batch=1&col=collection-silverbar-01.html
+     Optional:
+       block=block00
+       item=1..8
+       story=/path/to/story.html
+
+   ============================================================ */
+
+(() => {
+  const $ = (sel, root = document) => root.querySelector(sel);
+
+  const pad = (n, digits) => String(n).padStart(digits, '0');
+
+  const resolveTemplate = (str, map) => String(str || '').replace(/\{(\w+)\}/g, (_, k) => (map[k] ?? ''));
+
+  function safeJsonParse(maybeJson, fallback) {
+    if (!maybeJson) return fallback;
+    try { return JSON.parse(maybeJson); } catch { return fallback; }
+  }
+
+  function getIntAttr(el, name, fallback) {
+    const raw = el.getAttribute(name);
+    const n = parseInt(raw || '', 10);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function getStrAttr(el, name, fallback) {
+    const v = el.getAttribute(name);
+    return (v == null || v === '') ? fallback : v;
+  }
+
+  function parseTokenIndex(slug) {
+    const m = String(slug || '').match(/-(\d{1,})$/);
+    if (!m) return null;
+    const n = parseInt(m[1], 10);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  /* -------------------- Block map (single source of truth for routing) --------------------
+     NOTE: Folder names are stable slugs (NO numeric prefix).
+     You can change story_mode per block without changing page code.
+  */
+  const QD_BLOCKS = {
+    block00: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',        story_mode: 'per_item', shared_story: '/assets/stories/bar1-aries.html' },
+    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors', story_mode: 'shared',   shared_story: '/assets/stories/bar1-inventors.html' },
+    block02: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac — Taurus',       story_mode: 'shared',   shared_story: '/assets/stories/bar1-taurus.html' },
+    block03: { folder: 'scnft_sp_robot_butler',    label: 'Steampunk — Robot Butler', story_mode: 'per_item' },
+    block04: { folder: 'scnft_zodiac_gemini',      label: 'Zodiac — Gemini',       story_mode: 'shared' },
+    block05: { folder: 'scnft_zodiac_cancer',      label: 'Zodiac — Cancer',       story_mode: 'shared' },
+    block06: { folder: 'scnft_zodiac_leo',         label: 'Zodiac — Leo',          story_mode: 'shared' },
+    block07: { folder: 'scnft_zodiac_virgo',       label: 'Zodiac — Virgo',        story_mode: 'shared' },
+    block08: { folder: 'scnft_zodiac_libra',       label: 'Zodiac — Libra',        story_mode: 'shared' },
+    block09: { folder: 'scnft_zodiac_scorpio',     label: 'Zodiac — Scorpio',      story_mode: 'shared' },
+    block10: { folder: 'scnft_zodiac_sagittarius', label: 'Zodiac — Sagittarius',  story_mode: 'shared' },
+    block11: { folder: 'scnft_zodiac_capricorn',   label: 'Zodiac — Capricorn',    story_mode: 'shared' },
+    block12: { folder: 'scnft_zodiac_aquarius',    label: 'Zodiac — Aquarius',     story_mode: 'shared' },
+    block13: { folder: 'scnft_zodiac_pisces',      label: 'Zodiac — Pisces',       story_mode: 'shared' },
+    block14: { folder: 'scnft_new_series',         label: 'New Series',            story_mode: 'shared' },
+  };
+
+  function blockIdForBatch(batchNum) {
+    const b = Number(batchNum);
+    if (!Number.isFinite(b)) return null;
+    // Default flow: batch 1..15 map to block00..block14
+    if (b >= 1 && b <= 15) return 'block' + String(b - 1).padStart(2, '0');
+    return null;
+  }
+
+  function resolveBlockId(runtimeCfg, batchNum) {
+    // 1) Page-level override
+    if (runtimeCfg.blockId && QD_BLOCKS[runtimeCfg.blockId]) return runtimeCfg.blockId;
+
+    // 2) Optional: explicit batch rules on the page
+    if (Array.isArray(runtimeCfg.blockBatchRules) && batchNum) {
+      for (const r of runtimeCfg.blockBatchRules) {
+        const from = Number(r.from);
+        const to = Number(r.to);
+        const block = String(r.block || '');
+        if (!QD_BLOCKS[block]) continue;
+        if (Number.isFinite(from) && Number.isFinite(to) && batchNum >= from && batchNum <= to) return block;
+      }
+    }
+
+    // 3) Default mapping
+    const inferred = blockIdForBatch(batchNum);
+    if (inferred && QD_BLOCKS[inferred]) return inferred;
+
+    return null;
+  }
+
+  async function loadConfigIfPresent(body) {
+    const url = getStrAttr(body, 'data-config', '');
+    if (!url) return null;
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Config load failed (${res.status}) for ${url}`);
+      return await res.json();
+    } catch (e) {
+      console.warn('[QD] Config load failed:', e);
+      return null;
+    }
+  }
+
+  function buildRuntimeConfig({ body, cfg }) {
+    // Defaults (safe)
+    const defaults = {
+      title: 'QuantumDrive Silver Bar',
+      serial: 'E101837',
+      set: 1,
+      nft: { slugPrefix: 'qd-silver', idDigits: 7, startIndex: 1 },
+      batch: { size: 8, count: 5000, labelPrefix: 'Batch' },
+      assets: { fallbackImage: '/assets/img/nfts/placeholder.jpg', cardImageTemplate: '' },
+    };
+
+    const merged = {
+      title: cfg?.title ?? defaults.title,
+      serial: cfg?.serial ?? defaults.serial,
+      set: cfg?.set ?? defaults.set,
+      nft: {
+        slugPrefix: cfg?.nft?.slugPrefix ?? defaults.nft.slugPrefix,
+        idDigits: cfg?.nft?.idDigits ?? defaults.nft.idDigits,
+        startIndex: cfg?.nft?.startIndex ?? defaults.nft.startIndex,
+      },
+      batch: {
+        size: cfg?.batch?.size ?? defaults.batch.size,
+        count: cfg?.batch?.count ?? defaults.batch.count,
+        labelPrefix: cfg?.batch?.labelPrefix ?? defaults.batch.labelPrefix,
+      },
+      assets: {
+        fallbackImage: cfg?.assets?.fallbackImage ?? defaults.assets.fallbackImage,
+        cardImageTemplate: cfg?.assets?.cardImageTemplate ?? defaults.assets.cardImageTemplate,
+      },
+      links: {
+        detailPageTemplate: cfg?.links?.detailPageTemplate ?? 'nft.html?nft={slug}&bar={serial}&set={set}',
+      },
+      _sourceConfigUrl: getStrAttr(body, 'data-config', ''),
+    };
+
+    // Page-level overrides (authoritative)
+    merged.title = getStrAttr(body, 'data-collection-title', merged.title);
+    merged.serial = getStrAttr(body, 'data-bar-serial', merged.serial);
+    merged.set = getIntAttr(body, 'data-set', merged.set);
+
+    merged.nft.startIndex = getIntAttr(body, 'data-start-index', merged.nft.startIndex);
+    merged.batch.size = getIntAttr(body, 'data-batch-size', merged.batch.size);
+    merged.batch.count = getIntAttr(body, 'data-total-batches', merged.batch.count);
+
+    // Optional: demo cap (prevents 5000-option dropdown, etc.)
+    const demoCap = getIntAttr(body, 'data-demo-batches', 0);
+    if (demoCap > 0) merged.batch.count = Math.min(merged.batch.count, demoCap);
+
+    // Images
+    const imgTpl = getStrAttr(body, 'data-image-template', '');
+    if (imgTpl) merged.assets.cardImageTemplate = imgTpl;
+    merged.assets.fallbackImage = getStrAttr(body, 'data-fallback-image', merged.assets.fallbackImage);
+
+    // Optional range-based image map (mixed series by token id)
+    merged.imageMap = safeJsonParse(getStrAttr(body, 'data-image-map', ''), null);
+
+    // Optional batch-based image selection (legacy; supported)
+    merged.imageBatchMap = safeJsonParse(getStrAttr(body, 'data-image-batch-map', ''), null);
+    merged.imageBatchRules = safeJsonParse(getStrAttr(body, 'data-image-batch-rules', ''), null);
+
+    // Optional: series routing by batch (redirect to the appropriate collection page)
+    merged.seriesBatchRules = safeJsonParse(getStrAttr(body, 'data-series-batch-rules', ''), null);
+
+    // NEW: block routing
+    merged.blockId = getStrAttr(body, 'data-block-id', '');
+    merged.blockBatchRules = safeJsonParse(getStrAttr(body, 'data-block-batch-rules', ''), null);
+
+    return merged;
+  }
+
+  function pageForBatch(runtimeCfg, batchNum) {
+    const rules = runtimeCfg.seriesBatchRules;
+    if (!batchNum || !Array.isArray(rules)) return null;
+    for (const r of rules) {
+      const from = Number(r.from);
+      const to = Number(r.to);
+      const page = r.page;
+      if (!page) continue;
+      if (Number.isFinite(from) && Number.isFinite(to) && batchNum >= from && batchNum <= to) return String(page);
+    }
+    return null;
+  }
+
+  function templateForSlug(runtimeCfg, slug, batchNum) {
+    // 1) Batch-based selection (exact map)
+    if (batchNum && runtimeCfg.imageBatchMap) {
+      const t = runtimeCfg.imageBatchMap[String(batchNum)] || runtimeCfg.imageBatchMap[batchNum];
+      if (t) return t;
+    }
+
+    // 2) Batch-based selection (range rules)
+    if (batchNum && Array.isArray(runtimeCfg.imageBatchRules)) {
+      for (const r of runtimeCfg.imageBatchRules) {
+        const from = Number(r.from);
+        const to = Number(r.to);
+        if (Number.isFinite(from) && Number.isFinite(to) && batchNum >= from && batchNum <= to && r.tpl) {
+          return r.tpl;
+        }
+      }
+    }
+
+    // 3) Token-index range map (mixed series by token id)
+    const idx = parseTokenIndex(slug);
+    if (runtimeCfg.imageMap && idx != null) {
+      for (const r of runtimeCfg.imageMap) {
+        const from = Number(r.from);
+        const to = Number(r.to);
+        if (Number.isFinite(from) && Number.isFinite(to) && idx >= from && idx <= to && r.tpl) {
+          return r.tpl;
+        }
+      }
+    }
+
+    // 4) Block-driven default (Path A): derive from block mapping
+    // NOTE: We keep the template here as the "clean" (no numeric prefix) folder path.
+    // If your live image folders still have numeric prefixes (01_, 02_, ...),
+    // rendering code will auto-fallback to the prefixed folder via onerror.
+    if (batchNum) {
+      const blockId = resolveBlockId(runtimeCfg, batchNum);
+      const meta = blockId ? QD_BLOCKS[blockId] : null;
+      if (meta?.folder) return `/assets/img/collection/${meta.folder}/{id}.jpg`;
+    }
+
+    // 5) Page-level template
+    if (runtimeCfg.assets.cardImageTemplate) return runtimeCfg.assets.cardImageTemplate;
+
+    // 6) None (caller should fall back)
+    return '';
+  }
+
+  function imageForSlug(runtimeCfg, slug, batchNum) {
+    const tpl = templateForSlug(runtimeCfg, slug, batchNum);
+    if (tpl) return resolveTemplate(tpl, { id: slug });
+    return runtimeCfg.assets.fallbackImage;
+  }
+
+  function prefixedFolderForBlock(blockId, baseFolder) {
+    // block00 -> 01_*, block01 -> 02_*, ...
+    const idx = parseInt(String(blockId || '').replace('block', ''), 10);
+    if (!Number.isFinite(idx)) return '';
+    const prefix = String(idx + 1).padStart(2, '0') + '_';
+    return `${prefix}${baseFolder}`;
+  }
+
+  function blockImageCandidates(runtimeCfg, batchNum, slug) {
+    const blockId = resolveBlockId(runtimeCfg, batchNum);
+    const meta = blockId ? QD_BLOCKS[blockId] : null;
+    if (!meta?.folder) {
+      const src = imageForSlug(runtimeCfg, slug, batchNum);
+      return { src, altSrc: '' };
+    }
+
+    const clean = `/assets/img/collection/${meta.folder}/${slug}.jpg`;
+    const pref = prefixedFolderForBlock(blockId, meta.folder);
+    const prefixed = pref ? `/assets/img/collection/${pref}/${slug}.jpg` : '';
+
+    // Prefer the clean folder, but provide prefixed as automatic fallback.
+    return { src: clean, altSrc: prefixed };
+  }
+
+  function getBatchFromUrl(maxBatch) {
+    const sp = new URLSearchParams(location.search);
+    const raw = sp.get('batch') || sp.get('set') || '1';
+    const n = parseInt(raw, 10);
+    if (!Number.isFinite(n)) return 1;
+    return Math.min(Math.max(n, 1), maxBatch);
+  }
+
+  function setUrlBatch(batchNum) {
+    const sp = new URLSearchParams(location.search);
+    sp.set('batch', String(batchNum));
+    sp.delete('set');
+    history.replaceState({}, '', `${location.pathname}?${sp.toString()}`);
+  }
+
+  function bindTilt(root) {
+    try {
+      if (window.__QD?.setupTilt) window.__QD.setupTilt(root);
+    } catch {
+      // no-op
+    }
+  }
+
+  function renderCollectionGrid(runtimeCfg) {
+    const grid = $('#nftGrid');
+    const batchSelect = $('#batchSelect');
+    const batchLabel = $('#batchLabel');
+    const prevBtn = $('#prevBatch');
+    const nextBtn = $('#nextBatch');
+
+    if (!grid) return;
+
+    const BATCH_SIZE = runtimeCfg.batch.size;
+    const TOTAL_BATCHES = runtimeCfg.batch.count;
+    const START_INDEX = runtimeCfg.nft.startIndex;
+    const DIGITS = runtimeCfg.nft.idDigits;
+    const PREFIX = runtimeCfg.nft.slugPrefix;
+
+    const makeSlug = (n) => `${PREFIX}-${pad(n, DIGITS)}`;
+    const colPage = location.pathname.split('/').pop();
+
+    const syncSeriesLinks = (batchNum) => {
+      const links = document.querySelectorAll('a.qd-series-link[data-qdsync="batch"]');
+      if (!links || !links.length) return;
+      links.forEach((a) => {
+        const raw = a.getAttribute('href') || '';
+        if (!raw) return;
+        try {
+          const url = new URL(raw, location.href);
+          url.searchParams.set('batch', String(batchNum));
+          const qs = url.searchParams.toString();
+          a.setAttribute('href', url.pathname + (qs ? ('?' + qs) : ''));
+        } catch {
+          // no-op
+        }
+      });
+    };
+
+    const buildViewLink = (slug, batchNum, itemIndex) => {
+      // Keep detailPageTemplate compatibility, but also add navigation helpers.
+      const base = resolveTemplate(runtimeCfg.links.detailPageTemplate, {
+        slug,
+        serial: runtimeCfg.serial,
+        set: runtimeCfg.set,
+      });
+
+      const sp = new URLSearchParams(base.split('?')[1] || '');
+      sp.set('nft', slug);
+      sp.set('bar', runtimeCfg.serial);
+      sp.set('set', String(runtimeCfg.set));
+      sp.set('batch', String(batchNum));
+      sp.set('col', colPage);
+
+      // Block routing
+      const blockId = resolveBlockId(runtimeCfg, batchNum);
+      if (blockId) sp.set('block', blockId);
+      if (itemIndex) sp.set('item', String(itemIndex));
+
+      // Optional: keep explicit img template if you want deterministic legacy behavior.
+      // With block routing, this is no longer required.
+      const imgTpl = templateForSlug(runtimeCfg, slug, batchNum);
+      if (imgTpl) sp.set('img', imgTpl);
+
+      if (runtimeCfg._sourceConfigUrl) sp.set('cfg', runtimeCfg._sourceConfigUrl);
+
+      return `nft.html?${sp.toString()}`;
+    };
+
+    const ensureBatchSelect = () => {
+      if (!batchSelect) return;
+      batchSelect.innerHTML = '';
+      const padW = Math.max(2, String(TOTAL_BATCHES).length);
+      const frag = document.createDocumentFragment();
+      for (let b = 1; b <= TOTAL_BATCHES; b++) {
+        const startN = START_INDEX + (b - 1) * BATCH_SIZE;
+        const endN = startN + BATCH_SIZE - 1;
+        const opt = document.createElement('option');
+        opt.value = String(b);
+        opt.textContent = `${runtimeCfg.batch.labelPrefix} ${String(b).padStart(padW, '0')} • ${makeSlug(startN)} → ${makeSlug(endN)}`;
+        frag.appendChild(opt);
+      }
+      batchSelect.appendChild(frag);
+    };
+
+    const renderBatch = (batchNum) => {
+      const startN = START_INDEX + (batchNum - 1) * BATCH_SIZE;
+      const endN = startN + BATCH_SIZE - 1;
+      const firstSlug = makeSlug(startN);
+      const lastSlug = makeSlug(endN);
+      const padW = Math.max(2, String(TOTAL_BATCHES).length);
+
+      if (batchSelect) batchSelect.value = String(batchNum);
+      if (batchLabel) {
+        const blockId = resolveBlockId(runtimeCfg, batchNum);
+        const blockLabel = blockId && QD_BLOCKS[blockId]?.label ? ` • ${blockId.toUpperCase()} • ${QD_BLOCKS[blockId].label}` : '';
+        batchLabel.textContent = `Bar Serial: ${runtimeCfg.serial} • ${runtimeCfg.batch.labelPrefix} ${String(batchNum).padStart(padW, '0')} of ${TOTAL_BATCHES}${blockLabel} • ${firstSlug} → ${lastSlug}`;
+      }
+
+      syncSeriesLinks(batchNum);
+
+      const cards = [];
+      for (let i = 0; i < BATCH_SIZE; i++) {
+        const n = startN + i;
+        const slug = makeSlug(n);
+        const itemIndex = i + 1;
+        const { src: imgSrc, altSrc } = blockImageCandidates(runtimeCfg, batchNum, slug);
+        const title = `${runtimeCfg.title} — ${slug}`;
+        const viewLink = buildViewLink(slug, batchNum, itemIndex);
+
+        cards.push(`
+          <article class="cnft-card tilt">
+            <div class="cnft-media">
+              <img
+                src="${imgSrc}"
+                ${altSrc ? `data-alt-src="${altSrc}"` : ''}
+                alt="${title}"
+                onerror="if(this.dataset.altSrc){const a=this.dataset.altSrc;this.dataset.altSrc='';this.src=a;}else{this.onerror=null;this.src='${runtimeCfg.assets.fallbackImage}';}"
+              />
+            </div>
+            <div class="cnft-body">
+              <div class="cnft-meta">
+                <span class="badge">Bar Serial • ${runtimeCfg.serial}</span>
+              </div>
+              <h3 class="cnft-title">${title}</h3>
+              <p class="cnft-desc">Collector-grade artifact render (config-driven). Replace with traits, lore, marketplace links when ready.</p>
+              <div class="cnft-actions">
+                <a class="btn primary" href="${viewLink}">View</a>
+                <a class="btn" href="#">Marketplace</a>
+              </div>
+            </div>
+          </article>
+        `);
+      }
+
+      grid.innerHTML = cards.join('');
+      bindTilt(grid);
+
+      if (prevBtn) prevBtn.disabled = batchNum <= 1;
+      if (nextBtn) nextBtn.disabled = batchNum >= TOTAL_BATCHES;
+    };
+
+    const go = (batchNum) => {
+      const b = Math.min(Math.max(batchNum, 1), TOTAL_BATCHES);
+
+      // If this batch belongs to a different series page, redirect (keeps batch in querystring).
+      const targetPage = pageForBatch(runtimeCfg, b);
+      if (targetPage && targetPage !== colPage) {
+        const sp = new URLSearchParams(location.search);
+        sp.set('batch', String(b));
+        sp.delete('set');
+        location.href = `${targetPage}?${sp.toString()}`;
+        return;
+      }
+
+      setUrlBatch(b);
+      renderBatch(b);
+    };
+
+    // Bind controls (if present)
+    if (batchSelect) {
+      ensureBatchSelect();
+      batchSelect.addEventListener('change', () => go(parseInt(batchSelect.value, 10) || 1));
+    }
+    if (prevBtn) prevBtn.addEventListener('click', () => go(getBatchFromUrl(TOTAL_BATCHES) - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => go(getBatchFromUrl(TOTAL_BATCHES) + 1));
+
+    go(getBatchFromUrl(TOTAL_BATCHES));
+  }
+
+  function renderNftDetail(runtimeCfg) {
+    const titleEl = document.getElementById('qd-nft-title');
+    const tokenEl = document.getElementById('qd-token');
+    const badgeEl = document.getElementById('qd-badge');
+    const subEl = document.getElementById('qd-nft-sub');
+    const imgEl = document.getElementById('qd-nft-img');
+    const backEl = document.getElementById('qd-back');
+
+    if (!titleEl || !tokenEl || !badgeEl || !subEl || !imgEl) return;
+
+    const sp = new URLSearchParams(location.search);
+    const nft = sp.get('nft') || `${runtimeCfg.nft.slugPrefix}-${pad(runtimeCfg.nft.startIndex, runtimeCfg.nft.idDigits)}`;
+    const bar = sp.get('bar') || runtimeCfg.serial;
+    const set = sp.get('set') || String(runtimeCfg.set);
+    const batchFromUrl = sp.get('batch');
+
+    // Infer batch if not provided
+    let batch = 1;
+    if (batchFromUrl) {
+      batch = parseInt(batchFromUrl, 10) || 1;
+    } else {
+      const idx = parseTokenIndex(nft);
+      if (idx != null) {
+        const offset = idx - runtimeCfg.nft.startIndex;
+        if (offset >= 0) batch = Math.floor(offset / runtimeCfg.batch.size) + 1;
+      }
+    }
+    batch = Math.max(1, batch);
+
+    // Block + item
+    const item = parseInt(sp.get('item') || '0', 10) || null;
+    const blockFromUrl = sp.get('block');
+    const blockId = (blockFromUrl && QD_BLOCKS[blockFromUrl]) ? blockFromUrl : resolveBlockId(runtimeCfg, batch);
+    const blockMeta = blockId ? QD_BLOCKS[blockId] : null;
+
+    titleEl.textContent = nft.toUpperCase();
+    tokenEl.textContent = nft;
+    badgeEl.textContent = `Bar Serial • ${bar}`;
+
+    const blockLine = blockMeta?.label ? ` • ${blockId.toUpperCase()} • ${blockMeta.label}` : '';
+    subEl.textContent = `Bar ${bar} • Set ${set} • ${runtimeCfg.batch.labelPrefix} ${batch}${blockLine}`;
+
+    // Image resolution priority:
+    // 1) Explicit img template (legacy)
+    // 2) Block folder + slug
+    // 3) Fallback template resolution
+    const imgTpl = sp.get('img');
+    let imgSrc = '';
+    let altSrc = '';
+    if (imgTpl) {
+      imgSrc = resolveTemplate(imgTpl, { id: nft });
+    } else {
+      const c = blockImageCandidates(runtimeCfg, batch, nft);
+      imgSrc = c.src;
+      altSrc = c.altSrc;
+    }
+    if (altSrc) imgEl.dataset.altSrc = altSrc;
+    imgEl.onerror = function () {
+      if (this.dataset.altSrc) {
+        const a = this.dataset.altSrc;
+        this.dataset.altSrc = '';
+        this.src = a;
+        return;
+      }
+      this.onerror = null;
+      this.src = runtimeCfg.assets.fallbackImage;
+    };
+    imgEl.src = imgSrc;
+
+
+    // Story loading
+    (async () => {
+      try {
+        const explicitStory = sp.get('story');
+        let primary = explicitStory ? explicitStory : '';
+        let fallback = '';
+
+        if (!primary && blockId && blockMeta) {
+          if (blockMeta.story_mode === 'per_item') {
+            const idx = item || 0;
+            if (idx >= 1 && idx <= 8) primary = `/assets/stories/${blockId}/${idx}.html`;
+            // Shared fallback (modern per-block shared file, or legacy shared_story if defined)
+            fallback = blockMeta.shared_story || `/assets/stories/${blockId}/shared.html`;
+          } else if (blockMeta.story_mode === 'shared') {
+            primary = `/assets/stories/${blockId}/shared.html`;
+            fallback = blockMeta.shared_story || '';
+          }
+
+          // Backward-compatible: allow explicit legacy shared story file to act as primary
+          if (!primary && blockMeta.shared_story) primary = blockMeta.shared_story;
+        }
+
+        // Backward-compatible shared story fallbacks (existing files)
+        if (!primary && blockMeta?.shared_story) primary = blockMeta.shared_story;
+
+        let storySrc = primary;
+
+        // Preflight: if primary 404s, use fallback (if any)
+        if (storySrc) {
+          try {
+            const r = await fetch(storySrc, { cache: 'no-store' });
+            if (!r.ok) throw new Error(String(r.status));
+          } catch {
+            if (fallback) storySrc = fallback;
+          }
+        }
+
+        // Legacy heuristic fallback
+        if (!storySrc) {
+          const colParam = sp.get('col') || '';
+          const hay = String(imgTpl || colParam || '') + ' ' + String(imgSrc || '');
+          if (/taurus/i.test(hay)) storySrc = '/assets/stories/bar1-taurus.html';
+          else if (/aries/i.test(hay)) storySrc = '/assets/stories/bar1-aries.html';
+          else if (/inventors/i.test(hay)) storySrc = '/assets/stories/bar1-inventors.html';
+        }
+
+        if (storySrc) {
+          document.body.dataset.storySrc = storySrc;
+          if (window.__QD && typeof window.__QD.loadStory === 'function') window.__QD.loadStory();
+        }
+      } catch {
+        // no-op
+      }
+    })();
+
+
+    // Backlink
+    if (backEl) {
+      const colPage = sp.get('col') || 'collection-silverbar-01.html';
+      backEl.href = `${colPage}?batch=${encodeURIComponent(String(batch))}`;
+    }
+  }
+
+  async function init() {
+    const body = document.body;
+    const cfg = await loadConfigIfPresent(body);
+    const runtimeCfg = buildRuntimeConfig({ body, cfg });
+
+    // Collection pages
+    renderCollectionGrid(runtimeCfg);
+
+    // NFT detail page
+    renderNftDetail(runtimeCfg);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+})();
