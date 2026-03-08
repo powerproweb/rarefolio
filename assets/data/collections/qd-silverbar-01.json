@@ -1,0 +1,27 @@
+{
+  "collectionId": "qd-silverbar-01",
+  "title": "QuantumDrive Silver Bar I",
+  "serial": "E101837",
+  "set": 1,
+
+  "nft": {
+    "slugPrefix": "qd-silver",
+    "idDigits": 7,
+    "startIndex": 1
+  },
+
+  "batch": {
+    "size": 8,
+    "count": 5000,
+    "labelPrefix": "Batch"
+  },
+
+  "assets": {
+    "cardImageTemplate": "assets/img/nfts/qd-silver/{id}.jpg",
+    "fallbackImage": "assets/img/nfts/placeholder.jpg"
+  },
+
+  "links": {
+    "detailPageTemplate": "nft.html?nft={slug}&bar={serial}&set={set}"
+  }
+}
