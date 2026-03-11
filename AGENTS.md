@@ -24,7 +24,7 @@ All pages are flat `.html` files at the project root — no build step, no bundl
 
 **Key JS modules (all vanilla, IIFE-wrapped, no imports):**
 - `assets/js/main.js` — Sitewide: mobile menu, dropdown nav, back-to-top, NFT image watermarking (CSS overlay via `data-watermark`), card tilt effect, story loader. Exposes `window.__QD.setupTilt()` and `window.__QD.loadStory()`.
-- `assets/js/qd-wire.js` — Data-driven CNFT rendering engine. Contains the `QD_BLOCKS` routing map (block00–block14) that maps batch numbers to image folder slugs and story modes. Handles collection grid rendering (`#nftGrid`, `#batchSelect`) and NFT detail page population. This is the core rendering logic.
+- `assets/js/qd-wire.js` — Data-driven CNFT rendering engine. Contains the `QD_BLOCKS` routing map (block00–block14) that maps batch numbers to image folder slugs and story modes. Handles collection grid rendering (`#nftGrid`, windowed pill navigator `#batchNav`) and NFT detail page population. Loads block stories into `#qd-story` on batch navigation. This is the core rendering logic.
 - `assets/js/certificates.js` — Fetches certificate data from `api/cert/` endpoint and renders cert details + QR code.
 - `assets/js/qr-lite.js` — Embedded minimal QR code generator (canvas-based). Exposes `window.qdQrLite.drawQrToCanvas()`.
 - `assets/js/collections/collection-batches.js` — Legacy batch renderer (replaced by `qd-wire.js` for most pages).
@@ -52,12 +52,17 @@ MySQL (`rarefolio_cnftcert`), single table:
 ### Block Routing System (qd-wire.js)
 
 The `QD_BLOCKS` map in `qd-wire.js` is the single source of truth for mapping batches to image folders and story content:
-- Batch 1 → `block00` (scnft_zodiac_aries)
+- Batch 1 → `block00` (scnft_zodiac_taurus)
 - Batch 2 → `block01` (scnft_sp_inventors)
-- Batch 3 → `block02` (scnft_zodiac_taurus)
+- Batch 3 → `block02` (scnft_zodiac_aries)
 - Batches 4–15 → `block03`–`block14` (remaining zodiac/series)
 
-Each block has a `story_mode`: `shared` (one story HTML per block) or `per_item` (up to 8 individual story HTMLs). Stories live in `assets/stories/`.
+Each block has a `story_mode`: `shared` (one story HTML per block) or `per_item` (up to 8 individual story HTMLs). Stories live in `assets/stories/` using block-based directories:
+- `assets/stories/block00/shared.html` — Taurus shared story
+- `assets/stories/block01/shared.html` — Inventors shared story
+- `assets/stories/block02/shared.html` — Aries shared story (fallback)
+- `assets/stories/block02/1.html`–`8.html` — Aries per-item stubs
+- Legacy flat files (`bar1-taurus.html`, etc.) are preserved for backward compatibility.
 
 ### Certificate ID Format
 
@@ -69,7 +74,7 @@ All certificate and vault IDs follow deterministic patterns:
 ## Hosting & Deployment
 
 - Apache on shared hosting (BlueHost/cPanel)
-- `.htaccess` at root handles 404 routing and contains an extensive IP blocklist for contact form spam
+- `.htaccess` at root handles HTTPS canonicalization, `.html` extension stripping, security headers, browser caching, gzip compression, and error pages. The old IP blocklist has been moved to `.htaccess.old1`.
 - PDFs are stored outside webroot at `/home/<user>/rf_storage/pdfs/` and served via `download.php`
 - No build step — deploy by uploading files directly
 - Dompdf is vendored in `dompdf/` (loaded via `dompdf/autoload.inc.php`)
@@ -88,4 +93,4 @@ All certificate and vault IDs follow deterministic patterns:
 - `api/_config.php` contains database credentials and admin auth secrets — handle with care
 - The `dompdf/` directory is a third-party dependency (vendored via Composer) — do not modify files inside it
 - Certificate PDFs are generated once and are immutable (the issuer endpoint refuses to overwrite existing PDFs)
-- The `.htaccess` IP blocklist is very large (~2900 lines) and is manually maintained — avoid reformatting it
+- The old `.htaccess` IP blocklist (~2900 lines) has been archived to `.htaccess.old1` — the current `.htaccess` is clean and modular
