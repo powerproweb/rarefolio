@@ -23,7 +23,7 @@
       certId,
       status:'unverified',
       template:getParam('template')||'parchment',
-      cnft:{id:cnft,collection:getParam('collection')||'QuantumDrive Silver Bar — Series',barSerial:bar,edition:getParam('edition')||`Shard ${parseInt(n,10)} of 40,000`,silverAllocationTroyOz:getParam('silver')||'0.00025'},
+      cnft:{id:cnft,collection:getParam('collection')||'Rarefolio Silver Bar — Series',barSerial:bar,edition:getParam('edition')||`Shard ${parseInt(n,10)} of 40,000`,silverAllocationTroyOz:getParam('silver')||'0.00025'},
       holder:{displayName:getParam('buyer')||'',privacyEnabled:(getParam('privacy')||'1')!=='0',wallet:getParam('wallet')||''},
       chain:{network:getParam('network')||'Cardano',contractAddress:getParam('contract')||'',tokenId:getParam('token')||'',txHash:getParam('tx')||'',blockNumber:getParam('block')||''},
       custody:{vaultRecordId:`QD-VLT-${bar}-AG-${n}`,vaultAddress:'50 CR 356, Shiner, TX 77984',statement:'Custody recorded; verify via QR reference.'}

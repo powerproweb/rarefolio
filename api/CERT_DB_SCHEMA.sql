@@ -1,5 +1,5 @@
--- QuantumDrive Certificates (DB + Disk)
--- Run in phpMyAdmin against your QuantumDrive database.
+-- Rarefolio Certificates (DB + Disk)
+-- Run in phpMyAdmin against your Rarefolio database.
 
 CREATE TABLE IF NOT EXISTS qd_certificates (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

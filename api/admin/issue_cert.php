@@ -36,7 +36,7 @@ function cnft_num_from_id(string $cnftId): string {
 
 function server_origin(): string {
   $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-  $host = $_SERVER['HTTP_HOST'] ?? 'quantumdrive.io';
+  $host = $_SERVER['HTTP_HOST'] ?? 'rarefolio.io';
   return $scheme . '://' . $host;
 }
 
@@ -150,7 +150,7 @@ $txExplorerEsc = htmlspecialchars($txExplorer);
 $certAbsEsc = htmlspecialchars($certAbs);
 $downloadAbsEsc = htmlspecialchars($downloadAbs);
 
-  $attest = 'This Certificate of Authenticity confirms that the CNFT identified on this document has been issued by QuantumDrive.io and recorded on a public blockchain. The CNFT is associated with an allocation reference of 0.00025 troy oz of fine silver attributed to a serialized QuantumDrive Silver Bar. Ownership and provenance may be independently verified using the certificate details and QR verification reference provided.';
+  $attest = 'This Certificate of Authenticity confirms that the CNFT identified on this document has been issued by Rarefolio.io and recorded on a public blockchain. The CNFT is associated with an allocation reference of 0.00025 troy oz of fine silver attributed to a serialized Rarefolio Silver Bar. Ownership and provenance may be independently verified using the certificate details and QR verification reference provided.';
   $attest = htmlspecialchars($attest);
 
   $micro = htmlspecialchars((string)($payload['terms']['footerMicroTerms'] ?? ''));
@@ -183,9 +183,9 @@ $downloadAbsEsc = htmlspecialchars($downloadAbs);
 <body>
   <div class="page pb">
     <div class="frame">
-      <div class="brand">QuantumDrive.io</div>
+      <div class="brand">Rarefolio.io</div>
       <div class="title">Certificate of Authenticity</div>
-      <div class="sub">QuantumDrive Silver Shard CNFT — Provenance &amp; Verification</div>
+      <div class="sub">Rarefolio Silver Shard CNFT — Provenance &amp; Verification</div>
       <div style="text-align:center;">
         <span class="badge">VERIFIED</span>
       </div>
@@ -221,7 +221,7 @@ $downloadAbsEsc = htmlspecialchars($downloadAbs);
 
   <div class="page">
     <div class="frame">
-      <div class="brand">QuantumDrive.io</div>
+      <div class="brand">Rarefolio.io</div>
       <div class="title" style="font-size:20px;">Verification &amp; Chain Record</div>
       <div class="sub">Use the verification URL below to confirm provenance</div>
 
@@ -302,7 +302,7 @@ function require_basic_auth(): void {
   }
 
   if ($u !== ADMIN_USER || $p !== ADMIN_PASS) {
-    header('WWW-Authenticate: Basic realm="QuantumDrive Issuer"');
+    header('WWW-Authenticate: Basic realm="Rarefolio Issuer"');
     http_response_code(401);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['error' => 'Unauthorized'], JSON_UNESCAPED_SLASHES);
