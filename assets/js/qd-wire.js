@@ -1,5 +1,5 @@
 /* ============================================================
-   qd-wire.js — Data-driven wiring for QuantumDrive CNFT pages
+   qd-wire.js — Data-driven wiring for Rarefolio CNFT pages
 
    Key upgrade (Feb 2026):
    - Block-driven routing (block00..block14) with stable image folder slugs
@@ -50,9 +50,9 @@
      You can change story_mode per block without changing page code.
   */
   const QD_BLOCKS = {
-    block00: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',        story_mode: 'per_item', shared_story: '/assets/stories/bar1-aries.html' },
-    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors', story_mode: 'shared',   shared_story: '/assets/stories/bar1-inventors.html' },
-    block02: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac — Taurus',       story_mode: 'shared',   shared_story: '/assets/stories/bar1-taurus.html' },
+    block00: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac — Taurus',       story_mode: 'shared',   shared_story: '/assets/stories/block00/shared.html' },
+    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors', story_mode: 'shared',   shared_story: '/assets/stories/block01/shared.html' },
+    block02: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',        story_mode: 'per_item', shared_story: '/assets/stories/block02/shared.html' },
     block03: { folder: 'scnft_sp_robot_butler',    label: 'Steampunk — Robot Butler', story_mode: 'per_item' },
     block04: { folder: 'scnft_zodiac_gemini',      label: 'Zodiac — Gemini',       story_mode: 'shared' },
     block05: { folder: 'scnft_zodiac_cancer',      label: 'Zodiac — Cancer',       story_mode: 'shared' },
@@ -113,7 +113,7 @@
   function buildRuntimeConfig({ body, cfg }) {
     // Defaults (safe)
     const defaults = {
-      title: 'QuantumDrive Silver Bar',
+      title: 'Rarefolio Silver Bar',
       serial: 'E101837',
       set: 1,
       nft: { slugPrefix: 'qd-silver', idDigits: 7, startIndex: 1 },
@@ -295,10 +295,15 @@
 
   function renderCollectionGrid(runtimeCfg) {
     const grid = $('#nftGrid');
-    const batchSelect = $('#batchSelect');
+    const batchNav = $('#batchNav');
     const batchLabel = $('#batchLabel');
     const prevBtn = $('#prevBatch');
     const nextBtn = $('#nextBatch');
+    const firstBtn = $('#firstBatch');
+    const lastBtn = $('#lastBatch');
+    const jumpInput = $('#batchJumpInput');
+    const jumpTotal = $('#batchJumpTotal');
+    const jumpGo = $('#batchJumpGo');
 
     if (!grid) return;
 
@@ -310,6 +315,10 @@
 
     const makeSlug = (n) => `${PREFIX}-${pad(n, DIGITS)}`;
     const colPage = location.pathname.split('/').pop();
+
+    // Update jump input max & label
+    if (jumpInput) { jumpInput.max = String(TOTAL_BATCHES); jumpInput.min = '1'; }
+    if (jumpTotal) jumpTotal.textContent = `/ ${TOTAL_BATCHES}`;
 
     const syncSeriesLinks = (batchNum) => {
       const links = document.querySelectorAll('a.qd-series-link[data-qdsync="batch"]');
@@ -329,7 +338,6 @@
     };
 
     const buildViewLink = (slug, batchNum, itemIndex) => {
-      // Keep detailPageTemplate compatibility, but also add navigation helpers.
       const base = resolveTemplate(runtimeCfg.links.detailPageTemplate, {
         slug,
         serial: runtimeCfg.serial,
@@ -343,13 +351,10 @@
       sp.set('batch', String(batchNum));
       sp.set('col', colPage);
 
-      // Block routing
       const blockId = resolveBlockId(runtimeCfg, batchNum);
       if (blockId) sp.set('block', blockId);
       if (itemIndex) sp.set('item', String(itemIndex));
 
-      // Optional: keep explicit img template if you want deterministic legacy behavior.
-      // With block routing, this is no longer required.
       const imgTpl = templateForSlug(runtimeCfg, slug, batchNum);
       if (imgTpl) sp.set('img', imgTpl);
 
@@ -358,20 +363,51 @@
       return `nft.html?${sp.toString()}`;
     };
 
-    const ensureBatchSelect = () => {
-      if (!batchSelect) return;
-      batchSelect.innerHTML = '';
-      const padW = Math.max(2, String(TOTAL_BATCHES).length);
-      const frag = document.createDocumentFragment();
-      for (let b = 1; b <= TOTAL_BATCHES; b++) {
-        const startN = START_INDEX + (b - 1) * BATCH_SIZE;
-        const endN = startN + BATCH_SIZE - 1;
-        const opt = document.createElement('option');
-        opt.value = String(b);
-        opt.textContent = `${runtimeCfg.batch.labelPrefix} ${String(b).padStart(padW, '0')} • ${makeSlug(startN)} → ${makeSlug(endN)}`;
-        frag.appendChild(opt);
+    /* ---- Windowed batch pill navigator ---- */
+    const PILL_RADIUS = 8;
+
+    const visibleBatches = (current) => {
+      const set = new Set();
+      set.add(1);
+      set.add(TOTAL_BATCHES);
+      for (let i = current - PILL_RADIUS; i <= current + PILL_RADIUS; i++) {
+        if (i >= 1 && i <= TOTAL_BATCHES) set.add(i);
       }
-      batchSelect.appendChild(frag);
+      const sorted = Array.from(set).sort((a, b) => a - b);
+      // Insert ellipsis markers where gaps exist
+      const result = [];
+      for (let i = 0; i < sorted.length; i++) {
+        if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push(null); // null = ellipsis
+        result.push(sorted[i]);
+      }
+      return result;
+    };
+
+    const buildBatchNav = (currentBatch) => {
+      if (!batchNav) return;
+      const items = visibleBatches(currentBatch);
+      const frag = document.createDocumentFragment();
+      items.forEach((val) => {
+        if (val === null) {
+          const span = document.createElement('span');
+          span.className = 'batch-pill ellipsis';
+          span.textContent = '\u2026';
+          span.setAttribute('aria-hidden', 'true');
+          frag.appendChild(span);
+        } else {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'batch-pill' + (val === currentBatch ? ' active' : '');
+          btn.textContent = String(val);
+          btn.setAttribute('aria-label', `Batch ${val}`);
+          if (val !== currentBatch) {
+            btn.addEventListener('click', () => go(val));
+          }
+          frag.appendChild(btn);
+        }
+      });
+      batchNav.innerHTML = '';
+      batchNav.appendChild(frag);
     };
 
     const renderBatch = (batchNum) => {
@@ -381,12 +417,17 @@
       const lastSlug = makeSlug(endN);
       const padW = Math.max(2, String(TOTAL_BATCHES).length);
 
-      if (batchSelect) batchSelect.value = String(batchNum);
       if (batchLabel) {
         const blockId = resolveBlockId(runtimeCfg, batchNum);
-        const blockLabel = blockId && QD_BLOCKS[blockId]?.label ? ` • ${blockId.toUpperCase()} • ${QD_BLOCKS[blockId].label}` : '';
-        batchLabel.textContent = `Bar Serial: ${runtimeCfg.serial} • ${runtimeCfg.batch.labelPrefix} ${String(batchNum).padStart(padW, '0')} of ${TOTAL_BATCHES}${blockLabel} • ${firstSlug} → ${lastSlug}`;
+        const blockLabel = blockId && QD_BLOCKS[blockId]?.label ? ` \u2022 ${blockId.toUpperCase()} \u2022 ${QD_BLOCKS[blockId].label}` : '';
+        batchLabel.textContent = `Bar Serial: ${runtimeCfg.serial} \u2022 ${runtimeCfg.batch.labelPrefix} ${String(batchNum).padStart(padW, '0')} of ${TOTAL_BATCHES}${blockLabel} \u2022 ${firstSlug} \u2192 ${lastSlug}`;
       }
+
+      // Update pill strip
+      buildBatchNav(batchNum);
+
+      // Sync jump input
+      if (jumpInput) jumpInput.value = String(batchNum);
 
       syncSeriesLinks(batchNum);
 
@@ -396,7 +437,7 @@
         const slug = makeSlug(n);
         const itemIndex = i + 1;
         const { src: imgSrc, altSrc } = blockImageCandidates(runtimeCfg, batchNum, slug);
-        const title = `${runtimeCfg.title} — ${slug}`;
+        const title = `${runtimeCfg.title} \u2014 ${slug}`;
         const viewLink = buildViewLink(slug, batchNum, itemIndex);
 
         cards.push(`
@@ -411,7 +452,7 @@
             </div>
             <div class="cnft-body">
               <div class="cnft-meta">
-                <span class="badge">Bar Serial • ${runtimeCfg.serial}</span>
+                <span class="badge">Bar Serial \u2022 ${runtimeCfg.serial}</span>
               </div>
               <h3 class="cnft-title">${title}</h3>
               <p class="cnft-desc">Collector-grade artifact render (config-driven). Replace with traits, lore, marketplace links when ready.</p>
@@ -429,12 +470,32 @@
 
       if (prevBtn) prevBtn.disabled = batchNum <= 1;
       if (nextBtn) nextBtn.disabled = batchNum >= TOTAL_BATCHES;
+      if (firstBtn) firstBtn.disabled = batchNum <= 1;
+      if (lastBtn) lastBtn.disabled = batchNum >= TOTAL_BATCHES;
+
+      // ---- Story loading for collection grid ----
+      const storyHost = document.getElementById('qd-story');
+      if (storyHost) {
+        const blockId = resolveBlockId(runtimeCfg, batchNum);
+        const blockMeta = blockId ? QD_BLOCKS[blockId] : null;
+        let storySrc = '';
+        if (blockMeta) {
+          storySrc = blockMeta.shared_story || `/assets/stories/${blockId}/shared.html`;
+        }
+        if (storySrc) {
+          document.body.dataset.storySrc = storySrc;
+          if (window.__QD?.loadStory) window.__QD.loadStory();
+        } else {
+          delete document.body.dataset.storySrc;
+          storyHost.innerHTML = '<p class="muted small" style="margin:0;">No story available for this batch.</p>';
+        }
+      }
     };
 
     const go = (batchNum) => {
       const b = Math.min(Math.max(batchNum, 1), TOTAL_BATCHES);
 
-      // If this batch belongs to a different series page, redirect (keeps batch in querystring).
+      // If this batch belongs to a different series page, redirect.
       const targetPage = pageForBatch(runtimeCfg, b);
       if (targetPage && targetPage !== colPage) {
         const sp = new URLSearchParams(location.search);
@@ -448,13 +509,20 @@
       renderBatch(b);
     };
 
-    // Bind controls (if present)
-    if (batchSelect) {
-      ensureBatchSelect();
-      batchSelect.addEventListener('change', () => go(parseInt(batchSelect.value, 10) || 1));
-    }
+    // Bind controls
     if (prevBtn) prevBtn.addEventListener('click', () => go(getBatchFromUrl(TOTAL_BATCHES) - 1));
     if (nextBtn) nextBtn.addEventListener('click', () => go(getBatchFromUrl(TOTAL_BATCHES) + 1));
+    if (firstBtn) firstBtn.addEventListener('click', () => go(1));
+    if (lastBtn) lastBtn.addEventListener('click', () => go(TOTAL_BATCHES));
+
+    // Jump-to-batch
+    const doJump = () => {
+      if (!jumpInput) return;
+      const v = parseInt(jumpInput.value, 10);
+      if (Number.isFinite(v)) go(v);
+    };
+    if (jumpGo) jumpGo.addEventListener('click', doJump);
+    if (jumpInput) jumpInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doJump(); });
 
     go(getBatchFromUrl(TOTAL_BATCHES));
   }

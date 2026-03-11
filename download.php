@@ -4,7 +4,7 @@
 //
 // Your actual setup (BlueHost/cPanel):
 // - This script lives in: /home/<user>/public_html/download.php
-// - PDFs live one level above public_html, e.g. /home/<user>/qd_storage/pdfs
+// - PDFs live one level above public_html, e.g. /home/<user>/rf_storage/pdfs
 //
 // This implementation auto-derives <user> from __DIR__ so you don't have to hardcode it.
 
@@ -19,11 +19,11 @@ if ($cert === "") {
 // Derive /home/<user> from /home/<user>/public_html
 $homeDir = dirname(__DIR__); // __DIR__ is typically /home/<user>/public_html
 $candidates = [
-  $homeDir . "/qd_storage/pdfs",
-  $homeDir . "/qd_storage/pdfs/",
+  $homeDir . "/rf_storage/pdfs",
+  $homeDir . "/rf_storage/pdfs/",
 
   // Legacy / fallback (only used if your host actually has this layout)
-  "/home/qd_storage/pdfs",
+  "/home/rf_storage/pdfs",
 ];
 
 $file = null;

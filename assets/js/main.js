@@ -1,5 +1,5 @@
 /* ============================================================
-   QuantumDrive.io CNFT Collections Website (Static Template JS)
+   Rarefolio.io CNFT Collections Website (Static Template JS)
    - Mobile menu toggle
    - Multi-dropdown nav (hover on desktop, tap-to-open on mobile)
    - Back-to-top visibility
@@ -20,7 +20,7 @@
   // - Watermarks only the images displayed in the DOM (not downloads)
   // - Designed to work with static pages + dynamically injected grids
   // ------------------------------------------------------------
-  const WM_BRAND = "QuantumDrive.io";
+  const WM_BRAND = "Rarefolio.io";
 
   const getWatermarkContext = () => {
     const params = new URLSearchParams(location.search);

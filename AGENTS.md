@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-QuantumDrive.io is a static website for tokenized silver bar CNFTs (Cardano Native Fungible Tokens). Each physical silver bar (serial `E101837`) is divided into 40,000 CNFT "shards" organized into batches of 8, with provenance certificates and collector-grade artwork. The site is hosted on shared hosting (BlueHost/cPanel) with Apache/.htaccess and a PHP backend for certificate management.
+Rarefolio.io is a static website for tokenized silver bar CNFTs (Cardano Native Fungible Tokens). Each physical silver bar (serial `E101837`) is divided into 40,000 CNFT "shards" organized into batches of 8, with provenance certificates and collector-grade artwork. The site is hosted on shared hosting (BlueHost/cPanel) with Apache/.htaccess and a PHP backend for certificate management.
 
 ## Architecture
 
@@ -37,11 +37,11 @@ The backend is plain PHP (no framework, no Composer for the app itself). Dompdf 
 - `api/cert.php` — Static certificate lookup (hardcoded `$map` for Block 01 certs `QDCERT-E101837-0000009` through `0000016`). Returns JSON.
 - `api/cert/index.php` — Database-driven certificate lookup. Reads from `qd_certificates` table, returns stored `payload_json`.
 - `api/admin/issue_cert.php` — Admin endpoint (Basic Auth protected). Accepts JSON POST to issue a new certificate: validates input, generates a 2-page PDF via Dompdf (`render_pdf_html()`), writes PDF outside webroot to `PDF_STORAGE_DIR`, inserts a row into `qd_certificates`. Idempotent (returns existing cert if `cert_id` already exists).
-- `download.php` — Serves PDFs stored outside webroot (`/home/<user>/qd_storage/pdfs/`). Auto-derives paths from `__DIR__`.
+- `download.php` — Serves PDFs stored outside webroot (`/home/<user>/rf_storage/pdfs/`). Auto-derives paths from `__DIR__`.
 
 ### Database
 
-MySQL (`quantumdrive_cnftcert`), single table:
+MySQL (`rarefolio_cnftcert`), single table:
 - `qd_certificates` — Stores cert_id (format: `QDCERT-<BAR>-<7DIGIT>`), bar_serial, cnft_id, status (`verified`/`unverified`/`revoked`), payload as JSON, PDF metadata (sha256, bytes, storage key). Schema in `api/CERT_DB_SCHEMA.sql`.
 
 ### Data & Configuration
@@ -70,7 +70,7 @@ All certificate and vault IDs follow deterministic patterns:
 
 - Apache on shared hosting (BlueHost/cPanel)
 - `.htaccess` at root handles 404 routing and contains an extensive IP blocklist for contact form spam
-- PDFs are stored outside webroot at `/home/<user>/qd_storage/pdfs/` and served via `download.php`
+- PDFs are stored outside webroot at `/home/<user>/rf_storage/pdfs/` and served via `download.php`
 - No build step — deploy by uploading files directly
 - Dompdf is vendored in `dompdf/` (loaded via `dompdf/autoload.inc.php`)
 
