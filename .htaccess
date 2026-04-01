@@ -23,6 +23,22 @@ ErrorDocument 403 /404.html
   RewriteCond %{HTTP_HOST} ^www\.rarefolio\.io$ [NC]
   RewriteRule ^(.*)$ https://rarefolio.io/$1 [L,R=301]
 
+  # ── UNDER-DEVELOPMENT GATE ──────────────────────────────────────
+  # Redirect all visitors to under-development.html unless:
+  #   • they already requested it (or the login endpoint)
+  #   • they carry the rf_ud_auth cookie (authenticated)
+  #   • they are requesting static assets or the API
+  # To disable this gate when the site goes live, comment out
+  # or remove this block (from here to "END GATE").
+  RewriteCond %{REQUEST_URI} !^/under-development(\.html)?$ [NC]
+  RewriteCond %{REQUEST_URI} !^/api/ [NC]
+  RewriteCond %{REQUEST_URI} !^/assets/ [NC]
+  RewriteCond %{REQUEST_URI} !^/dompdf/ [NC]
+  RewriteCond %{REQUEST_URI} !\.(css|js|jpg|jpeg|png|gif|webp|svg|ico|woff2?|pdf|json|xml|zip)$ [NC]
+  RewriteCond %{HTTP_COOKIE} !rf_ud_auth=1
+  RewriteRule ^(.*)$ /under-development.html [L,R=302]
+  # ── END GATE ────────────────────────────────────────────────────
+
   # Strip .html from URLs (external redirect: /page.html → /page)
   RewriteCond %{THE_REQUEST} \s/+(.+)\.html[\s?] [NC]
   RewriteRule ^ /%1 [R=301,L]

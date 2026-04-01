@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+<!-- ========================= Rarefolio Under Development ========================= -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+<title>Rarefolio.io | Founders Pre-Sale</title>
+<meta name="description" content="Rarefolio.io is under development. Tokenized silver bar CNFTs on Cardano — collector-grade, verifiable, delivered." />
+<meta name="robots" content="noindex,nofollow" />
+
+<meta name="theme-color" content="#070A12" />
+<meta name="color-scheme" content="dark light" />
+
+<link rel="icon" href="/assets/img/qd_logo_site.png" />
+<link rel="apple-touch-icon" href="/assets/img/qd_logo_site.png" />
+
+<meta property="og:site_name" content="Rarefolio.io" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Site Under Development | Rarefolio.io" />
+<meta property="og:description" content="Rarefolio.io is under development. Tokenized silver bar CNFTs on Cardano." />
+<meta property="og:url" content="https://rarefolio.io/" />
+<meta property="og:image" content="https://rarefolio.io/assets/img/header/silver_bar_header_2400x1200_01.jpg" />
+<meta property="og:locale" content="en_US" />
+
+<link rel="preload" as="style" href="/assets/css/styles.css" />
+<link rel="stylesheet" href="/assets/css/styles.css" />
+<link rel="preload" as="style" href="/assets/css/custom.css" />
+<link rel="stylesheet" href="/assets/css/custom.css" />
+
+<style>
+  /* Page-scoped layout helpers */
+  .ud-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .ud-header {
+    width: 100%;
+    border-bottom: 1px solid rgba(240,215,161,.12);
+    background: rgba(5,10,24,.86);
+    padding: 14px 0;
+  }
+  .ud-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .ud-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 32px 0 44px;
+  }
+
+  /* Hero text */
+  .ud-hero {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .ud-hero h1 {
+    font-size: clamp(26px, 3.4vw, 44px);
+    color: #fae282;
+    margin: 0 0 10px;
+    letter-spacing: .3px;
+  }
+  .ud-hero p {
+    color: var(--text-1);
+    font-size: clamp(14px, 1.6vw, 18px);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* Token showcase */
+  .ud-tokens {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto 32px;
+    text-align: center;
+  }
+  .ud-tokens h2 {
+    font-size: clamp(16px, 2vw, 22px);
+    color: #fff4c8;
+    margin: 0 0 6px;
+    letter-spacing: .2px;
+  }
+  .ud-tokens .ud-tokens-sub {
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 0 0 16px;
+  }
+  .ud-token-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 560px) {
+    .ud-token-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .ud-tokens { max-width: 360px; }
+  }
+  .ud-token-card {
+    border-radius: 16px;
+    border: 1px solid rgba(255,224,101,.18);
+    background: rgba(255,255,255,.04);
+    box-shadow: 0 8px 22px rgba(0,0,0,.35);
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .ud-token-card:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(0,0,0,.50);
+    border-color: rgba(255,224,101,.45);
+  }
+  .ud-token-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    filter: saturate(1.02) contrast(1.02);
+    transition: transform .22s ease, filter .22s ease;
+  }
+  .ud-token-card:hover img {
+    transform: scale(1.06);
+    filter: saturate(1.15) contrast(1.08) brightness(1.04);
+  }
+  .ud-token-label {
+    padding: 8px 6px;
+    font-size: 11px;
+    color: var(--text-2);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Login panel */
+  .ud-login {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .ud-login-panel {
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(240,215,161,.14);
+    background: rgba(255,255,255,.03);
+    box-shadow: var(--shadow-md);
+    padding: 22px 20px 26px;
+  }
+  .ud-login-panel h3 {
+    text-align: center;
+    font-size: 16px;
+    color: #fff4c8;
+    margin: 0 0 16px;
+    letter-spacing: .2px;
+  }
+  .ud-login-panel .ud-field {
+    margin-bottom: 12px;
+  }
+  .ud-login-panel .ud-field label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-1);
+    margin-bottom: 6px;
+  }
+  .ud-login-panel .ud-field input {
+    width: 100%;
+    padding: 12px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(240,215,161,.16);
+    background: rgba(0,0,0,.20);
+    color: var(--text-0);
+    outline: none;
+    font-size: 14px;
+  }
+  .ud-login-panel .ud-field input:focus {
+    border-color: rgba(240,215,161,.35);
+    box-shadow: 0 0 0 3px rgba(185,167,255,.14);
+  }
+  .ud-login-panel .ud-submit {
+    width: 100%;
+    margin-top: 6px;
+  }
+  .ud-error {
+    background: rgba(122,31,42,.25);
+    border: 1px solid rgba(122,31,42,.45);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #ffa4a4;
+    text-align: center;
+    display: none;
+  }
+</style>
+</head>
+
+<body id="top">
+<div class="ud-wrap">
+
+  <!-- Minimal header (logo only) -->
+  <header class="ud-header">
+    <div class="container ud-header-inner">
+      <a class="brand" href="under-development.html">
+        <img src="/assets/img/qd_logo_site.png" alt="Rarefolio.io logo" />
+        <div class="title mas_txt_clr">
+          <strong>Rarefolio.io</strong>
+          <span>CNFT Collections</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="ud-main">
+    <div class="container">
+
+      <!-- Hero -->
+      <div class="ud-hero">
+        <h1>We’re crafting something collector-worthy</h1>
+        <p>RareFolio is getting polished behind the curtain.
+		<br />
+		Check back soon for a collector-focused experience built for discovery, rarity, and a little obsession.</p>
+      </div>
+
+      <!-- Founders Pre-Sale Token Showcase (8 tokens, 4-over-4) -->
+      <div class="ud-tokens">
+        <h2>Founders Pre-Sale Starts April 10th 2026 — Inventors Guild</h2>
+        <p class="ud-tokens-sub">Block 01 · 8 Collector-Grade CNFTs · Silver Bar I (E101837)</p>
+
+        <div class="ud-token-grid">
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000009.jpg"
+                 alt="qd-silver-0000009"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000009</div>
+          </div>
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000010.jpg"
+                 alt="qd-silver-0000010"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000010</div>
+          </div>
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000011.jpg"
+                 alt="qd-silver-0000011"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000011</div>
+          </div>
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000012.jpg"
+                 alt="qd-silver-0000012"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000012</div>
+          </div>
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000013.jpg"
+                 alt="qd-silver-0000013"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000013</div>
+          </div>
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000014.jpg"
+                 alt="qd-silver-0000014"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000014</div>
+          </div>
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000015.jpg"
+                 alt="qd-silver-0000015"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000015</div>
+          </div>
+          <div class="ud-token-card">
+            <img src="/assets/img/collection/scnft_sp_inventors/qd-silver-0000016.jpg"
+                 alt="qd-silver-0000016"
+                 onerror="this.onerror=null;this.src='/assets/img/nfts/sys/placeholder.jpg';" />
+            <div class="ud-token-label">qd-silver-0000016</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="sep" />
+
+      <!-- Login form -->
+      <div class="ud-login">
+        <div class="ud-login-panel">
+          <h3>Admin Login</h3>
+
+          <div class="ud-error" id="ud-error">
+            Invalid username or password. Please try again.
+          </div>
+
+          <form method="POST" action="/api/login.php" autocomplete="off">
+            <div class="ud-field">
+              <label for="ud-user">Username</label>
+              <input type="text" id="ud-user" name="username" required autofocus />
+            </div>
+            <div class="ud-field">
+              <label for="ud-pass">Password</label>
+              <input type="password" id="ud-pass" name="password" required />
+            </div>
+            <button type="submit" class="btn primary ud-submit">Sign In</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="margin-top:auto;">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        &copy; 2026 Rarefolio.io. All rights reserved. 
+      </div>
+      <div class="footer-right">
+        <a href="https://qdls.io/xrf" target="_blank">X-RareFolio</a><!--  -->
+        <!-- <a href="https://qdls.io/qdcnft-d" target="_blank">Discord</a> -->
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Show error banner if redirected with ?error=1 -->
+<script>
+(function(){
+  if (new URLSearchParams(window.location.search).get('error') === '1') {
+    var el = document.getElementById('ud-error');
+    if (el) el.style.display = 'block';
+  }
+})();
+</script>
+
+</body>
+</html>
