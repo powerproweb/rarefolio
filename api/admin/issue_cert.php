@@ -39,6 +39,58 @@ function server_origin(): string {
   $host = $_SERVER['HTTP_HOST'] ?? 'rarefolio.io';
   return $scheme . '://' . $host;
 }
+function cert_image_url(string $relativePath): string {
+  return server_origin() . '/' . ltrim($relativePath, '/');
+}
+
+function resolve_cert_assets(string $template, string $sealColor, string $cnftNum): array {
+  $backgrounds = [
+    'parchment' => ['bg-parchment_01.jpg', 'bg-parchment_02.jpg', 'bg-parchment_03.jpg', 'bg-parchment_04.jpg'],
+    'cream' => ['bg-cream_01.jpg', 'bg-cream_02.jpg'],
+  ];
+
+  $seals = [
+    'gold' => [
+      'wax-seal-gold_01.png',
+      'wax-seal-gold_02.png',
+      'wax-seal-gold_03.png',
+      'wax-seal-gold_04.png',
+      'wax-seal-gold_05.png',
+      'wax-seal-gold_06.png',
+      'wax-seal-gold_07.png',
+      'wax-seal-gold_08.png',
+    ],
+    'red' => [
+      'wax-seal-red_09.png',
+      'wax-seal-red_10.png',
+      'wax-seal-red_11.png',
+      'wax-seal-red_12.png',
+      'wax-seal-red_13.png',
+      'wax-seal-red_14.png',
+    ],
+    'blue' => [
+      'wax-seal-blue_15.png',
+      'wax-seal-blue_16.png',
+      'wax-seal-blue_17.png',
+      'wax-seal-blue_18.png',
+      'wax-seal-blue_19.png',
+      'wax-seal-blue_20.png',
+    ],
+  ];
+
+  $n = max(1, (int)$cnftNum);
+  $bgPool = $backgrounds[$template] ?? $backgrounds['parchment'];
+  $sealPool = $seals[$sealColor] ?? $seals['gold'];
+
+  $bgFile = $bgPool[($n - 1) % count($bgPool)];
+  $sealFile = $sealPool[($n - 1) % count($sealPool)];
+
+  return [
+    'bgUrl' => cert_image_url('assets/img/certs/' . $bgFile),
+    'sealUrl' => cert_image_url('assets/img/certs/' . $sealFile),
+    'logoUrl' => cert_image_url('assets/img/rf_logo_site.png'),
+  ];
+}
 
 function ensure_storage_dir(): void {
   if (!is_dir(PDF_STORAGE_DIR)) {
@@ -56,6 +108,7 @@ function build_payload(array $in, string $certId, string $vaultRecordId): array 
     'certId' => $certId,
     'status' => 'verified',
     'template' => $in['template'] ?? 'parchment',
+    'sealColor' => $in['sealColor'] ?? 'gold',
 
     'cnft' => [
       'id' => $in['cnftId'],
@@ -106,16 +159,19 @@ function payload_sha256(array $payload): string {
 }
 
 function render_pdf_html(array $payload): string {
-  // Minimal premium PDF layout (2 pages). Replace with art-directed version later.
-  $certId = htmlspecialchars($payload['certId'] ?? '');
-  $cnftId = htmlspecialchars($payload['cnft']['id'] ?? '');
-  $collection = htmlspecialchars($payload['cnft']['collection'] ?? '');
-  $bar = htmlspecialchars($payload['cnft']['barSerial'] ?? '');
+  $certId = htmlspecialchars((string)($payload['certId'] ?? ''));
+  $cnftIdRaw = (string)($payload['cnft']['id'] ?? '');
+  $cnftId = htmlspecialchars($cnftIdRaw);
+  $collectionRaw = (string)($payload['cnft']['collection'] ?? '');
+  $collection = htmlspecialchars($collectionRaw);
+  $barRaw = (string)($payload['cnft']['barSerial'] ?? '');
+  $bar = htmlspecialchars($barRaw);
   $edition = htmlspecialchars((string)($payload['cnft']['edition'] ?? ''));
   $silver = htmlspecialchars((string)($payload['cnft']['silverAllocationTroyOz'] ?? '0.00025'));
 
-  $vaultId = htmlspecialchars($payload['custody']['vaultRecordId'] ?? '');
-  $vaultAddr = htmlspecialchars($payload['custody']['vaultAddress'] ?? '');
+  $vaultId = htmlspecialchars((string)($payload['custody']['vaultRecordId'] ?? ''));
+  $vaultAddr = htmlspecialchars((string)($payload['custody']['vaultAddress'] ?? ''));
+  $custodyStatement = htmlspecialchars((string)($payload['custody']['statement'] ?? 'Custody recorded; verify via QR reference.'));
 
   $privacy = (bool)($payload['holder']['privacyEnabled'] ?? true);
   $holder = $privacy ? 'Private Holder' : htmlspecialchars((string)($payload['holder']['displayName'] ?? ''));
@@ -129,31 +185,71 @@ function render_pdf_html(array $payload): string {
   $tx = htmlspecialchars((string)($payload['chain']['txHash'] ?? ''));
   $block = htmlspecialchars((string)($payload['chain']['blockNumber'] ?? '—'));
 
+  $template = (string)($payload['template'] ?? 'parchment');
+  $sealColor = (string)($payload['sealColor'] ?? 'gold');
+  $templateLabel = $template === 'cream' ? 'Cream Template' : 'Parchment Template';
+  $templateLabel = htmlspecialchars($templateLabel);
+  $sealColorLabel = htmlspecialchars(ucfirst($sealColor) . ' Seal Series');
+
+  $cnftNum = '0000001';
+  if (preg_match('/(\d{7})$/', $cnftIdRaw, $m)) {
+    $cnftNum = $m[1];
+  }
+
+  $assets = resolve_cert_assets($template, $sealColor, $cnftNum);
+  $bgUrl = htmlspecialchars($assets['bgUrl']);
+  $sealUrl = htmlspecialchars($assets['sealUrl']);
+  $logoUrl = htmlspecialchars($assets['logoUrl']);
+
   $verifyUrl = htmlspecialchars((string)($payload['verification']['verifyUrl'] ?? ''));
 
-// Build absolute URLs for PDF hyperlinks (PDF viewers are picky about relative links)
-$origin = function_exists('server_origin') ? server_origin() : '';
-$certAbs = $origin . '/cert.html?cert=' . rawurlencode($payload['certId'] ?? '');
-$downloadRel = (string)($payload['pdf']['downloadUrl'] ?? '');
-$downloadAbs = $downloadRel !== '' && str_starts_with($downloadRel, '/') ? ($origin . $downloadRel) : $downloadRel;
+  $origin = function_exists('server_origin') ? server_origin() : '';
+  $certAbs = $origin . '/cert.html?cert=' . rawurlencode((string)($payload['certId'] ?? ''));
+  $downloadRel = (string)($payload['pdf']['downloadUrl'] ?? '');
+  $downloadAbs = $downloadRel !== '' && str_starts_with($downloadRel, '/') ? ($origin . $downloadRel) : $downloadRel;
 
-// Optional explorer links (Cardano default). If network unknown, fall back to plain text.
-$txRaw = (string)($payload['chain']['txHash'] ?? '');
-$txExplorer = '';
-if ($txRaw !== '') {
-  $net = strtolower((string)($payload['chain']['network'] ?? ''));
-  if (strpos($net, 'cardano') !== false) {
-    $txExplorer = 'https://cardanoscan.io/transaction/' . rawurlencode($txRaw);
+  $txRaw = (string)($payload['chain']['txHash'] ?? '');
+  $txExplorer = '';
+  if ($txRaw !== '') {
+    $net = strtolower((string)($payload['chain']['network'] ?? ''));
+    if (strpos($net, 'cardano') !== false) {
+      $txExplorer = 'https://cardanoscan.io/transaction/' . rawurlencode($txRaw);
+    }
   }
-}
-$txExplorerEsc = htmlspecialchars($txExplorer);
-$certAbsEsc = htmlspecialchars($certAbs);
-$downloadAbsEsc = htmlspecialchars($downloadAbs);
+
+  $certAbsEsc = htmlspecialchars($certAbs);
+  $downloadAbsEsc = htmlspecialchars($downloadAbs);
+  $txExplorerEsc = htmlspecialchars($txExplorer);
+  $txHtml = $txExplorer !== ''
+    ? '<a href="' . $txExplorerEsc . '" target="_blank" rel="noopener">' . $tx . '</a>'
+    : $tx;
 
   $attest = 'This Certificate of Authenticity confirms that the CNFT identified on this document has been issued by Rarefolio.io and recorded on a public blockchain. The CNFT is associated with an allocation reference of 0.00025 troy oz of fine silver attributed to a serialized Rarefolio Silver Bar. Ownership and provenance may be independently verified using the certificate details and QR verification reference provided.';
   $attest = htmlspecialchars($attest);
 
   $micro = htmlspecialchars((string)($payload['terms']['footerMicroTerms'] ?? ''));
+
+  if ($template === 'cream') {
+    $textColor = '#1a1e2e';
+    $mutedColor = '#4f5d74';
+    $accentColor = '#8a9bb5';
+    $accentStrong = '#5d728f';
+    $panelBg = 'rgba(255,255,255,.88)';
+    $panelBorder = 'rgba(93,114,143,.28)';
+    $pageWash = 'rgba(247,248,251,.15)';
+    $linkColor = '#405a7b';
+  } else {
+    $textColor = '#3b2a1a';
+    $mutedColor = '#6d5638';
+    $accentColor = '#c9a84c';
+    $accentStrong = '#8a6b24';
+    $panelBg = 'rgba(255,255,255,.82)';
+    $panelBorder = 'rgba(138,107,36,.24)';
+    $pageWash = 'rgba(250,245,233,.10)';
+    $linkColor = '#7a5e21';
+  }
+
+  $collectionLine = htmlspecialchars($collectionRaw . ' • Bar Serial ' . $barRaw);
 
   return <<<HTML
 <!doctype html>
@@ -162,100 +258,232 @@ $downloadAbsEsc = htmlspecialchars($downloadAbs);
   <meta charset="utf-8">
   <style>
     @page { size: letter; margin: 0; }
-    body { margin:0; font-family: DejaVu Sans, Arial, sans-serif; color:#111; }
-    a { color:#0a4db3; text-decoration: underline; }
-    .page { width: 8.5in; height: 11in; position: relative; }
-    .frame { position:absolute; inset: 0.5in; }
-    .brand { text-align:center; font-weight: 900; letter-spacing:.08em; margin-top: 6px; }
-    .title { text-align:center; font-family: DejaVu Serif, "Times New Roman", serif; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing:.08em; margin: 10px 0 4px; }
-    .sub { text-align:center; font-size: 11px; letter-spacing:.08em; text-transform: uppercase; color: rgba(0,0,0,.65); margin: 0 0 12px; }
-    .badge { text-align:center; font-size: 11px; font-weight: 900; color:#0b6b3a; border:1px solid rgba(0,0,0,.15); display:inline-block; padding:6px 10px; border-radius: 999px; }
-    .panel { border:1px solid rgba(0,0,0,.14); padding:10px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; background: rgba(255,255,255,.85); margin-top: 10px; }
-    .h { font-size: 11px; letter-spacing:.08em; text-transform: uppercase; color: rgba(0,0,0,.62); font-weight: 900; margin-bottom: 6px; }
+    body { margin:0; font-family: DejaVu Sans, Arial, sans-serif; color: {$textColor}; }
+    a { color: {$linkColor}; text-decoration: underline; }
+    .page {
+      width: 8.5in;
+      height: 11in;
+      position: relative;
+      background-image: url('{$bgUrl}');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+    .page:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: {$pageWash};
+    }
+    .frame {
+      position: absolute;
+      top: 0.48in;
+      right: 0.48in;
+      bottom: 0.48in;
+      left: 0.48in;
+      z-index: 1;
+    }
+    .logo-wrap { text-align:center; margin: 0 0 0.04in; }
+    .logo { width: 1.02in; height: auto; }
+    .brand {
+      text-align:center;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: {$mutedColor};
+      margin: 0 0 8px;
+    }
+    .title {
+      text-align:center;
+      font-family: DejaVu Serif, "Times New Roman", serif;
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin: 0;
+      color: {$textColor};
+    }
+    .page-two .title { font-size: 22px; }
+    .sub {
+      text-align:center;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: {$mutedColor};
+      margin: 8px 0 4px;
+    }
+    .meta-line {
+      text-align:center;
+      font-size: 9.5px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: {$mutedColor};
+      margin: 0 0 12px;
+    }
+    .badge-wrap { text-align:center; margin-bottom: 10px; }
+    .badge {
+      display:inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid {$accentColor};
+      background: rgba(255,255,255,.56);
+      color: {$accentStrong};
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .panel {
+      background: {$panelBg};
+      border: 1px solid {$panelBorder};
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    .page-one .holder-panel { width: 5.7in; }
+    .h {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: {$mutedColor};
+      margin: 0 0 8px;
+    }
+    .panel p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.55;
+      color: {$textColor};
+    }
     table { width:100%; border-collapse: collapse; }
-    td { padding: 6px 4px; vertical-align: top; font-size: 12.5px; }
-    .k { color: rgba(0,0,0,.62); font-weight: 800; width: 170px; }
-    .v { font-weight: 900; word-break: break-word; }
-    .footer { position:absolute; left: 0.5in; right: 0.5in; bottom: 0.5in; font-size: 9.5px; color: rgba(0,0,0,.62); border-top:1px solid rgba(0,0,0,.14); padding-top: 8px; }
+    td {
+      padding: 5px 0;
+      vertical-align: top;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    tr + tr td { border-top: 1px solid rgba(0,0,0,.08); }
+    .k {
+      width: 1.78in;
+      padding-right: 12px;
+      color: {$mutedColor};
+      font-weight: 700;
+    }
+    .v {
+      color: {$textColor};
+      font-weight: 900;
+      word-break: break-word;
+    }
+    .linkish { word-break: break-all; }
+    .seal {
+      position: absolute;
+      right: 0.08in;
+      bottom: 1.42in;
+      width: 1.8in;
+      height: auto;
+    }
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid {$panelBorder};
+      padding-top: 8px;
+      font-size: 9px;
+      line-height: 1.45;
+      color: {$mutedColor};
+    }
     .pb { page-break-after: always; }
   </style>
 </head>
 <body>
-  <div class="page pb">
+  <div class="page page-one pb">
     <div class="frame">
+      <div class="logo-wrap"><img class="logo" src="{$logoUrl}" alt="Rarefolio.io logo" /></div>
       <div class="brand">Rarefolio.io</div>
       <div class="title">Certificate of Authenticity</div>
       <div class="sub">Rarefolio Silver Shard CNFT — Provenance &amp; Verification</div>
-      <div style="text-align:center;">
-        <span class="badge">VERIFIED</span>
-      </div>
+      <div class="meta-line">{$collectionLine}</div>
+      <div class="badge-wrap"><span class="badge">Verified • {$templateLabel}</span></div>
 
-      <div class="panel">$attest</div>
+      <div class="panel">
+        <div class="h">Attestation</div>
+        <p>{$attest}</p>
+      </div>
 
       <div class="panel">
         <div class="h">Identification</div>
         <table>
-          <tr><td class="k">Certificate ID</td><td class="v">$certId</td></tr>
-          <tr><td class="k">CNFT ID</td><td class="v">$cnftId</td></tr>
-          <tr><td class="k">Collection / Series</td><td class="v">$collection</td></tr>
-          <tr><td class="k">Bar Serial #</td><td class="v">$bar</td></tr>
-          <tr><td class="k">Edition</td><td class="v">$edition</td></tr>
-          <tr><td class="k">Silver Allocation</td><td class="v">$silver troy oz</td></tr>
+          <tr><td class="k">Certificate ID</td><td class="v">{$certId}</td></tr>
+          <tr><td class="k">CNFT ID</td><td class="v">{$cnftId}</td></tr>
+          <tr><td class="k">Collection / Series</td><td class="v">{$collection}</td></tr>
+          <tr><td class="k">Bar Serial #</td><td class="v">{$bar}</td></tr>
+          <tr><td class="k">Edition</td><td class="v">{$edition}</td></tr>
+          <tr><td class="k">Silver Allocation</td><td class="v">{$silver} troy oz</td></tr>
         </table>
       </div>
 
-      <div class="panel">
+      <div class="panel holder-panel">
         <div class="h">Holder &amp; Custody</div>
         <table>
-          <tr><td class="k">Holder Name</td><td class="v">$holder</td></tr>
-          <tr><td class="k">Wallet (last 8)</td><td class="v">$walletTail</td></tr>
-          <tr><td class="k">Vault Record ID</td><td class="v">$vaultId</td></tr>
-          <tr><td class="k">Vault Location</td><td class="v">$vaultAddr</td></tr>
-          <tr><td class="k">Custody Note</td><td class="v">Custody recorded; verify via QR reference.</td></tr>
+          <tr><td class="k">Holder Name</td><td class="v">{$holder}</td></tr>
+          <tr><td class="k">Wallet (last 8)</td><td class="v">{$walletTail}</td></tr>
+          <tr><td class="k">Vault Record ID</td><td class="v">{$vaultId}</td></tr>
+          <tr><td class="k">Vault Location</td><td class="v">{$vaultAddr}</td></tr>
+          <tr><td class="k">Custody Note</td><td class="v">{$custodyStatement}</td></tr>
         </table>
       </div>
 
-      <div class="footer">$micro</div>
+      <img class="seal" src="{$sealUrl}" alt="{$sealColorLabel}" />
+      <div class="footer">{$micro}</div>
     </div>
   </div>
 
-  <div class="page">
+  <div class="page page-two">
     <div class="frame">
+      <div class="logo-wrap"><img class="logo" src="{$logoUrl}" alt="Rarefolio.io logo" /></div>
       <div class="brand">Rarefolio.io</div>
-      <div class="title" style="font-size:20px;">Verification &amp; Chain Record</div>
-      <div class="sub">Use the verification URL below to confirm provenance</div>
+      <div class="title">Verification &amp; Chain Record</div>
+      <div class="sub">Independent verification and custody references</div>
+      <div class="meta-line">{$templateLabel} • {$sealColorLabel}</div>
 
       <div class="panel">
         <div class="h">Verify URL</div>
-        <div class="v"><a href="$verifyUrl" target="_blank" rel="noopener">$verifyUrl</a></div>
+        <div class="v linkish"><a href="{$verifyUrl}" target="_blank" rel="noopener">{$verifyUrl}</a></div>
       </div>
 
       <div class="panel">
         <div class="h">Certificate View</div>
-        <div class="v"><a href="$certAbsEsc" target="_blank" rel="noopener">$certAbsEsc</a></div>
+        <div class="v linkish"><a href="{$certAbsEsc}" target="_blank" rel="noopener">{$certAbsEsc}</a></div>
       </div>
 
       <div class="panel">
         <div class="h">Original PDF Download</div>
-        <div class="v"><a href="$downloadAbsEsc" target="_blank" rel="noopener">$downloadAbsEsc</a></div>
+        <div class="v linkish"><a href="{$downloadAbsEsc}" target="_blank" rel="noopener">{$downloadAbsEsc}</a></div>
       </div>
 
       <div class="panel">
         <div class="h">On-chain Details</div>
         <table>
-          <tr><td class="k">Network</td><td class="v">$network</td></tr>
-          <tr><td class="k">Contract Address</td><td class="v">$contract</td></tr>
-          <tr><td class="k">Token ID</td><td class="v">$tokenId</td></tr>
-          <tr><td class="k">Transaction Hash</td><td class="v">$tx</td></tr>
-          <tr><td class="k">Block Number</td><td class="v">$block</td></tr>
+          <tr><td class="k">Network</td><td class="v">{$network}</td></tr>
+          <tr><td class="k">Contract Address</td><td class="v">{$contract}</td></tr>
+          <tr><td class="k">Token ID</td><td class="v">{$tokenId}</td></tr>
+          <tr><td class="k">Transaction Hash</td><td class="v linkish">{$txHtml}</td></tr>
+          <tr><td class="k">Block Number</td><td class="v">{$block}</td></tr>
         </table>
       </div>
 
       <div class="panel">
         <div class="h">Custody &amp; Vault Reference</div>
         <table>
-          <tr><td class="k">Vault Record ID</td><td class="v">$vaultId</td></tr>
-          <tr><td class="k">Vault Location</td><td class="v">$vaultAddr</td></tr>
+          <tr><td class="k">Vault Record ID</td><td class="v">{$vaultId}</td></tr>
+          <tr><td class="k">Vault Location</td><td class="v">{$vaultAddr}</td></tr>
+          <tr><td class="k">Custody Statement</td><td class="v">{$custodyStatement}</td></tr>
         </table>
       </div>
 
@@ -328,6 +556,11 @@ if (!in_array($template, ['parchment', 'cream'], true)) {
   respond(400, ['error' => 'Invalid template. Use parchment or cream.']);
 }
 
+$sealColor = $in['sealColor'] ?? 'gold';
+if (!is_string($sealColor) || !in_array($sealColor, ['gold', 'red', 'blue'], true)) {
+  respond(400, ['error' => 'Invalid sealColor. Use gold, red, or blue.']);
+}
+
 $cnftNum = cnft_num_from_id($cnftId);
 $certId = "QDCERT-{$barSerial}-{$cnftNum}";
 $vaultRecordId = "QD-VLT-{$barSerial}-AG-{$cnftNum}";
@@ -374,8 +607,8 @@ try {
     'tokenId' => $tokenId,
     'txHash' => $txHash,
     'blockNumber' => $in['blockNumber'] ?? '',
-
-    'template' => $template
+    'template' => $template,
+    'sealColor' => $sealColor
   ];
 
   $payload = build_payload($payloadInput, $certId, $vaultRecordId);

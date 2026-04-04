@@ -36,7 +36,7 @@ The backend is plain PHP (no framework, no Composer for the app itself). Dompdf 
 - `api/_config.php` — Database credentials, PDO factory (`qd_pdo()`), PDF storage path, admin auth constants. **Contains secrets — never commit changes to credentials.**
 - `api/cert.php` — Static certificate lookup (hardcoded `$map` for Block 01 certs `QDCERT-E101837-0000009` through `0000016`). Returns JSON.
 - `api/cert/index.php` — Database-driven certificate lookup. Reads from `qd_certificates` table, returns stored `payload_json`.
-- `api/admin/issue_cert.php` — Admin endpoint (Basic Auth protected). Accepts JSON POST to issue a new certificate: validates input, generates a 2-page PDF via Dompdf (`render_pdf_html()`), writes PDF outside webroot to `PDF_STORAGE_DIR`, inserts a row into `qd_certificates`. Idempotent (returns existing cert if `cert_id` already exists).
+- `api/admin/issue_cert.php` — Admin endpoint (Basic Auth protected). Accepts JSON POST to issue a new certificate: validates input, generates a 2-page art-directed PDF via Dompdf (`render_pdf_html()`), writes PDF outside webroot to `PDF_STORAGE_DIR`, inserts a row into `qd_certificates`. Idempotent (returns existing cert if `cert_id` already exists). Supports `template` (`parchment`|`cream`) and optional `sealColor` (`gold`|`red`|`blue`, default `gold`) parameters.
 - `download.php` — Serves PDFs stored outside webroot (`/home/<user>/rf_storage/pdfs/`). Auto-derives paths from `__DIR__`.
 
 ### Database
@@ -63,6 +63,16 @@ Each block has a `story_mode`: `shared` (one story HTML per block) or `per_item`
 - `assets/stories/block02/shared.html` — Aries shared story (fallback)
 - `assets/stories/block02/1.html`–`8.html` — Aries per-item stubs
 - Legacy flat files (`bar1-taurus.html`, etc.) are preserved for backward compatibility.
+
+### Certificate Image Assets & Rotation
+
+Certificate PDF backgrounds and wax seals live in `assets/img/certs/`:
+- **Backgrounds** (selected by `template`): `bg-parchment_01.jpg`–`_04` (4 variants), `bg-cream_01.jpg`–`_02` (2 variants)
+- **Wax Seals** (selected by `sealColor`): Gold `wax-seal-gold_01.png`–`_08` (8 variants), Red `wax-seal-red_09.png`–`_14` (6 variants), Blue `wax-seal-blue_15.png`–`_20` (6 variants)
+
+Asset selection uses deterministic modular arithmetic on the 7-digit CNFT number (`cnft_num`): `($n - 1) % poolSize`. The same CNFT always gets the same seal + background combo, adjacent CNFTs get different visuals, and no extra DB columns or randomness are required.
+
+The `resolve_cert_assets()` function in `api/admin/issue_cert.php` handles rotation. The `cert_image_url()` helper builds absolute URLs for Dompdf's remote image fetching.
 
 ### Certificate ID Format
 
@@ -93,4 +103,5 @@ All certificate and vault IDs follow deterministic patterns:
 - `api/_config.php` contains database credentials and admin auth secrets — handle with care
 - The `dompdf/` directory is a third-party dependency (vendored via Composer) — do not modify files inside it
 - Certificate PDFs are generated once and are immutable (the issuer endpoint refuses to overwrite existing PDFs)
+- Site logo is `assets/img/rf_logo_site.png` (used sitewide and in certificate PDFs)
 - The old `.htaccess` IP blocklist (~2900 lines) has been archived to `.htaccess.old1` — the current `.htaccess` is clean and modular
