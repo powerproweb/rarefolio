@@ -69,9 +69,18 @@ MySQL (`rarefolio_cnftcert`), three tables:
 **Block ID format**: `{barSerial}-block{NNNN}` (e.g., `E101837-block0042`). Globally unique across all bars.
 
 **Story resolution** (`storyUrlForBlock()` in qd-wire.js):
-- API-sourced blocks → `/api/blocks/story.php?block=X&item=Y` (DB-driven)
-- Static blocks → `/assets/stories/blockNN/shared.html` or `/assets/stories/blockNN/{1-8}.html`
+- API-sourced blocks → `/api/blocks/story.php?block=X&item=Y` (DB-driven, server extracts per-item)
+- Static shared blocks → `/assets/stories/blockNN/shared.html`
+- Static per-item blocks → `/assets/stories/blockNN/items.html` (single file, all 8 articles with `data-item="1"`–`"8"` attributes; client-side `DOMParser` extracts the matching article via `data-story-item` on `<body>`)
 - Legacy flat files (`bar1-taurus.html`, etc.) preserved as heuristic fallback
+
+**Per-item file format** (`items.html`):
+```
+<article data-item="1">...story for item 1...</article>
+<article data-item="2">...story for item 2...</article>
+...up to data-item="8"
+```
+The `loadStory()` function in `main.js` reads `document.body.dataset.storyItem` (set by `qd-wire.js`). If the value is 1–8, it parses the fetched HTML via `DOMParser` and injects only the matching `article[data-item="N"]`. If 0 or absent, the full content is injected (shared story behavior).
 
 **Scaling**: A 100oz bar has 5,000 blocks. A 5oz bar might have 250. Each bar's batch size and count are set in its JSON config file (`qd-silverbar-01.json`, etc.) — not hardcoded.
 

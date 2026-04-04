@@ -171,13 +171,13 @@
   function storyUrlForBlock(meta, itemNum) {
     if (!meta) return '';
     if (meta._source === 'api') {
-      // DB-driven: use the story API
+      // DB-driven: use the story API (server extracts per-item)
       const item = (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) ? itemNum : 0;
       return `/api/blocks/story.php?block=${encodeURIComponent(meta.block_id)}&item=${item}`;
     }
-    // Static: use file paths
+    // Static: single items.html contains all 8 per-item stories (extracted client-side)
     if (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) {
-      return `/assets/stories/${meta.block_id}/${itemNum}.html`;
+      return `/assets/stories/${meta.block_id}/items.html`;
     }
     return meta.shared_story || `/assets/stories/${meta.block_id}/shared.html`;
   }
@@ -574,9 +574,11 @@
         const storySrc = blockMeta ? storyUrlForBlock(blockMeta, 0) : '';
         if (storySrc) {
           document.body.dataset.storySrc = storySrc;
+          delete document.body.dataset.storyItem; // shared story, no per-item extraction
           if (window.__QD?.loadStory) window.__QD.loadStory();
         } else {
           delete document.body.dataset.storySrc;
+          delete document.body.dataset.storyItem;
           storyHost.innerHTML = '<p class="muted small" style="margin:0;">No story available for this batch.</p>';
         }
       }
@@ -713,6 +715,8 @@
 
       if (storySrc) {
         document.body.dataset.storySrc = storySrc;
+        // Tell the loader which per-item article to extract (0 = shared/full)
+        document.body.dataset.storyItem = String(item || 0);
         if (window.__QD?.loadStory) window.__QD.loadStory();
       }
     } catch {

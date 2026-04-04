@@ -335,9 +335,12 @@
   })();
 
   // ------------------------------------------------------------
-  // Story loader (collection pages)
+  // Story loader (collection pages + NFT detail)
   // - Expects: <div id="qd-story"></div>
   // - Source: <body data-story-src="/assets/stories/<file>.html">
+  // - Per-item: <body data-story-item="3"> → extracts article[data-item="3"]
+  //   from a single items.html that contains all 8 per-item articles.
+  //   If data-story-item is 0 or absent, injects the full response.
   // ------------------------------------------------------------
   const loadStory = () => {
     const host = document.getElementById("qd-story");
@@ -345,6 +348,8 @@
 
     const src = document.body?.dataset?.storySrc || host.dataset.storySrc || "";
     if (!src) return;
+
+    const itemNum = parseInt(document.body?.dataset?.storyItem || "0", 10);
 
     // Provide a graceful placeholder while loading.
     if (!host.innerHTML.trim()) {
@@ -357,6 +362,17 @@
         return r.text();
       })
       .then((html) => {
+        // Per-item extraction: parse and find article[data-item="N"]
+        if (itemNum >= 1 && itemNum <= 8) {
+          try {
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            const article = doc.querySelector('article[data-item="' + itemNum + '"]');
+            if (article) {
+              host.innerHTML = article.outerHTML;
+              return;
+            }
+          } catch { /* fall through to full content */ }
+        }
         host.innerHTML = html;
       })
       .catch(() => {
