@@ -1,10 +1,13 @@
 /* ============================================================
    qd-wire.js — Data-driven wiring for Rarefolio CNFT pages
 
-   Key upgrade (Feb 2026):
-   - Block-driven routing (block00..block14) with stable image folder slugs
-   - Image folders should NOT carry numeric prefixes; order lives in config/rules
-   - Story mode supports: shared (1 story per block) OR per_item (8 stories per block)
+   Architecture (Apr 2026):
+   - Static QD_BLOCKS map: instant fallback for Bar I batches 1-15
+   - DB-driven API: scales to 5,000+ batches per bar, any bar size
+   - Resolution chain: page override → static map → API → fallback
+   - Story mode: shared (1 per block) OR per_item (up to 8 per block)
+   - Stories served from /api/blocks/story.php for DB blocks,
+     static /assets/stories/ files for legacy blocks
 
    URL params on nft.html:
      nft=qd-silver-0000001&bar=E101837&set=1&batch=1&col=collection-silverbar-01.html
@@ -45,14 +48,14 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  /* -------------------- Block map (single source of truth for routing) --------------------
-     NOTE: Folder names are stable slugs (NO numeric prefix).
-     You can change story_mode per block without changing page code.
+  /* -------------------- Static block map (Bar I fallback for batches 1-15) --------------------
+     NOTE: For batches beyond 15 and for all other bars, blocks are resolved
+     via the API (/api/blocks/resolve.php). This map is the instant offline fallback.
   */
   const QD_BLOCKS = {
     block00: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac — Taurus',       story_mode: 'shared',   shared_story: '/assets/stories/block00/shared.html' },
-    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors', story_mode: 'shared',   shared_story: '/assets/stories/block01/shared.html' },
-    block02: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',        story_mode: 'per_item', shared_story: '/assets/stories/block02/shared.html' },
+    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors', story_mode: 'per_item',   shared_story: '/assets/stories/block01/shared.html' },
+    block02: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',        story_mode: 'shared', shared_story: '/assets/stories/block02/shared.html' },
     block03: { folder: 'scnft_sp_robot_butler',    label: 'Steampunk — Robot Butler', story_mode: 'per_item', shared_story: '/assets/stories/block03/shared.html' },
     block04: { folder: 'scnft_zodiac_gemini',      label: 'Zodiac — Gemini',       story_mode: 'shared',   shared_story: '/assets/stories/block04/shared.html' },
     block05: { folder: 'scnft_zodiac_cancer',      label: 'Zodiac — Cancer',       story_mode: 'shared',   shared_story: '/assets/stories/block05/shared.html' },
@@ -70,16 +73,15 @@
   function blockIdForBatch(batchNum) {
     const b = Number(batchNum);
     if (!Number.isFinite(b)) return null;
-    // Default flow: batch 1..15 map to block00..block14
+    // Static map: batch 1..15 → block00..block14 (Bar I only)
     if (b >= 1 && b <= 15) return 'block' + String(b - 1).padStart(2, '0');
     return null;
   }
 
+  /** Sync resolution — static map only (Bar I batches 1-15). Used by legacy callers. */
   function resolveBlockId(runtimeCfg, batchNum) {
-    // 1) Page-level override
     if (runtimeCfg.blockId && QD_BLOCKS[runtimeCfg.blockId]) return runtimeCfg.blockId;
 
-    // 2) Optional: explicit batch rules on the page
     if (Array.isArray(runtimeCfg.blockBatchRules) && batchNum) {
       for (const r of runtimeCfg.blockBatchRules) {
         const from = Number(r.from);
@@ -90,11 +92,94 @@
       }
     }
 
-    // 3) Default mapping
     const inferred = blockIdForBatch(batchNum);
     if (inferred && QD_BLOCKS[inferred]) return inferred;
 
     return null;
+  }
+
+  /* ---- API-driven block resolution (scales to 5,000+ batches per bar) ---- */
+  const _apiBlockCache = new Map(); // key: "barSerial:batchNum" → normalized meta or null
+
+  /**
+   * Fetch block metadata from the API. Caches per session.
+   * Returns { block_id, folder, label, story_mode, _source:'api' } or null.
+   */
+  async function _fetchBlockFromApi(barSerial, batchNum) {
+    const key = `${barSerial}:${batchNum}`;
+    if (_apiBlockCache.has(key)) return _apiBlockCache.get(key);
+    try {
+      const url = `/api/blocks/resolve.php?bar=${encodeURIComponent(barSerial)}&batch=${encodeURIComponent(String(batchNum))}`;
+      const res = await fetch(url, { cache: 'default' });
+      if (!res.ok) { _apiBlockCache.set(key, null); return null; }
+      const d = await res.json();
+      const meta = {
+        block_id:   d.block_id,
+        folder:     d.folder_slug,
+        label:      d.label,
+        story_mode: d.story_mode,
+        _source:    'api',
+      };
+      _apiBlockCache.set(key, meta);
+      return meta;
+    } catch {
+      _apiBlockCache.set(key, null);
+      return null;
+    }
+  }
+
+  /**
+   * Primary async block resolver. Resolution chain:
+   *   1) Page-level override (static)
+   *   2) Batch rules (static)
+   *   3) Static QD_BLOCKS (Bar I batches 1-15)
+   *   4) API /api/blocks/resolve.php (all bars, all batches)
+   * Returns normalized meta: { block_id, folder, label, story_mode, _source, shared_story? }
+   */
+  async function getBlockMeta(runtimeCfg, batchNum) {
+    if (!batchNum) return null;
+
+    // 1) Page-level override
+    if (runtimeCfg.blockId && QD_BLOCKS[runtimeCfg.blockId]) {
+      const s = QD_BLOCKS[runtimeCfg.blockId];
+      return { block_id: runtimeCfg.blockId, folder: s.folder, label: s.label, story_mode: s.story_mode, shared_story: s.shared_story, _source: 'static' };
+    }
+
+    // 2) Batch rules
+    if (Array.isArray(runtimeCfg.blockBatchRules)) {
+      for (const r of runtimeCfg.blockBatchRules) {
+        const from = Number(r.from), to = Number(r.to), block = String(r.block || '');
+        if (QD_BLOCKS[block] && Number.isFinite(from) && Number.isFinite(to) && batchNum >= from && batchNum <= to) {
+          const s = QD_BLOCKS[block];
+          return { block_id: block, folder: s.folder, label: s.label, story_mode: s.story_mode, shared_story: s.shared_story, _source: 'static' };
+        }
+      }
+    }
+
+    // 3) Static map (Bar I batches 1-15)
+    const staticId = blockIdForBatch(batchNum);
+    if (staticId && QD_BLOCKS[staticId]) {
+      const s = QD_BLOCKS[staticId];
+      return { block_id: staticId, folder: s.folder, label: s.label, story_mode: s.story_mode, shared_story: s.shared_story, _source: 'static' };
+    }
+
+    // 4) API
+    return _fetchBlockFromApi(runtimeCfg.serial, batchNum);
+  }
+
+  /** Build the story URL for a resolved block meta. */
+  function storyUrlForBlock(meta, itemNum) {
+    if (!meta) return '';
+    if (meta._source === 'api') {
+      // DB-driven: use the story API
+      const item = (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) ? itemNum : 0;
+      return `/api/blocks/story.php?block=${encodeURIComponent(meta.block_id)}&item=${item}`;
+    }
+    // Static: use file paths
+    if (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) {
+      return `/assets/stories/${meta.block_id}/${itemNum}.html`;
+    }
+    return meta.shared_story || `/assets/stories/${meta.block_id}/shared.html`;
   }
 
   async function loadConfigIfPresent(body) {
@@ -254,19 +339,28 @@
     return `${prefix}${baseFolder}`;
   }
 
-  function blockImageCandidates(runtimeCfg, batchNum, slug) {
-    const blockId = resolveBlockId(runtimeCfg, batchNum);
-    const meta = blockId ? QD_BLOCKS[blockId] : null;
+  function blockImageCandidates(runtimeCfg, batchNum, slug, blockMetaOverride) {
+    // Use pre-resolved meta if provided, otherwise fall back to sync static lookup
+    let meta = blockMetaOverride;
+    if (!meta) {
+      const blockId = resolveBlockId(runtimeCfg, batchNum);
+      meta = blockId ? { ...QD_BLOCKS[blockId], block_id: blockId } : null;
+    }
+    // Also check API cache if still no meta
+    if (!meta) {
+      const cached = _apiBlockCache.get(`${runtimeCfg.serial}:${batchNum}`);
+      if (cached) meta = cached;
+    }
+
     if (!meta?.folder) {
       const src = imageForSlug(runtimeCfg, slug, batchNum);
       return { src, altSrc: '' };
     }
 
     const clean = `/assets/img/collection/${meta.folder}/${slug}.jpg`;
-    const pref = prefixedFolderForBlock(blockId, meta.folder);
+    const pref = prefixedFolderForBlock(meta.block_id, meta.folder);
     const prefixed = pref ? `/assets/img/collection/${pref}/${slug}.jpg` : '';
 
-    // Prefer the clean folder, but provide prefixed as automatic fallback.
     return { src: clean, altSrc: prefixed };
   }
 
@@ -410,7 +504,9 @@
       batchNav.appendChild(frag);
     };
 
-    const renderBatch = (batchNum) => {
+    const renderBatch = async (batchNum) => {
+      const blockMeta = await getBlockMeta(runtimeCfg, batchNum);
+
       const startN = START_INDEX + (batchNum - 1) * BATCH_SIZE;
       const endN = startN + BATCH_SIZE - 1;
       const firstSlug = makeSlug(startN);
@@ -418,8 +514,7 @@
       const padW = Math.max(2, String(TOTAL_BATCHES).length);
 
       if (batchLabel) {
-        const blockId = resolveBlockId(runtimeCfg, batchNum);
-        const blockLabel = blockId && QD_BLOCKS[blockId]?.label ? ` \u2022 ${blockId.toUpperCase()} \u2022 ${QD_BLOCKS[blockId].label}` : '';
+        const blockLabel = blockMeta?.label ? ` \u2022 ${blockMeta.block_id.toUpperCase()} \u2022 ${blockMeta.label}` : '';
         batchLabel.textContent = `Bar Serial: ${runtimeCfg.serial} \u2022 ${runtimeCfg.batch.labelPrefix} ${String(batchNum).padStart(padW, '0')} of ${TOTAL_BATCHES}${blockLabel} \u2022 ${firstSlug} \u2192 ${lastSlug}`;
       }
 
@@ -436,7 +531,7 @@
         const n = startN + i;
         const slug = makeSlug(n);
         const itemIndex = i + 1;
-        const { src: imgSrc, altSrc } = blockImageCandidates(runtimeCfg, batchNum, slug);
+        const { src: imgSrc, altSrc } = blockImageCandidates(runtimeCfg, batchNum, slug, blockMeta);
         const title = `${runtimeCfg.title} \u2014 ${slug}`;
         const viewLink = buildViewLink(slug, batchNum, itemIndex);
 
@@ -476,12 +571,7 @@
       // ---- Story loading for collection grid ----
       const storyHost = document.getElementById('qd-story');
       if (storyHost) {
-        const blockId = resolveBlockId(runtimeCfg, batchNum);
-        const blockMeta = blockId ? QD_BLOCKS[blockId] : null;
-        let storySrc = '';
-        if (blockMeta) {
-          storySrc = blockMeta.shared_story || `/assets/stories/${blockId}/shared.html`;
-        }
+        const storySrc = blockMeta ? storyUrlForBlock(blockMeta, 0) : '';
         if (storySrc) {
           document.body.dataset.storySrc = storySrc;
           if (window.__QD?.loadStory) window.__QD.loadStory();
@@ -492,7 +582,7 @@
       }
     };
 
-    const go = (batchNum) => {
+    const go = async (batchNum) => {
       const b = Math.min(Math.max(batchNum, 1), TOTAL_BATCHES);
 
       // If this batch belongs to a different series page, redirect.
@@ -506,7 +596,7 @@
       }
 
       setUrlBatch(b);
-      renderBatch(b);
+      await renderBatch(b);
     };
 
     // Bind controls
@@ -527,7 +617,7 @@
     go(getBatchFromUrl(TOTAL_BATCHES));
   }
 
-  function renderNftDetail(runtimeCfg) {
+  async function renderNftDetail(runtimeCfg) {
     const titleEl = document.getElementById('qd-nft-title');
     const tokenEl = document.getElementById('qd-token');
     const badgeEl = document.getElementById('qd-badge');
@@ -556,30 +646,26 @@
     }
     batch = Math.max(1, batch);
 
-    // Block + item
     const item = parseInt(sp.get('item') || '0', 10) || null;
-    const blockFromUrl = sp.get('block');
-    const blockId = (blockFromUrl && QD_BLOCKS[blockFromUrl]) ? blockFromUrl : resolveBlockId(runtimeCfg, batch);
-    const blockMeta = blockId ? QD_BLOCKS[blockId] : null;
+
+    // Resolve block via full chain (static → API)
+    const blockMeta = await getBlockMeta(runtimeCfg, batch);
 
     titleEl.textContent = nft.toUpperCase();
     tokenEl.textContent = nft;
     badgeEl.textContent = `Bar Serial • ${bar}`;
 
-    const blockLine = blockMeta?.label ? ` • ${blockId.toUpperCase()} • ${blockMeta.label}` : '';
+    const blockLine = blockMeta?.label ? ` • ${blockMeta.block_id.toUpperCase()} • ${blockMeta.label}` : '';
     subEl.textContent = `Bar ${bar} • Set ${set} • ${runtimeCfg.batch.labelPrefix} ${batch}${blockLine}`;
 
-    // Image resolution priority:
-    // 1) Explicit img template (legacy)
-    // 2) Block folder + slug
-    // 3) Fallback template resolution
+    // Image resolution
     const imgTpl = sp.get('img');
     let imgSrc = '';
     let altSrc = '';
     if (imgTpl) {
       imgSrc = resolveTemplate(imgTpl, { id: nft });
     } else {
-      const c = blockImageCandidates(runtimeCfg, batch, nft);
+      const c = blockImageCandidates(runtimeCfg, batch, nft, blockMeta);
       imgSrc = c.src;
       altSrc = c.altSrc;
     }
@@ -596,62 +682,42 @@
     };
     imgEl.src = imgSrc;
 
-
     // Story loading
-    (async () => {
-      try {
-        const explicitStory = sp.get('story');
-        let primary = explicitStory ? explicitStory : '';
-        let fallback = '';
+    try {
+      const explicitStory = sp.get('story');
+      let storySrc = explicitStory || '';
 
-        if (!primary && blockId && blockMeta) {
-          if (blockMeta.story_mode === 'per_item') {
-            const idx = item || 0;
-            if (idx >= 1 && idx <= 8) primary = `/assets/stories/${blockId}/${idx}.html`;
-            // Shared fallback (modern per-block shared file, or legacy shared_story if defined)
-            fallback = blockMeta.shared_story || `/assets/stories/${blockId}/shared.html`;
-          } else if (blockMeta.story_mode === 'shared') {
-            primary = `/assets/stories/${blockId}/shared.html`;
-            fallback = blockMeta.shared_story || '';
-          }
-
-          // Backward-compatible: allow explicit legacy shared story file to act as primary
-          if (!primary && blockMeta.shared_story) primary = blockMeta.shared_story;
-        }
-
-        // Backward-compatible shared story fallbacks (existing files)
-        if (!primary && blockMeta?.shared_story) primary = blockMeta.shared_story;
-
-        let storySrc = primary;
-
-        // Preflight: if primary 404s, use fallback (if any)
-        if (storySrc) {
-          try {
-            const r = await fetch(storySrc, { cache: 'no-store' });
-            if (!r.ok) throw new Error(String(r.status));
-          } catch {
-            if (fallback) storySrc = fallback;
-          }
-        }
-
-        // Legacy heuristic fallback
-        if (!storySrc) {
-          const colParam = sp.get('col') || '';
-          const hay = String(imgTpl || colParam || '') + ' ' + String(imgSrc || '');
-          if (/taurus/i.test(hay)) storySrc = '/assets/stories/bar1-taurus.html';
-          else if (/aries/i.test(hay)) storySrc = '/assets/stories/bar1-aries.html';
-          else if (/inventors/i.test(hay)) storySrc = '/assets/stories/bar1-inventors.html';
-        }
-
-        if (storySrc) {
-          document.body.dataset.storySrc = storySrc;
-          if (window.__QD && typeof window.__QD.loadStory === 'function') window.__QD.loadStory();
-        }
-      } catch {
-        // no-op
+      if (!storySrc && blockMeta) {
+        storySrc = storyUrlForBlock(blockMeta, item || 0);
       }
-    })();
 
+      // For static blocks: preflight check + fallback chain
+      if (storySrc && blockMeta?._source === 'static') {
+        try {
+          const r = await fetch(storySrc, { cache: 'no-store' });
+          if (!r.ok) throw new Error(String(r.status));
+        } catch {
+          // Fall back to shared story
+          storySrc = storyUrlForBlock(blockMeta, 0);
+        }
+      }
+
+      // Legacy heuristic fallback
+      if (!storySrc) {
+        const colParam = sp.get('col') || '';
+        const hay = String(imgTpl || colParam || '') + ' ' + String(imgSrc || '');
+        if (/taurus/i.test(hay)) storySrc = '/assets/stories/bar1-taurus.html';
+        else if (/aries/i.test(hay)) storySrc = '/assets/stories/bar1-aries.html';
+        else if (/inventors/i.test(hay)) storySrc = '/assets/stories/bar1-inventors.html';
+      }
+
+      if (storySrc) {
+        document.body.dataset.storySrc = storySrc;
+        if (window.__QD?.loadStory) window.__QD.loadStory();
+      }
+    } catch {
+      // no-op
+    }
 
     // Backlink
     if (backEl) {
@@ -669,7 +735,7 @@
     renderCollectionGrid(runtimeCfg);
 
     // NFT detail page
-    renderNftDetail(runtimeCfg);
+    await renderNftDetail(runtimeCfg);
   }
 
   if (document.readyState === 'loading') {
