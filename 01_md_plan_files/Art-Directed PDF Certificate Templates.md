@@ -8,7 +8,7 @@ The `render_pdf_html()` function in `api/admin/issue_cert.php` produces a plain 
 * **Page 1**: Brand, title, VERIFIED badge, attestation text, Identification table, Holder & Custody table, footer micro-terms
 * **Page 2**: Brand, title, Verify URL, Cert View link, PDF Download link, On-chain Details table, Custody & Vault table, footer
 * **Image assets**: none exist yet — user is creating background images (2550×3300 JPG) and wax seal (600×600 PNG with transparency)
-* **Logo**: `assets/img/qd_logo_site.png` (307 KB) available for embedding
+* **Logo**: `assets/img/rf_logo_site.png` (307 KB) available for embedding
 * **Dompdf constraints**: CSS `background-image` works on `<body>` and block elements; `position: absolute` supported; no CSS grid; `background-size: cover` supported; images must use absolute URLs or base64 data URIs for reliable rendering
 ## Proposed Changes
 ### 1. Create image asset directory
@@ -25,7 +25,7 @@ Pass the `template` value (`parchment` or `cream`) into `render_pdf_html()` (cur
 * **Panel styling**: semi-transparent white panels with subtle border, adapted per template
 #### Page 1 layout (Certificate of Authenticity):
 * Full-bleed background image on `.page`
-* Logo (`qd_logo_site.png`) centered at top, ~1in wide
+* Logo (`rf_logo_site.png`) centered at top, ~1in wide
 * Title "Certificate of Authenticity" in serif font below logo
 * Subtitle line with CNFT series + bar serial
 * VERIFIED badge (styled pill)
