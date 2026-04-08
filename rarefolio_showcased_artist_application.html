@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RareFolio | Showcased Artist Application</title>
+  <meta name="description" content="Apply to become a RareFolio Showcased Artist. A curated application for museum-quality digital artists, visionary creators, and collector-grade storytellers." />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --panel: rgba(18, 23, 34, 0.88);
+      --panel-2: rgba(25, 31, 45, 0.92);
+      --line: rgba(205, 170, 94, 0.25);
+      --gold: #d4af63;
+      --gold-2: #f0d08a;
+      --text: #eef2f7;
+      --muted: #a9b3c3;
+      --danger: #ff8a8a;
+      --success: #99d6b0;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --max: 1220px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(212,175,99,0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(90,120,170,0.10), transparent 25%),
+        linear-gradient(180deg, #0b0d12 0%, #0d1016 45%, #0a0c10 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .wrap {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(8, 10, 14, 0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 74px;
+    }
+
+    .brand {
+      letter-spacing: 0.18em;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--gold-2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav-links a,
+    .btn {
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(212,175,99,0.22), rgba(212,175,99,0.10));
+      border-color: rgba(212,175,99,0.42);
+      color: #fff8e8;
+      box-shadow: 0 10px 34px rgba(212,175,99,0.10);
+    }
+
+    .nav-links a:hover,
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,175,99,0.42);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .hero {
+      padding: 72px 0 34px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-copy {
+      padding: 42px;
+      position: relative;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--gold-2);
+      font-size: 0.78rem;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 16px;
+      line-height: 1.08;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+    }
+
+    h3 {
+      font-size: 1.28rem;
+    }
+
+    .hero-copy p,
+    .lead,
+    .muted {
+      color: var(--muted);
+    }
+
+    .lead {
+      font-size: 1.08rem;
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+
+    .stats {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.2rem;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .hero-side {
+      background:
+        linear-gradient(180deg, rgba(212,175,99,0.06), rgba(255,255,255,0.02)),
+        radial-gradient(circle at top, rgba(212,175,99,0.12), transparent 40%),
+        var(--panel-2);
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .curation-list,
+    .notes-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .curation-list li,
+    .notes-list li {
+      padding: 14px 14px 14px 18px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+    }
+
+    .curation-list li::before,
+    .notes-list li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      position: absolute;
+      left: 14px;
+      top: 20px;
+      box-shadow: 0 0 0 5px rgba(212,175,99,0.12);
+    }
+
+    .curation-list li span,
+    .notes-list li span {
+      padding-left: 18px;
+      display: inline-block;
+      color: var(--muted);
+    }
+
+    .section {
+      padding: 22px 0;
+    }
+
+    .section-intro {
+      margin-bottom: 22px;
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(212,175,99,0.10);
+      border: 1px solid rgba(212,175,99,0.20);
+      color: #fff4d4;
+      font-size: 0.92rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 30px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .feature-box {
+      padding: 22px;
+      background: rgba(255,255,255,0.025);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .feature-box p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    form {
+      display: grid;
+      gap: 24px;
+    }
+
+    .form-section {
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 22px;
+      padding: 24px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .form-section header {
+      margin-bottom: 18px;
+    }
+
+    .form-section header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .field,
+    .field-full {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 650;
+      font-size: 0.96rem;
+      color: #f4f7fb;
+    }
+
+    label small {
+      display: block;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(5,7,11,0.72);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    textarea {
+      min-height: 132px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(212,175,99,0.55);
+      box-shadow: 0 0 0 4px rgba(212,175,99,0.11);
+      background: rgba(7,9,14,0.92);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .check {
+      display: flex;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .check input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+    }
+
+    .check span {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .upload-box {
+      border: 1px dashed rgba(212,175,99,0.35);
+      background: linear-gradient(180deg, rgba(212,175,99,0.06), rgba(255,255,255,0.02));
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .upload-box p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    .form-note,
+    .legal-note {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .legal-note {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 18px;
+    }
+
+    .submit-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer {
+      padding: 40px 0 70px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .mini {
+      font-size: 0.88rem;
+    }
+
+    .required {
+      color: var(--gold-2);
+    }
+
+    .anchor-offset {
+      scroll-margin-top: 95px;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .grid-3,
+      .form-grid,
+      .checkbox-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .hero-side,
+      .panel {
+        padding: 24px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner {
+        padding: 10px 0;
+        align-items: start;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 2.35rem;
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      .submit-row {
+        align-items: stretch;
+      }
+
+      .submit-row .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a href="#top" class="brand">RareFolio Artist Curation</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#why-apply">Why Apply</a>
+        <a href="#what-we-review">What We Review</a>
+        <a href="#application">Application</a>
+        <a href="#application" class="btn btn-primary">Apply Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="card hero-copy">
+          <div class="eyebrow">RareFolio Showcased Artist Application</div>
+          <h1>Bring museum-grade work to a collector-grade stage.</h1>
+          <p class="lead">
+            RareFolio is built for artists whose work carries weight, story, technical excellence, and a point of view.
+            This application is designed to help us understand not only what you create, but why collectors should stop,
+            look closer, and remember your name.
+          </p>
+          <p class="lead">
+            We are seeking artists who think beyond quick drops and fleeting noise. We want vision, discipline, curation,
+            presentation quality, and work that can live proudly in a serious digital collection.
+          </p>
+          <div class="hero-actions">
+            <a href="#application" class="btn btn-primary">Start Your Application</a>
+            <a href="#what-we-review" class="btn">See What We Review</a>
+          </div>
+          <div class="stats" aria-label="Highlights">
+            <div class="stat">
+              <strong>Curated Quality</strong>
+              <span class="muted">We look for art that is well made, original, and ready to share with collectors.</span>
+            </div>
+            <div class="stat">
+              <strong>Presentation Matters</strong>
+              <span class="muted">Great art looks even better with a good story, clear details, and nice images.</span>
+            </div>
+            <div class="stat">
+              <strong>Long/Short Term Fit</strong>
+              <span class="muted">We want artists who truly care about making beautiful digital art, now and in the future.</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="card hero-side">
+          <div>
+            <div class="badge">Collector trust starts with curatorial standards</div>
+            <h2 style="margin-top:18px;">What sets a RareFolio artist apart?</h2>
+            <ul class="curation-list">
+              <li><span>A distinct artistic voice with work that feels intentional, refined, and memorable.</span></li>
+              <li><span>A portfolio that demonstrates consistency, depth, and a strong sense of visual authorship.</span></li>
+              <li><span>The ability to articulate concept, process, themes, and audience with clarity and confidence.</span></li>
+              <li><span>Professional presentation assets that support trust with collectors, curators, and future collaborators.</span></li>
+            </ul>
+          </div>
+          <div class="panel" style="padding:20px; margin-top:24px; border-radius:22px;">
+            <h3 style="margin-bottom:10px;">Before you submit</h3>
+            <ul class="notes-list">
+              <li><span>Have your artist bio, portfolio links, social links, and 3 to 8 best showcase pieces ready.</span></li>
+              <li><span>Choose work that represents your highest level, not just your most recent uploads.</span></li>
+              <li><span>Think like a curator for five minutes. A little ruthlessness here saves a lot of regret later.</span></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="why-apply" class="section anchor-offset">
+      <div class="wrap">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">Why artists apply</div>
+            <h2>Built for serious creators, not digital clutter.</h2>
+          </div>
+          <div class="badge">Museum-quality standards with collector-focused presentation</div>
+        </div>
+        <div class="panel grid-3">
+          <div class="feature-box">
+            <h3>Curated visibility</h3>
+            <p>Your work is presented in an environment designed for discovery, trust, and elevated perception, not algorithmic chaos.</p>
+          </div>
+          <div class="feature-box">
+            <h3>Brand-aligned storytelling</h3>
+            <p>We care about narrative framing, collection cohesion, and the context that helps collectors understand artistic value.</p>
+          </div>
+          <div class="feature-box">
+            <h3>Long-view positioning</h3>
+            <p>RareFolio aims to spotlight artists whose work can hold cultural and collector relevance over time, not just for a weekend spike.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="what-we-review" class="section anchor-offset">
+      <div class="wrap">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">Evaluation Criteria</div>
+            <h2>What our team is actually reviewing.</h2>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="grid-3">
+            <div class="feature-box">
+              <h3>Artistic quality</h3>
+              <p>Composition, visual discipline, technical execution, originality, and whether the work shows mastery rather than improvisation.</p>
+            </div>
+            <div class="feature-box">
+              <h3>Curatorial cohesion</h3>
+              <p>How well your selected works fit together as a body of work, and whether your visual identity feels consistent and intentional.</p>
+            </div>
+            <div class="feature-box">
+              <h3>Collector readiness</h3>
+              <p>Presentation assets, metadata readiness, communication clarity, and whether your work feels ready for a premium platform.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="application" class="section anchor-offset">
+      <div class="wrap">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">Application Form</div>
+            <h2>Apply to become a RareFolio Showcased Artist.</h2>
+            <p class="lead">Tell us who you are, what you create, and why your work belongs in a premium collector environment.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <form id="artistApplicationForm" action="#" method="post" enctype="multipart/form-data">
+            <div class="form-section">
+              <header>
+                <h3>1. Artist Identity</h3>
+                <p>Start with the essentials. This section gives us the professional context behind your work.</p>
+              </header>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="fullName">Full Name <span class="required">*</span></label>
+                  <input id="fullName" name="full_name" type="text" placeholder="Your full professional name" required />
+                </div>
+                <div class="field">
+                  <label for="artistName">Artist / Brand Name</label>
+                  <input id="artistName" name="artist_name" type="text" placeholder="Public artist name or studio name" />
+                </div>
+                <div class="field">
+                  <label for="email">Primary Email <span class="required">*</span></label>
+                  <input id="email" name="email" type="email" placeholder="name@example.com" required />
+                </div>
+                <div class="field">
+                  <label for="location">Location</label>
+                  <input id="location" name="location" type="text" placeholder="City, Region, Country" />
+                </div>
+                <div class="field">
+                  <label for="website">Website / Portfolio URL</label>
+                  <input id="website" name="website" type="url" placeholder="https://yourportfolio.com" />
+                </div>
+                <div class="field">
+                  <label for="yearsCreating">Years Creating Professionally</label>
+                  <select id="yearsCreating" name="years_creating">
+                    <option value="">Select one</option>
+                    <option>Emerging: under 2 years</option>
+                    <option>Developing: 2 to 5 years</option>
+                    <option>Established: 5 to 10 years</option>
+                    <option>Veteran: 10+ years</option>
+                  </select>
+                </div>
+                <div class="field-full">
+                  <label for="artistBio">Artist Bio <span class="required">*</span>
+                    <small>Give us the polished version. Share your artistic background, key influences, medium focus, and the perspective that defines your work.</small>
+                  </label>
+                  <textarea id="artistBio" name="artist_bio" placeholder="Write a strong, collector-facing bio that introduces your work with confidence and clarity." required></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <header>
+                <h3>2. Artistic Practice & Vision</h3>
+                <p>This is where we understand what drives the work and how thoughtfully it has been developed.</p>
+              </header>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="primaryMedium">Primary Medium <span class="required">*</span></label>
+                  <select id="primaryMedium" name="primary_medium" required>
+                    <option value="">Select one</option>
+                    <option>Digital Illustration</option>
+                    <option>Fine Art / Painterly Digital</option>
+                    <option>3D / CGI</option>
+                    <option>Mixed Media</option>
+                    <option>Photography</option>
+                    <option>Generative Art</option>
+                    <option>AI-Assisted Art</option>
+                    <option>Animation / Motion</option>
+                    <option>Experimental / Hybrid</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="styleKeywords">Style Keywords</label>
+                  <input id="styleKeywords" name="style_keywords" type="text" placeholder="Example: cinematic, surreal, archival, neo-baroque" />
+                </div>
+                <div class="field-full">
+                  <label for="artistStatement">Artist Statement <span class="required">*</span>
+                    <small>What themes, emotions, concepts, or philosophical questions anchor your body of work?</small>
+                  </label>
+                  <textarea id="artistStatement" name="artist_statement" placeholder="Describe the meaning, tension, and deeper intent behind your work." required></textarea>
+                </div>
+                <div class="field-full">
+                  <label for="signatureDifference">What makes your work distinct? <span class="required">*</span>
+                    <small>Be specific. Tell us what separates your work from lookalikes, trend-chasers, and technically polished but forgettable pieces.</small>
+                  </label>
+                  <textarea id="signatureDifference" name="signature_difference" placeholder="Explain your visual signature, conceptual edge, or process advantage." required></textarea>
+                </div>
+                <div class="field-full">
+                  <label for="collectorAppeal">Why do you believe your work resonates with collectors?</label>
+                  <textarea id="collectorAppeal" name="collector_appeal" placeholder="Share how your work creates emotional, aesthetic, cultural, or long-term collector value."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <header>
+                <h3>3. Portfolio, Collections & Presentation</h3>
+                <p>We are looking for quality, cohesion, and presentation discipline.</p>
+              </header>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="portfolioUrl2">Primary Portfolio Link <span class="required">*</span></label>
+                  <input id="portfolioUrl2" name="portfolio_url" type="url" placeholder="https://behance.net/... or your own portfolio site" required />
+                </div>
+                <div class="field">
+                  <label for="socialUrl">Primary Social / Public Profile</label>
+                  <input id="socialUrl" name="social_url" type="url" placeholder="https://instagram.com/... or other public profile" />
+                </div>
+                <div class="field-full">
+                  <label for="bestWorkLinks">Links to 3-8 Showcase Pieces <span class="required">*</span>
+                    <small>Paste one link per line. Choose only your strongest work. This is your front room, not your storage closet.</small>
+                  </label>
+                  <textarea id="bestWorkLinks" name="best_work_links" placeholder="https://...
+https://...
+https://..." required></textarea>
+                </div>
+                <div class="field-full">
+                  <label for="seriesInfo">Current Collection / Series Information</label>
+                  <textarea id="seriesInfo" name="series_info" placeholder="Tell us about your most relevant collection, series concept, timeline, and how the works connect."></textarea>
+                </div>
+                <div class="field-full">
+                  <label for="presentationReadiness">How prepared are you for premium presentation?</label>
+                  <textarea id="presentationReadiness" name="presentation_readiness" placeholder="Tell us whether you already have titles, descriptions, consistent sizing, formatted previews, collector-ready bios, and other polished assets."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <header>
+                <h3>4. Professional Readiness & Fit</h3>
+                <p>RareFolio is not just about beautiful work. It is also about reliability, alignment, and long-term standards.</p>
+              </header>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="availability">Current Availability</label>
+                  <select id="availability" name="availability">
+                    <option value="">Select one</option>
+                    <option>Ready now</option>
+                    <option>Ready within 30 days</option>
+                    <option>Ready within 60 to 90 days</option>
+                    <option>Exploring fit only</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="exclusive">Are you open to exclusive or featured collection opportunities?</label>
+                  <select id="exclusive" name="exclusive_interest">
+                    <option value="">Select one</option>
+                    <option>Yes</option>
+                    <option>Possibly, depending on structure</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field-full">
+                  <label>Which best describe your current practice?</label>
+                  <div class="checkbox-grid">
+                    <label class="check"><input type="checkbox" name="practice_tags[]" value="Fine art focus" /><span>Fine art focus</span></label>
+                    <label class="check"><input type="checkbox" name="practice_tags[]" value="Collector editions" /><span>Collector editions / limited releases</span></label>
+                    <label class="check"><input type="checkbox" name="practice_tags[]" value="Story-led work" /><span>Story-led or lore-rich work</span></label>
+                    <label class="check"><input type="checkbox" name="practice_tags[]" value="Strong online following" /><span>Established audience or collector community</span></label>
+                    <label class="check"><input type="checkbox" name="practice_tags[]" value="Experimental practice" /><span>Experimental or concept-forward practice</span></label>
+                    <label class="check"><input type="checkbox" name="practice_tags[]" value="Web3 experience" /><span>Web3 / CNFT / digital collectible experience</span></label>
+                  </div>
+                </div>
+                <div class="field-full">
+                  <label for="whyRareFolio">Why RareFolio? <span class="required">*</span>
+                    <small>Why does this platform feel like the right fit for your work, your audience, and your next chapter?</small>
+                  </label>
+                  <textarea id="whyRareFolio" name="why_rarefolio" placeholder="Tell us why you want your work associated with RareFolio specifically." required></textarea>
+                </div>
+                <div class="field-full">
+                  <label for="professionalNotes">Anything else we should know?</label>
+                  <textarea id="professionalNotes" name="professional_notes" placeholder="Share exhibition history, collector milestones, press, awards, upcoming releases, or context that strengthens your application."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <header>
+                <h3>5. Uploads & Supporting Materials</h3>
+                <p>Give us assets that match the level of your work. Strong applications are curated, concise, and polished.</p>
+              </header>
+              <div class="form-grid">
+                <div class="field field-full">
+                  <div class="upload-box">
+                    <label for="headshot">Professional Headshot or Artist Portrait</label>
+                    <p>Recommended: high-resolution image for editorial or featured-artist presentation.</p>
+                    <input id="headshot" name="headshot" type="file" accept="image/*" />
+                  </div>
+                </div>
+                <div class="field field-full">
+                  <div class="upload-box">
+                    <label for="portfolioPdf">Portfolio PDF or Curated Presentation Deck</label>
+                    <p>Optional but encouraged. Ideal for artists with a strong body of work and presentation-ready materials.</p>
+                    <input id="portfolioPdf" name="portfolio_pdf" type="file" accept=".pdf,.ppt,.pptx" />
+                  </div>
+                </div>
+                <div class="field field-full">
+                  <div class="upload-box">
+                    <label for="sampleWorks">Sample Artwork Files</label>
+                    <p>Upload 3 to 8 polished sample images that represent your best showcase-ready work.</p>
+                    <input id="sampleWorks" name="sample_works" type="file" accept="image/*" multiple />
+                  </div>
+                </div>
+                <div class="field-full">
+                  <label for="fileNotes">Notes about the uploaded files</label>
+                  <textarea id="fileNotes" name="file_notes" placeholder="List titles, creation dates, dimensions, mediums, or any context needed for the review team."></textarea>
+                </div>
+              </div>
+              <p class="form-note">Technical note: if you later connect this form to MailerLite, the text fields can map cleanly to custom fields. File uploads will usually need a separate upload workflow or storage endpoint unless you use an integration layer.</p>
+            </div>
+
+            <div class="form-section">
+              <header>
+                <h3>6. Consent & Submission</h3>
+                <p>Final details so we can review your application responsibly and professionally.</p>
+              </header>
+              <div class="form-grid">
+                <div class="field-full">
+                  <label class="check">
+                    <input type="checkbox" name="consent_review" required />
+                    <span>I confirm that the information provided is accurate, that I have rights to the work submitted, and that RareFolio may review these materials for curation and featured-artist consideration. <span class="required">*</span></span>
+                  </label>
+                </div>
+                <div class="field-full">
+                  <label class="check">
+                    <input type="checkbox" name="consent_contact" />
+                    <span>I would like to receive updates about RareFolio artist opportunities, curation announcements, and future platform developments.</span>
+                  </label>
+                </div>
+              </div>
+              <div class="submit-row" style="margin-top:22px;">
+                <p class="legal-note">Submission does not guarantee acceptance. Applications are reviewed for artistic quality, alignment with RareFolio standards, and overall presentation readiness.</p>
+                <button type="submit" class="btn btn-primary">Submit Application</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>RareFolio Showcased Artist Application</p>
+      <p class="mini">Standalone landing page for root-level deployment. Replace the form action and field mapping when you connect your submission workflow.</p>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.getElementById('artistApplicationForm');
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      alert('Application form structure is ready. Connect the form action or JavaScript submission handler when you are ready to send data to MailerLite and your upload endpoint.');
+    });
+  </script>
+</body>
+</html>
