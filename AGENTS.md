@@ -21,6 +21,7 @@ All pages are flat `.html` files at the project root — no build step, no bundl
 - `cert.html` — Certificate of Authenticity viewer
 - `verify.html` — Public certificate verification page
 - `collection-silverbar-calculator.html` — Silver shard calculator
+- `rarefolio_showcased_artist_application.html` — Showcased artist application form (multi-section, client-side validation, async submit to `/api/artist-application.php`)
 
 **Key JS modules (all vanilla, IIFE-wrapped, no imports):**
 - `assets/js/main.js` — Sitewide: mobile menu, dropdown nav, back-to-top, NFT image watermarking (CSS overlay via `data-watermark`), card tilt effect, story loader. Exposes `window.__QD.setupTilt()` and `window.__QD.loadStory()`.
@@ -42,6 +43,7 @@ The backend is plain PHP (no framework, no Composer for the app itself). Dompdf 
 - `api/admin/manage_blocks.php` — Admin endpoint (Basic Auth). `POST` to create/update a block, `DELETE ?block_id=X` to remove.
 - `api/admin/manage_stories.php` — Admin endpoint (Basic Auth). `POST` to create/update a story, `GET ?block=X&item=N` to read, `DELETE` to remove.
 - `api/admin/seed_blocks.php` — One-time admin script to migrate the first 15 static blocks + stories into the DB for Bar I.
+- `api/artist-application.php` — Public endpoint. `POST` with `multipart/form-data`. Validates required fields, generates unique reference code (`RF-{hex}-{date}`), saves file uploads to `uploads/artist_applications/{app_ref}/`, inserts into `qd_artist_applications`. Returns JSON `{ success, message, app_ref }`.
 - `download.php` — Serves PDFs stored outside webroot (`/home/<user>/rf_storage/pdfs/`). Auto-derives paths from `__DIR__`.
 
 ### Database
@@ -50,6 +52,7 @@ MySQL (`rarefolio_cnftcert`), three tables:
 - `qd_certificates` — Stores cert_id (format: `QDCERT-<BAR>-<7DIGIT>`), bar_serial, cnft_id, status (`verified`/`unverified`/`revoked`), payload as JSON, PDF metadata (sha256, bytes, storage key). Schema in `api/CERT_DB_SCHEMA.sql`.
 - `qd_blocks` — One row per batch per bar. Maps `(bar_serial, batch_num)` to block_id, folder_slug, label, story_mode. Block ID format: `{barSerial}-block{NNNN}` (e.g., `E101837-block0042`). Unique on `(bar_serial, batch_num)`. Schema in `api/BLOCKS_DB_SCHEMA.sql`.
 - `qd_stories` — Story HTML fragments. Each row has a `block_id` + optional `item_num` (NULL = shared, 1–8 = per-item). Unique on `(block_id, item_num)`. Schema in `api/BLOCKS_DB_SCHEMA.sql`.
+- `qd_artist_applications` — Showcased artist application submissions. Columns span 6 sections (identity, practice, portfolio, readiness, uploads, consent). Status enum: `pending`/`reviewed`/`accepted`/`declined`. File uploads stored as relative paths under `uploads/artist_applications/{app_ref}/`. Unique on `app_ref`. Schema in `api/ARTIST_APP_DB_SCHEMA.sql`.
 
 ### Data & Configuration
 
