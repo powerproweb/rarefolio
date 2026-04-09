@@ -4,6 +4,21 @@
 ---
 
 ---
+## 2026-04-09 | ~21:25 UTC — Bugfix: Aries/Taurus block ID swap
+
+### Problem
+`collection-silverbar-01-aries.html` had `data-block-id="block00"` (Taurus) and `collection-silverbar-01-taurus.html` had `data-block-id="block02"` (Aries). The page-level override caused each page to load the wrong block’s images and stories.
+
+### Fix
+- `collection-silverbar-01-aries.html` line 70: `block00` → `block02`, `per_item` → `shared`
+- `collection-silverbar-01-taurus.html` line 70: `block02` → `block00`
+
+### Caught by
+End-to-end story wiring test (data-block-id audit across all 15 sub-pages).
+
+---
+
+---
 ## 2026-04-09 | ~15:45 UTC — Showcased Artist Application
 
 ### What Was Built
