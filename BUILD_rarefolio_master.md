@@ -4,53 +4,82 @@
 ---
 
 ---
-## 2026-04-08 | ~22:00 UTC — APR 10 GO-LIVE SPRINT
+## 2026-04-09 | ~15:45 UTC — Showcased Artist Application
 
-**Deadline: April 10, 2026 end-of-day | ~48 hours**
+### What Was Built
+Full artist application pipeline: public form → client-side validation → PHP backend → MySQL storage with file uploads.
 
-### Reality Check
-The codebase is further along than the old TODO suggests. Per CHANGELOG, these are DONE:
+### Files Added
+- `rarefolio_showcased_artist_application.html` — Public-facing multi-section application form with client-side validation (required fields, email/URL format, consent checks), dynamic error display, and async `fetch` submission to the backend. On success, replaces form with confirmation + unique reference code.
+- `api/artist-application.php` — `POST /api/artist-application.php` endpoint. Accepts `multipart/form-data`, validates required fields server-side, generates a unique reference code (`RF-{hex}-{date}`, e.g. `RF-A3B9C1D2E4F6-20260409`), saves uploaded files to `uploads/artist_applications/{app_ref}/`, inserts into `qd_artist_applications`. Returns JSON `{ success, message, app_ref }`.
+- `api/ARTIST_APP_DB_SCHEMA.sql` — Creates `qd_artist_applications` table with 30+ columns across 6 sections: Artist Identity, Artistic Practice & Vision, Portfolio & Presentation, Professional Readiness, Uploads (file paths), and Consent. Indexed on `app_ref` (unique), `email`, `status`, `submitted_at`.
+
+### Files Modified
+- `README_rarefolio.md` — Added artist application documentation and new deploy steps (1b: run schema, 3b: ensure upload dir is writable)
+
+### Deploy Steps (added to go-live sprint)
+- 1b. Run `api/ARTIST_APP_DB_SCHEMA.sql` in phpMyAdmin (creates `qd_artist_applications`)
+- 3b. Ensure web server can write to `uploads/artist_applications/`
+
+### DB Table
+`qd_artist_applications` — status enum: `pending` → `reviewed` → `accepted` / `declined`. Uploads stored as relative paths under `uploads/artist_applications/{app_ref}/`.
+
+---
+
+---
+## 2026-04-08 | ~22:00 UTC — APR 10 GO-LIVE SPRINT (updated Apr 9 ~20:30 UTC)
+
+**Deadline: April 10, 2026 end-of-day**
+
+### Story Audit (Apr 9 ~20:30 UTC)
+- block00 (Taurus): shared ✅ 14KB | items — (shared-only)
+- block01 (Inventors): shared **❌ MISSING** | items ✅ 20KB real
+- block02 (Aries): shared ✅ 14KB | items — (shared-only)
+- block03 (Robot Butler): shared **❌ MISSING** | items ✅ 35KB real
+- block04–13 (Gemini→Pisces): shared ✅ all real (5–6KB) | items renamed `.dont_use` (shared-only)
+- block14 (New Series): shared **⚠️ STUB 407 bytes** | items stub
+
+### What's Done
 - ✅ Hero sections on index.html + collections.html
 - ✅ All 15 collection sub-pages (blocks 00–14) with batch routing rules
 - ✅ about.html nav link removed (philosophy page serves as About)
 - ✅ Art-directed PDF cert templates (6 backgrounds + 20 wax seals + rotation logic)
+- ✅ Shared stories written for blocks 00, 02, 04–13 (12 of 15)
+- ✅ Per-item lore for block01 Inventors (8 items) and block03 Robot Butler (8 items)
+- ✅ Showcased Artist Application (form + API + DB schema)
+- ✅ Blocks 04–13 items.html renamed to `.dont_use` (shared-only intent)
 
-What's left falls into 3 lanes: **Infrastructure**, **Content**, and **Polish**.
+### Remaining Content (3 files)
+1. **Create `block01/shared.html`** — Inventors Guild shared story (currently missing entirely)
+2. **Create `block03/shared.html`** — Robot Butler shared story (currently missing entirely)
+3. **Rewrite `block14/shared.html`** — New Series (currently a 407-byte stub)
 
-### DAY 1 — Apr 9 (Wed): Infrastructure + Content Blitz
-
-**Morning: Deploy the backend (~1 hr)**
-1. Run `api/CERT_DB_SCHEMA.sql` + `api/BLOCKS_DB_SCHEMA.sql` in BlueHost phpMyAdmin
-2. Hit `seed_blocks.php` (Basic Auth) to populate first 15 blocks + stories
-3. FTP upload all local files to BlueHost; confirm `.htaccess` is the clean version
-4. Smoke test: `resolve.php?bar=E101837&batch=1`, `story.php?block=E101837-block0000&item=0`, `cert.php?id=QDCERT-E101837-0000009`
-
-**Afternoon + Evening: Content sprint (4–6 hrs)**
-5. Write shared stories for blocks 03–14 (12 files × ~150–300 words each):
-   block03 Robot Butler, block04 Gemini, block05 Cancer, block06 Leo, block07 Virgo, block08 Libra, block09 Scorpio, block10 Sagittarius, block11 Capricorn, block12 Aquarius, block13 Pisces, block14 New Series
-6. ~~Write per-item stories for block01 — Inventors Guild (8 items)~~ ✅ DONE
-7. ~~Write per-item stories for block02 — Aries~~ → using shared story for all 8 items
-8. ~~Write per-item stories for block03 — Robot Butler~~ → using shared story for all 8 items
+### Deploy (Day 1 carry-over if not done yet)
+4. Run `api/CERT_DB_SCHEMA.sql` + `api/BLOCKS_DB_SCHEMA.sql` + `api/ARTIST_APP_DB_SCHEMA.sql` in phpMyAdmin
+5. Hit `seed_blocks.php` to populate first 15 blocks
+6. FTP upload all files to BlueHost; confirm `.htaccess` is clean; ensure `uploads/artist_applications/` is writable
+7. Smoke test endpoints (resolve, story, cert)
 
 ### DAY 2 — Apr 10 (Thu): Polish, Test, Go Live
 
 **Morning (~1.5 hrs)**
-9. Review/finalize all 12 shared stories + block01 per-item stories
-10. Bar II/III decision — Option A (recommended): keep pages live, add "Coming Soon" banner, drop "(Placeholder)" from nav. Option B: hide from nav entirely.
+8. Write the 3 missing shared stories (block01, block03, block14)
+9. Review/finalize all stories + block01/block03 per-item lore
+10. Bar II/III decision — Option A (recommended): keep live with "Coming Soon" banner. Option B: hide from nav.
 
 **Afternoon: End-to-end testing (~2 hrs)**
-11. Full cert pipeline: issue test certs (parchment + cream), verify, view, download PDF — confirm art-directed layout
-12. Collection walkthrough: Silver Bar I batches 1–15, block sub-pages, individual NFT detail, story loading
-13. Cross-browser + mobile spot-check (Chrome, Firefox, mobile viewport)
+11. Full cert pipeline: issue test certs (parchment + cream), verify, view, download PDF
+12. Collection walkthrough: Silver Bar I batches 1–15, block sub-pages, NFT detail, story loading
+13. Cross-browser + mobile spot-check
 14. Final deploy: upload Day 2 changes, clear caches, verify live
 
 ### Out of Scope
-- Blocks 16–5,000 registration (not needed — only 15 blocks are live)
-- Per-item stories for blocks 04–14 (shared stories sufficient for launch)
+- Blocks 16–5,000 registration
+- Per-item stories for blocks 04–14
 - `site.webmanifest` / PWA, nav/footer templating refactor
 
 ### Deliverable
-By end of Apr 10: rarefolio.io live with Silver Bar I fully navigable (15 blocks, 120 CNFTs), all shared stories authored, Inventors with per-item lore, Aries/Robot Butler using shared stories, cert pipeline tested on production, Bar II/III gracefully placeholder'd.
+By end of Apr 10: rarefolio.io live with Silver Bar I fully navigable (15 blocks, 120 CNFTs), all shared stories authored, Inventors/Robot Butler with per-item lore, cert pipeline tested, Bar II/III gracefully placeholder'd.
 
 ---
 
