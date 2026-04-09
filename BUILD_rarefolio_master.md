@@ -4,6 +4,24 @@
 ---
 
 ---
+## 2026-04-09 | ~21:33 UTC — Legacy story cleanup + finalized architecture
+
+### Removed
+- `assets/stories/bar1-taurus.html`, `bar1-aries.html`, `bar1-inventors.html` — legacy flat story files (~1,600 lines)
+- Legacy heuristic fallback block in `qd-wire.js` (lines 707–714) that pattern-matched URL strings to guess story paths
+- `data-story-src` attributes from `collection-silverbar-01-aries.html`, `-taurus.html`, `-inventors.html` that pointed to deleted files
+- Legacy fallback documentation line from AGENTS.md
+
+### Finalized Story Resolution Architecture
+All stories now resolve through two clean paths — no more legacy fallbacks:
+1. **Static (blocks 00–14, Bar I)**: `assets/stories/blockNN/shared.html` or `items.html` → resolved via `QD_BLOCKS` map in `qd-wire.js`
+2. **DB-driven (blocks 16–5,000+, all bars)**: `/api/blocks/story.php` → reads from `qd_stories` table, managed via `manage_stories.php`
+
+No static files needed for blocks beyond 14. The DB handles all scaling.
+
+---
+
+---
 ## 2026-04-09 | ~21:25 UTC — Bugfix: Aries/Taurus block ID swap
 
 ### Problem
@@ -46,47 +64,43 @@ Full artist application pipeline: public form → client-side validation → PHP
 
 **Deadline: April 10, 2026 end-of-day**
 
-### Story Audit (Apr 9 ~20:30 UTC)
-- block00 (Taurus): shared ✅ 14KB | items — (shared-only)
-- block01 (Inventors): shared **❌ MISSING** | items ✅ 20KB real
-- block02 (Aries): shared ✅ 14KB | items — (shared-only)
-- block03 (Robot Butler): shared **❌ MISSING** | items ✅ 35KB real
-- block04–13 (Gemini→Pisces): shared ✅ all real (5–6KB) | items renamed `.dont_use` (shared-only)
-- block14 (New Series): shared **⚠️ STUB 407 bytes** | items stub
+### Story Audit (final — Apr 9 ~21:33 UTC)
+- block00 (Taurus): shared ✅ 14KB | shared-only
+- block01 (Inventors): shared ✅ 8.5KB | items ✅ 20KB (8 articles)
+- block02 (Aries): shared ✅ 14KB | shared-only
+- block03 (Robot Butler): shared ✅ 10KB | items ✅ 35KB (8 articles)
+- block04–13 (Gemini→Pisces): shared ✅ all real (5–6KB) | shared-only
+- block14 (New Series): shared ⚠️ placeholder (intentional — next collection)
+- Legacy files (`bar1-*.html`): ✅ **DELETED** + dead fallback code removed from qd-wire.js
 
 ### What's Done
 - ✅ Hero sections on index.html + collections.html
-- ✅ All 15 collection sub-pages (blocks 00–14) with batch routing rules
+- ✅ All 15 collection sub-pages with correct block routing (Aries/Taurus swap fixed)
 - ✅ about.html nav link removed (philosophy page serves as About)
 - ✅ Art-directed PDF cert templates (6 backgrounds + 20 wax seals + rotation logic)
-- ✅ Shared stories written for blocks 00, 02, 04–13 (12 of 15)
+- ✅ Shared stories for all 15 blocks (14 real + block14 intentional placeholder)
 - ✅ Per-item lore for block01 Inventors (8 items) and block03 Robot Butler (8 items)
 - ✅ Showcased Artist Application (form + API + DB schema)
-- ✅ Blocks 04–13 items.html renamed to `.dont_use` (shared-only intent)
+- ✅ Blocks 04–13 items.html disabled (shared-only)
+- ✅ Legacy story files + dead fallback code removed
+- ✅ Inventors page story-mode attribute corrected
 
-### Remaining Content (3 files)
-1. **Create `block01/shared.html`** — Inventors Guild shared story (currently missing entirely)
-2. **Create `block03/shared.html`** — Robot Butler shared story (currently missing entirely)
-3. **Rewrite `block14/shared.html`** — New Series (currently a 407-byte stub)
+### DAY 2 — Apr 10 (Thu): Deploy, Test, Go Live
 
-### Deploy (Day 1 carry-over if not done yet)
-4. Run `api/CERT_DB_SCHEMA.sql` + `api/BLOCKS_DB_SCHEMA.sql` + `api/ARTIST_APP_DB_SCHEMA.sql` in phpMyAdmin
-5. Hit `seed_blocks.php` to populate first 15 blocks
-6. FTP upload all files to BlueHost; confirm `.htaccess` is clean; ensure `uploads/artist_applications/` is writable
-7. Smoke test endpoints (resolve, story, cert)
+**Deploy**
+1. Run `api/CERT_DB_SCHEMA.sql` + `api/BLOCKS_DB_SCHEMA.sql` + `api/ARTIST_APP_DB_SCHEMA.sql` in phpMyAdmin
+2. Hit `seed_blocks.php` to populate first 15 blocks
+3. FTP upload all files to BlueHost; confirm `.htaccess` is clean; ensure `uploads/artist_applications/` is writable
+4. Smoke test endpoints (resolve, story, cert)
 
-### DAY 2 — Apr 10 (Thu): Polish, Test, Go Live
+**Polish**
+5. Bar II/III decision — Option A (recommended): keep live with "Coming Soon" banner. Option B: hide from nav.
 
-**Morning (~1.5 hrs)**
-8. Write the 3 missing shared stories (block01, block03, block14)
-9. Review/finalize all stories + block01/block03 per-item lore
-10. Bar II/III decision — Option A (recommended): keep live with "Coming Soon" banner. Option B: hide from nav.
-
-**Afternoon: End-to-end testing (~2 hrs)**
-11. Full cert pipeline: issue test certs (parchment + cream), verify, view, download PDF
-12. Collection walkthrough: Silver Bar I batches 1–15, block sub-pages, NFT detail, story loading
-13. Cross-browser + mobile spot-check
-14. Final deploy: upload Day 2 changes, clear caches, verify live
+**End-to-end testing**
+6. Full cert pipeline: issue test certs (parchment + cream), verify, view, download PDF
+7. Collection walkthrough: Silver Bar I batches 1–15, block sub-pages, NFT detail, story loading
+8. Cross-browser + mobile spot-check
+9. Final deploy: upload any Day 2 fixes, clear caches, verify live
 
 ### Out of Scope
 - Blocks 16–5,000 registration
