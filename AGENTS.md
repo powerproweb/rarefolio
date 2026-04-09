@@ -75,9 +75,7 @@ MySQL (`rarefolio_cnftcert`), three tables:
 - API-sourced blocks → `/api/blocks/story.php?block=X&item=Y` (DB-driven, server extracts per-item)
 - Static shared blocks → `/assets/stories/blockNN/shared.html`
 - Static per-item blocks → `/assets/stories/blockNN/items.html` (single file, all 8 articles with `data-item="1"`–`"8"` attributes; client-side `DOMParser` extracts the matching article via `data-story-item` on `<body>`)
-- Legacy flat files (`bar1-taurus.html`, etc.) preserved as heuristic fallback
-
-**Per-item file format** (`items.html`):
+**Per-item
 ```
 <article data-item="1">...story for item 1...</article>
 <article data-item="2">...story for item 2...</article>

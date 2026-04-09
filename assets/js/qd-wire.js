@@ -704,15 +704,6 @@
         }
       }
 
-      // Legacy heuristic fallback
-      if (!storySrc) {
-        const colParam = sp.get('col') || '';
-        const hay = String(imgTpl || colParam || '') + ' ' + String(imgSrc || '');
-        if (/taurus/i.test(hay)) storySrc = '/assets/stories/bar1-taurus.html';
-        else if (/aries/i.test(hay)) storySrc = '/assets/stories/bar1-aries.html';
-        else if (/inventors/i.test(hay)) storySrc = '/assets/stories/bar1-inventors.html';
-      }
-
       if (storySrc) {
         document.body.dataset.storySrc = storySrc;
         // Tell the loader which per-item article to extract (0 = shared/full)
