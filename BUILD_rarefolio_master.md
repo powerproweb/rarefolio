@@ -85,30 +85,66 @@ Full artist application pipeline: public form → client-side validation → PHP
 - ✅ Legacy story files + dead fallback code removed
 - ✅ Inventors page story-mode attribute corrected
 
-### DAY 2 — Apr 10 (Thu): Deploy, Test, Go Live
+### GO-LIVE CHECKLIST — Apr 10 (Thu)
 
-**Deploy**
-1. Run `api/CERT_DB_SCHEMA.sql` + `api/BLOCKS_DB_SCHEMA.sql` + `api/ARTIST_APP_DB_SCHEMA.sql` in phpMyAdmin
-2. Hit `seed_blocks.php` to populate first 15 blocks
-3. FTP upload all files to BlueHost; confirm `.htaccess` is clean; ensure `uploads/artist_applications/` is writable
-4. Smoke test endpoints (resolve, story, cert)
+**STEP 1: Database setup (~10 min)**
+Open BlueHost phpMyAdmin → select `rarefolio_cnftcert` database → run these in order:
+- [ ] `api/CERT_DB_SCHEMA.sql` → creates `qd_certificates`
+- [ ] `api/BLOCKS_DB_SCHEMA.sql` → creates `qd_blocks` + `qd_stories`
+- [ ] `api/ARTIST_APP_DB_SCHEMA.sql` → creates `qd_artist_applications`
 
-**Polish**
-5. Bar II/III decision — Option A (recommended): keep live with "Coming Soon" banner. Option B: hide from nav.
+**STEP 2: Seed block data (~2 min)**
+- [ ] Open `https://rarefolio.io/api/admin/seed_blocks.php` in browser (Basic Auth required)
+- [ ] Confirm response shows 15 blocks + stories inserted
 
-**End-to-end testing**
-6. Full cert pipeline: issue test certs (parchment + cream), verify, view, download PDF
-7. Collection walkthrough: Silver Bar I batches 1–15, block sub-pages, NFT detail, story loading
-8. Cross-browser + mobile spot-check
-9. Final deploy: upload any Day 2 fixes, clear caches, verify live
+**STEP 3: File upload (~15 min)**
+- [ ] FTP or cPanel File Manager: upload entire local project to BlueHost webroot
+- [ ] Verify `.htaccess` is the current clean version (NOT `.htaccess.old1`)
+- [ ] Verify `uploads/artist_applications/` directory exists and is writable (chmod 755 or 775)
+- [ ] Verify `dompdf/` directory is intact on server
+
+**STEP 4: Smoke test APIs (~5 min)**
+- [ ] `GET https://rarefolio.io/api/blocks/resolve.php?bar=E101837&batch=1` → expect JSON with block00 metadata
+- [ ] `GET https://rarefolio.io/api/blocks/story.php?block=E101837-block0000&item=0` → expect Taurus shared story HTML
+- [ ] `GET https://rarefolio.io/api/cert.php?id=QDCERT-E101837-0000009` → expect cert JSON
+
+**STEP 5: Bar II/III treatment (~10 min)**
+- [ ] Option A (recommended): add "Coming Soon" banner to `collection-silverbar-02.html` + `03.html`, remove "(Placeholder)" from nav labels
+- [ ] Option B: hide Bar II/III links from nav entirely
+
+**STEP 6: Certificate pipeline test (~20 min)**
+- [ ] `POST https://rarefolio.io/api/admin/issue_cert.php` with `template: parchment` → expect success + PDF generated
+- [ ] `POST` again with `template: cream` → expect success + different background
+- [ ] Visit `https://rarefolio.io/verify.html?id=QDCERT-...` → confirm cert verifies
+- [ ] Visit `https://rarefolio.io/cert.html?id=QDCERT-...` → confirm cert viewer renders
+- [ ] Download PDF via `https://rarefolio.io/download.php?file=...` → confirm art-directed layout, wax seal, background
+
+**STEP 7: Collection walkthrough (~30 min)**
+- [ ] `collection-silverbar-01.html?batch=1` → batch 1 loads, Taurus story appears in story panel
+- [ ] Navigate batches 1–15 via pill navigator → each batch redirects to correct sub-page
+- [ ] Click into `collection-silverbar-01-inventors.html` → grid renders, shared story loads
+- [ ] Click an individual NFT → `nft.html` populates title, image, badge, story
+- [ ] On Inventors NFT detail (item 1–8) → per-item story loads from items.html
+- [ ] On Robot Butler NFT detail (item 1–8) → per-item story loads
+- [ ] On Aries/Taurus NFT detail → shared story loads (no per-item)
+
+**STEP 8: Cross-browser + mobile (~15 min)**
+- [ ] Chrome desktop → nav, grid, tilt effect, watermark overlay, back-to-top
+- [ ] Firefox desktop → same checks
+- [ ] Mobile viewport (Chrome DevTools or real device) → hamburger menu, grid layout, story panel
+
+**STEP 9: Final deploy (~5 min)**
+- [ ] Upload any Day 2 fixes (Bar II/III banner, typos, etc.)
+- [ ] Clear any server-side caches if applicable
+- [ ] Final visit to `https://rarefolio.io/` → confirm live
 
 ### Out of Scope
-- Blocks 16–5,000 registration
-- Per-item stories for blocks 04–14
+- Blocks 16–5,000 registration (DB-driven, post-launch)
+- Per-item stories for blocks 04–14 (shared stories sufficient)
 - `site.webmanifest` / PWA, nav/footer templating refactor
 
 ### Deliverable
-By end of Apr 10: rarefolio.io live with Silver Bar I fully navigable (15 blocks, 120 CNFTs), all shared stories authored, Inventors/Robot Butler with per-item lore, cert pipeline tested, Bar II/III gracefully placeholder'd.
+By end of Apr 10: rarefolio.io live with Silver Bar I fully navigable (15 blocks, 120 CNFTs), all shared stories authored, Inventors/Robot Butler with per-item lore, cert pipeline tested on production, Bar II/III gracefully placeholder'd.
 
 ---
 
