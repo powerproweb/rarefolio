@@ -455,6 +455,27 @@
       scroll-margin-top: 95px;
     }
 
+    .field-error input,
+    .field-error select,
+    .field-error textarea {
+      border-color: var(--danger) !important;
+      box-shadow: 0 0 0 3px rgba(255, 138, 138, 0.12);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+
+    .check-error {
+      border-color: var(--danger) !important;
+    }
+
+    .check-error .error-msg {
+      margin-top: 6px;
+    }
+
     @media (max-width: 1024px) {
       .hero-grid,
       .grid-3,
@@ -881,9 +902,119 @@ https://..." required></textarea>
 
   <script>
     const form = document.getElementById('artistApplicationForm');
-    form.addEventListener('submit', function (event) {
+
+    function clearErrors() {
+      form.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+      form.querySelectorAll('.check-error').forEach(el => el.classList.remove('check-error'));
+      form.querySelectorAll('.error-msg').forEach(el => el.remove());
+    }
+
+    function showError(field, message) {
+      const container = field.closest('.field, .field-full, .check');
+      if (!container) return;
+      if (container.classList.contains('check')) {
+        container.classList.add('check-error');
+      } else {
+        container.classList.add('field-error');
+      }
+      if (!container.querySelector('.error-msg')) {
+        const msg = document.createElement('span');
+        msg.className = 'error-msg';
+        msg.textContent = message;
+        container.appendChild(msg);
+      }
+    }
+
+    function validateForm() {
+      clearErrors();
+      let firstError = null;
+
+      form.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
+        if (field.type === 'checkbox') return;
+        const val = field.value.trim();
+        if (!val) {
+          showError(field, 'This field is required.');
+          if (!firstError) firstError = field;
+        } else if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+          showError(field, 'Please enter a valid email address.');
+          if (!firstError) firstError = field;
+        } else if (field.type === 'url' && !/^https?:\/\/.+/.test(val)) {
+          showError(field, 'Please enter a valid URL starting with http:// or https://');
+          if (!firstError) firstError = field;
+        }
+      });
+
+      const consent = form.querySelector('input[name="consent_review"]');
+      if (consent && !consent.checked) {
+        showError(consent, 'You must agree to continue.');
+        if (!firstError) firstError = consent;
+      }
+
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstError.focus({ preventScroll: true });
+      }
+      return !firstError;
+    }
+
+    form.addEventListener('input', function (e) {
+      const c = e.target.closest('.field, .field-full, .check');
+      if (c) { c.classList.remove('field-error', 'check-error'); const m = c.querySelector('.error-msg'); if (m) m.remove(); }
+    });
+
+    form.addEventListener('change', function (e) {
+      const c = e.target.closest('.field, .field-full, .check');
+      if (c) { c.classList.remove('field-error', 'check-error'); const m = c.querySelector('.error-msg'); if (m) m.remove(); }
+    });
+
+    form.addEventListener('submit', async function (event) {
       event.preventDefault();
-      alert('Application form structure is ready. Connect the form action or JavaScript submission handler when you are ready to send data to MailerLite and your upload endpoint.');
+      if (!validateForm()) return;
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const origText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      // Append consent checkbox values as text so PHP sees them
+      const formData = new FormData(form);
+      if (form.querySelector('input[name="consent_review"]').checked) {
+        formData.set('consent_review', '1');
+      }
+      if (form.querySelector('input[name="consent_contact"]').checked) {
+        formData.set('consent_contact', '1');
+      }
+
+      try {
+        const res = await fetch('/api/artist-application.php', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          form.innerHTML = `
+            <div style="text-align:center; padding:60px 20px;">
+              <div style="font-size:2.4rem; margin-bottom:12px;">&#10003;</div>
+              <h2 style="color:#fff;">Application Received</h2>
+              <p class="lead" style="margin:14px auto 0; max-width:48ch;">
+                Thank you for applying. Your reference code is
+                <strong style="color:var(--gold-2);">${data.app_ref}</strong>.
+                We will review your submission and follow up by email.
+              </p>
+            </div>`;
+          form.closest('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          const msgs = data.errors ? data.errors.join('\n• ') : data.message;
+          alert('Submission issue:\n\n• ' + msgs);
+          submitBtn.disabled = false;
+          submitBtn.textContent = origText;
+        }
+      } catch (err) {
+        alert('Network error. Please check your connection and try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = origText;
+      }
     });
   </script>
 </body>

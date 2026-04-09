@@ -13,14 +13,24 @@ What's Done
 •  Certificate pipeline: issuance API, art-directed PDFs (parchment/cream + 20 wax seals), verification, download
 •  DB-driven block routing system (scales to 5,000 batches per bar, multi-bar)
 •  Story placeholder files for all 15 blocks + per-item stubs for Inventors, Aries, Robot Butler
+•  Showcased Artist Application page (rarefolio_showcased_artist_application.html) with:
+   - 6-section curated form (identity, vision, portfolio, readiness, uploads, consent)
+   - Custom inline validation with styled error messages and scroll-to-first-error
+   - PHP backend (api/artist-application.php) that validates, saves file uploads, and inserts into MySQL
+   - DB schema (api/ARTIST_APP_DB_SCHEMA.sql) with qd_artist_applications table
+   - Unique reference code per submission (e.g. RF-A3B9C1D2E4F6-20260409)
+   - File uploads stored under uploads/artist_applications/{app_ref}/
+   - On-success confirmation replaces the form with the reference code
 •  AGENTS.md, CHANGELOG, .htaccess all current
 
 Still To Do
 
 DB Setup (deploy blockers)
 1. Run BLOCKS_DB_SCHEMA.sql in phpMyAdmin (creates qd_blocks + qd_stories)
+1b. Run ARTIST_APP_DB_SCHEMA.sql in phpMyAdmin (creates qd_artist_applications)
 2. Hit seed_blocks.php to migrate the first 15 blocks + stories into DB
 3. Upload all new files to BlueHost
+3b. Ensure the web server can write to uploads/artist_applications/
 
 Content (your authoring work)
 4. Write the 12 story placeholders with real lore (blocks 03–14: Robot Butler, Gemini → Pisces, New Series)
