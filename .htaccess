@@ -15,6 +15,10 @@ ErrorDocument 403 /404.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Pass HTTP Basic Auth credentials through to PHP (required on BlueHost)
+  RewriteCond %{HTTP:Authorization} ^(.*)
+  RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
   # Force HTTPS
   RewriteCond %{HTTPS} off
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
@@ -23,23 +27,15 @@ ErrorDocument 403 /404.html
   RewriteCond %{HTTP_HOST} ^www\.rarefolio\.io$ [NC]
   RewriteRule ^(.*)$ https://rarefolio.io/$1 [L,R=301]
 
-  # ── UNDER-DEVELOPMENT GATE ──────────────────────────────────────
-  # Redirect all visitors to under-development.html unless:
-  #   • they already requested it (or the login endpoint)
-  #   • they carry the rf_ud_auth cookie (authenticated)
-  #   • they are requesting static assets or the API
-  # To disable this gate when the site goes live, comment out
-  # or remove this block (from here to "END GATE").
-  RewriteCond %{REQUEST_URI} !^/under-development(\.html)?$ [NC]
-  RewriteCond %{REQUEST_URI} !^/api/ [NC]
-  RewriteCond %{REQUEST_URI} !^/assets/ [NC]
-  RewriteCond %{REQUEST_URI} !^/dompdf/ [NC]
-  RewriteCond %{REQUEST_URI} !\.(css|js|jpg|jpeg|png|gif|webp|svg|ico|woff2?|pdf|json|xml|zip)$ [NC]
-  RewriteCond %{HTTP_COOKIE} !rf_ud_auth=1
-  RewriteRule ^(.*)$ /under-development.html [L,R=302]
-  # ── END GATE ────────────────────────────────────────────────────
+  # --- Collection block router (scalable sub-pages via single PHP template) ---
+  # /collection/silverbar-01/aquarius?batch=13 -> collections/block.php?bar=01&block=aquarius&batch=13
+  RewriteRule ^collection/silverbar-([0-9]{2})/([a-z0-9-]+)/?$ collections/block.php?bar=$1&block=$2 [QSA,L]
 
-  # Strip .html from URLs (external redirect: /page.html → /page)
+  # --- 301 redirects: old static sub-pages -> new clean URLs ---
+  RewriteRule ^collection-silverbar-([0-9]{2})-([a-z0-9-]+)\.html$ /collection/silverbar-$1/$2 [R=301,L]
+  RewriteRule ^collection-silverbar-([0-9]{2})-([a-z0-9-]+)$ /collection/silverbar-$1/$2 [R=301,L]
+
+  # Strip .html from URLs
   RewriteCond %{THE_REQUEST} \s/+(.+)\.html[\s?] [NC]
   RewriteRule ^ /%1 [R=301,L]
 

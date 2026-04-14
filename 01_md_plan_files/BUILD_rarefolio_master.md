@@ -1,8 +1,20 @@
 # BUILD_rarefolio_master.md
-> **Master build log for rarefolio.io — newest plans go at the top.**
+**Master build log for rarefolio.io — newest plans go at the top.**
 
 ---
+What's left is all deploy + manual testing (Day 2):
 
+1. Run 3 SQL schemas in BlueHost phpMyAdmin — CERT_DB_SCHEMA.sql, BLOCKS_DB_SCHEMA.sql, ARTIST_APP_DB_SCHEMA.sql
+2. Hit seed_blocks.php (Basic Auth) to populate the first 15 blocks into DB
+3. FTP upload all files to BlueHost — confirm .htaccess is the clean version, uploads/artist_applications/ is writable
+4. Smoke test the 3 API endpoints: resolve.php, story.php, cert.php
+5. Bar II/III — add "Coming Soon" banner or hide from nav
+6. Cert pipeline test — issue test certs (parchment + cream), verify, view, download PDF
+7. Collection walkthrough — Silver Bar I batches 1–15, sub-pages, NFT detail, story loading
+8. Browser spot-check — Chrome, Firefox, mobile viewport
+9. Final deploy — push any Day 2 fixes, clear caches, verify live
+
+Items 1–4 are ~30 minutes. Item 5 is a quick decision + edit. Items 6–8 are ~1.5 hours of testing. You could be live by midday.
 ---
 ## 2026-04-09 | ~21:33 UTC — Legacy story cleanup + finalized architecture
 

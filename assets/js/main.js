@@ -70,7 +70,7 @@
 
   const applyNFTWatermarks = (root = document) => {
     const ctx = getWatermarkContext();
-    const imgs = $$('img', root).filter(isLikelyNFTImage);
+    const imgs = $$('img', root).filter(isLikelyNFTImage).filter(img => !img.closest('#qd-story'));
     if (!imgs.length) return;
 
     imgs.forEach((img) => {

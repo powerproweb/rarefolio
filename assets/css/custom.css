@@ -376,7 +376,7 @@ div.div_float_r_rl {
   margin: 30px auto;
   padding: 12px 20px;
   background-color: #b37333;
-  color: white;
+  color: #ffefa3;
   text-align: center;
   text-decoration: none;
   font-family: 'Cinzel', serif;
@@ -538,7 +538,7 @@ div.div_float_r_rl {
 
 .vlt-custom--4111 .vlt-swiper-button-prev--style-2,
 .vlt-custom--4111 .vlt-swiper-button-next--style-2 {
-	color: #fff;
+	color: #ffefa3;
 }
 
 .vlt-custom--6632 {
@@ -546,12 +546,12 @@ div.div_float_r_rl {
 }
 
 .vlt-custom--9917 .vlt-social-icons a:not(:hover) {
-	color: #fff;
+	color: #ffefa3;
 }
 
 .vlt-custom--8681 .vlt-countdown h5,
 .vlt-custom--8681 .vlt-countdown strong {
-	color: #fff;
+	color: #ffefa3;
 }
 
 .vlt-custom--9511 .vlt-swiper-pagination--style-1 span {

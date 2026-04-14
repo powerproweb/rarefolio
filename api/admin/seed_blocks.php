@@ -23,8 +23,11 @@ function respond(int $code, array $payload): void {
 function require_basic_auth(): void {
   $u = $_SERVER['PHP_AUTH_USER'] ?? '';
   $p = $_SERVER['PHP_AUTH_PW']   ?? '';
-  if (($u === '' || $p === '') && !empty($_SERVER['HTTP_AUTHORIZATION'])) {
-    $auth = $_SERVER['HTTP_AUTHORIZATION'];
+  $authHeader = $_SERVER['HTTP_AUTHORIZATION']
+    ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+    ?? '';
+  if (($u === '' || $p === '') && $authHeader !== '') {
+    $auth = $authHeader;
     if (stripos($auth, 'basic ') === 0) {
       $decoded = base64_decode(substr($auth, 6));
       if ($decoded !== false && strpos($decoded, ':') !== false) {

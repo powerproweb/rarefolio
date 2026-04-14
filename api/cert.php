@@ -10,17 +10,45 @@ if ($cert === "") {
   exit;
 }
 
-// Block 01 mapping (Inventors Guild prelaunch: 0000009–0000016)
-$map = [
-  "QDCERT-E101837-0000009" => "qd-silver-0000009",
-  "QDCERT-E101837-0000010" => "qd-silver-0000010",
-  "QDCERT-E101837-0000011" => "qd-silver-0000011",
-  "QDCERT-E101837-0000012" => "qd-silver-0000012",
-  "QDCERT-E101837-0000013" => "qd-silver-0000013",
-  "QDCERT-E101837-0000014" => "qd-silver-0000014",
-  "QDCERT-E101837-0000015" => "qd-silver-0000015",
-  "QDCERT-E101837-0000016" => "qd-silver-0000016",
+// ---- Block metadata for cert resolution ----
+$blocks = [
+  // block00: Taurus (batch 1, CNFTs 0000001–0000008)
+  'block00' => [
+    'collection' => 'Zodiac — Taurus (Block 00)',
+    'folder'     => 'scnft_zodiac_taurus',
+    'batch'      => 1,
+    'start'      => 1,
+    'end'        => 8,
+  ],
+  // block01: Inventors Guild (batch 2, CNFTs 0000009–0000016)
+  'block01' => [
+    'collection' => 'Founders Prelaunch — Inventors Guild (Block 01)',
+    'folder'     => 'scnft_sp_inventors',
+    'batch'      => 2,
+    'start'      => 9,
+    'end'        => 16,
+  ],
+  // block02: Aries (batch 3, CNFTs 0000017–0000024)
+  'block02' => [
+    'collection' => 'Zodiac — Aries (Block 02)',
+    'folder'     => 'scnft_zodiac_aries',
+    'batch'      => 3,
+    'start'      => 17,
+    'end'        => 24,
+  ],
 ];
+
+// Build the full cert map from block definitions
+$map = [];       // cert_id => cnft_slug
+$blockMap = [];  // cert_id => block_key
+foreach ($blocks as $bk => $bdata) {
+  for ($n = $bdata['start']; $n <= $bdata['end']; $n++) {
+    $num = str_pad((string)$n, 7, '0', STR_PAD_LEFT);
+    $certKey = "QDCERT-E101837-{$num}";
+    $map[$certKey] = "qd-silver-{$num}";
+    $blockMap[$certKey] = $bk;
+  }
+}
 
 if (!isset($map[$cert])) {
   http_response_code(404);
@@ -29,34 +57,45 @@ if (!isset($map[$cert])) {
 }
 
 $nftId = $map[$cert];
+$bk = $blockMap[$cert];
+$bdata = $blocks[$bk];
+$cnftNum = substr($cert, -7);
 
-// NOTE: PDFs live OUTSIDE webroot; serve them via /download.php
+// Build response
 $data = [
   "status" => "verified",
   "certId" => $cert,
   "cnft" => [
     "id" => $nftId,
     "barSerial" => "E101837",
-    "collection" => "Founders Prelaunch — Inventors Guild (Block 01)",
-    "image" => "/assets/img/collection/scnft_sp_inventors/{$nftId}.jpg",
+    "collection" => $bdata['collection'],
+    "image" => "/assets/img/collection/{$bdata['folder']}/{$nftId}.jpg",
+    "edition" => "Shard " . (int)$cnftNum . " of 40,000",
+    "silverAllocationTroyOz" => "0.00025",
+  ],
+  "holder" => [
+    "displayName" => "",
+    "privacyEnabled" => true,
+    "walletDisplay" => "—",
   ],
   "custody" => [
-    "vaultRecordId" => "—",
-    "vaultAddress" => "—",
+    "vaultRecordId" => "QD-VLT-E101837-AG-{$cnftNum}",
+    "vaultAddress" => "50 CR 356, Shiner, TX 77984",
+    "statement" => "Custody recorded; verify via QR reference.",
   ],
   "chain" => [
     "network" => "Cardano",
     "txHash" => "—",
+    "contractAddress" => "—",
+    "tokenId" => $nftId,
   ],
   "pdf" => [
     "downloadUrl" => "/download.php?cert=" . rawurlencode($cert),
   ],
   "links" => [
-    "verifyUrl" => "/verify.html?cert=" . rawurlencode($cert),
-    "certUrl" => "/cert.html?cert=" . rawurlencode($cert),
-    "nftUrl" => "/nft.html?nft=" . rawurlencode($nftId) . "&bar=E101837&set=1&batch=2&col=collection-inventors-guild-prelaunch.html&img=assets/img/collection/scnft_sp_inventors/{id}.jpg",
-    "downloadsShared" => "/assets/downloads/block01/QD_InventorsGuild_Block01_Shared_Pack.zip",
-    "downloadsIndividual" => "/assets/downloads/block01/QD_InventorsGuild_Block01_" . rawurlencode($cert) . ".zip",
+    "verifyUrl" => "/verify?cert=" . rawurlencode($cert),
+    "certUrl" => "/cert?cert=" . rawurlencode($cert),
+    "nftUrl" => "/nft?nft=" . rawurlencode($nftId) . "&bar=E101837&set=1&batch={$bdata['batch']}&block={$bk}&img=/assets/img/collection/{$bdata['folder']}/{id}.jpg",
   ],
 ];
 

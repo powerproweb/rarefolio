@@ -11,9 +11,9 @@
   --panel: rgba(255,255,255,.06);
   --panel-2: rgba(255,255,255,.09);
 
-  --text-0: rgba(255,255,255,.92);
-  --text-1: rgba(255,255,255,.76);
-  --text-2: rgba(255,255,255,.58);
+  --text-0: rgba(255,239,163,.92);
+  --text-1: rgba(255,239,163,.76);
+  --text-2: rgba(255,239,163,.58);
 
   --gold: #d9b46c;
   --gold-2:#f0d7a1;
@@ -38,11 +38,11 @@
 /* ***=======@@@@@@@~~~|||||||>>> CUSTOM MISC ELEMENTS <<<|||||||~~~@@@@@@@=======*** */
 	
 .mas_txt_clr {
-	color: #fff4c8 !important;
+	color: #ffefa3 !important;
 	font-weight: 100 !important;	}
 	
 .mas_txt_clr_100 {
-	color: #fff4c8 !important;
+	color: #ffefa3 !important;
 	font-weight: 100 !important;	}
 	
 .mas_txt_clr_t_100 {
@@ -429,7 +429,7 @@ hr.sep{
   letter-spacing: .3px;
 }
 .lead{
-  color: #fff4c8; /* color: var(--text-1); */
+  color: #ffefa3; /* color: var(--text-1); */
   max-width: 90%;
   line-height:1.6;
   margin: 0 0 16px;
@@ -461,7 +461,7 @@ hr.sep{
 .section-title-zodiac h1{ 
 	margin:0; 
 	font-size: 28px; 
-	color: #fff4c8 !important; /* added */
+	color: #ffefa3 !important; /* added */
 	letter-spacing:.3px; }
 
 .section{ padding: 22px 0 44px; }
@@ -472,9 +472,9 @@ hr.sep{
   gap: 14px;
   margin: 10px 0 18px;
 }
-.section-title h1{ margin:0; font-size: 28px; color: #fff4c8 !important; /* added */ letter-spacing:.3px; }
-.section-title h2{ margin:0; font-size: 20px; color: #fff4c8 !important; /* added */ letter-spacing:.3px; }
-.section-title p{ margin:0; color: #fff4c8 !important; /* added  color: var(--text-2); */ font-size: 13px; }
+.section-title h1{ margin:0; font-size: 28px; color: #ffefa3 !important; /* added */ letter-spacing:.3px; }
+.section-title h2{ margin:0; font-size: 20px; color: #ffefa3 !important; /* added */ letter-spacing:.3px; }
+.section-title p{ margin:0; color: #ffefa3 !important; /* added  color: var(--text-2); */ font-size: 13px; }
 
 .panel{
   border-radius: var(--radius-xl);

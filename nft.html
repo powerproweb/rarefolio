@@ -47,10 +47,10 @@
 <meta name="twitter:image" content="https://rarefolio.io/assets/img/header/silver_bar_header_2400x1200_01.jpg" />
 
 <!-- Optional performance hints (safe; keep or remove) -->
-<link rel="preload" as="style" href="/assets/css/styles.css" />
-<link rel="stylesheet" href="/assets/css/styles.css" />
-<link rel="preload" as="style" href="/assets/css/custom.css" />
-<link rel="stylesheet" href="/assets/css/custom.css" />
+<link rel="preload" as="style" href="/assets/css/styles.css?v=20260412" />
+<link rel="stylesheet" href="/assets/css/styles.css?v=20260412" />
+<link rel="preload" as="style" href="/assets/css/custom.css?v=20260412" />
+<link rel="stylesheet" href="/assets/css/custom.css?v=20260412" />
 
 <!-- Structured Data (Organization) -->
 <script type="application/ld+json">
@@ -205,10 +205,17 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 
         <hr class="sep" />
 
-        <div class="controls" style="justify-content:flex-start; gap:10px;">
-          <a id="qd-back" class="btn" href="collection-silverbar-01.html?batch=1">← Back to Collection</a>
-          <a class="btn primary" href="collections.html">All Collections</a>
-        </div>
+          <div class="controls" style="justify-content:flex-start; gap:10px; flex-wrap:wrap;">
+            <a id="qd-back" class="btn" href="collection-silverbar-01.html?batch=1">← Back to Collection</a>
+            <a id="qd-purchase" class="btn primary" href="contact.html" style="background:linear-gradient(135deg,#d4a017,#f0c040);color:#1a1208;">Purchase</a>
+            <a class="btn" href="collections.html">All Collections</a>
+          </div>
+
+          <div class="controls" style="justify-content:flex-start; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <a id="qd-cert-link" class="btn" href="#" style="display:none;">View Certificate</a>
+            <a id="qd-verify-link" class="btn" href="#" style="display:none;">Verify</a>
+            <a id="qd-download-link" class="btn" href="#" style="display:none;" target="_blank" rel="noopener">Download PDF</a>
+          </div>
 
         <hr class="sep" />
 
@@ -239,9 +246,9 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 
 <div class="backtotop"><a href="#top" aria-label="Back to top">Back to top</a></div>
 
-<script src="/assets/js/main.js"></script>
+<script src="/assets/js/main.js?v=20260412"></script>
 
 <!-- Image + detail rendering handled entirely by qd-wire.js (resolves {id} templates, block routing, fallbacks) -->
-<script src="/assets/js/qd-wire.js"></script>
+<script src="/assets/js/qd-wire.js?v=20260412"></script>
 </body>
 </html>

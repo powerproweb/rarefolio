@@ -70,6 +70,61 @@
     block14: { folder: 'scnft_new_series',         label: 'New Series',            story_mode: 'shared',   shared_story: '/assets/stories/block14/shared.html' },
   };
 
+  /* ---- Block slug map (block_id → URL slug for clean URLs) ---- */
+  const BLOCK_SLUGS = {
+    block00: 'taurus',      block01: 'inventors',     block02: 'aries',
+    block03: 'robot-butler', block04: 'gemini',       block05: 'cancer',
+    block06: 'leo',          block07: 'virgo',        block08: 'libra',
+    block09: 'scorpio',      block10: 'sagittarius',  block11: 'capricorn',
+    block12: 'aquarius',     block13: 'pisces',       block14: 'new-series',
+  };
+
+  function slugForBlock(blockMeta) {
+    if (!blockMeta) return '';
+    // Static blocks: use the lookup
+    if (BLOCK_SLUGS[blockMeta.block_id]) return BLOCK_SLUGS[blockMeta.block_id];
+    // DB blocks: derive from folder_slug (e.g. 'scnft_zodiac_gemini' → 'gemini')
+    if (blockMeta.folder) {
+      const parts = blockMeta.folder.split('_');
+      return parts[parts.length - 1] || blockMeta.block_id;
+    }
+    return blockMeta.block_id;
+  }
+
+  /** Update page title, heading, and body data-* attrs when block changes. */
+  function updatePageMeta(runtimeCfg, blockMeta, batchNum) {
+    if (!blockMeta) return;
+    const barNum = getStrAttr(document.body, 'data-bar-num', '01');
+    const label = blockMeta.label || '';
+    const collTitle = `Bar ${barNum} \u2022 ${label}`;
+
+    // Update <title>
+    document.title = `Silver Bar ${barNum} | ${label} | Tokenized Silver Bar CNFTs | Rarefolio.io`;
+
+    // Update heading
+    const heading = document.getElementById('qd-collection-heading');
+    if (heading) heading.textContent = collTitle;
+
+    // Update body data attributes
+    const body = document.body;
+    body.dataset.blockId = blockMeta.block_id;
+    body.dataset.storyMode = blockMeta.story_mode || 'shared';
+    body.dataset.collectionTitle = collTitle;
+    if (blockMeta.shared_story) body.dataset.storySrc = blockMeta.shared_story;
+
+    // Update URL via pushState (no reload)
+    const slug = slugForBlock(blockMeta);
+    if (slug) {
+      const newPath = `/collection/silverbar-${barNum}/${slug}`;
+      const sp = new URLSearchParams();
+      sp.set('batch', String(batchNum));
+      const newUrl = `${newPath}?${sp.toString()}`;
+      if (location.pathname + location.search !== newUrl) {
+        history.pushState({ batch: batchNum, block: blockMeta.block_id }, '', newUrl);
+      }
+    }
+  }
+
   function blockIdForBatch(batchNum) {
     const b = Number(batchNum);
     if (!Number.isFinite(b)) return null;
@@ -255,7 +310,7 @@
     merged.imageBatchMap = safeJsonParse(getStrAttr(body, 'data-image-batch-map', ''), null);
     merged.imageBatchRules = safeJsonParse(getStrAttr(body, 'data-image-batch-rules', ''), null);
 
-    // Optional: series routing by batch (redirect to the appropriate collection page)
+    // Series batch rules (legacy — kept for backward compat but no longer triggers redirects)
     merged.seriesBatchRules = safeJsonParse(getStrAttr(body, 'data-series-batch-rules', ''), null);
 
     // NEW: block routing
@@ -443,9 +498,22 @@
       sp.set('bar', runtimeCfg.serial);
       sp.set('set', String(runtimeCfg.set));
       sp.set('batch', String(batchNum));
-      sp.set('col', colPage);
 
+      // Build col param using clean URL if on the PHP template, else use current page
+      const barNum = getStrAttr(document.body, 'data-bar-num', '');
       const blockId = resolveBlockId(runtimeCfg, batchNum);
+      if (barNum && blockId) {
+        const bSlug = BLOCK_SLUGS[blockId] || '';
+        if (bSlug) {
+          sp.set('col', `/collection/silverbar-${barNum}/${bSlug}`);
+          sp.set('barnum', barNum);
+        } else {
+          sp.set('col', colPage);
+        }
+      } else {
+        sp.set('col', colPage);
+      }
+
       if (blockId) sp.set('block', blockId);
       if (itemIndex) sp.set('item', String(itemIndex));
 
@@ -454,7 +522,7 @@
 
       if (runtimeCfg._sourceConfigUrl) sp.set('cfg', runtimeCfg._sourceConfigUrl);
 
-      return `nft.html?${sp.toString()}`;
+      return `/nft?${sp.toString()}`;
     };
 
     /* ---- Windowed batch pill navigator ---- */
@@ -553,7 +621,7 @@
               <p class="cnft-desc">Collector-grade artifact render (config-driven). Replace with traits, lore, marketplace links when ready.</p>
               <div class="cnft-actions">
                 <a class="btn primary" href="${viewLink}">View</a>
-                <a class="btn" href="#">Marketplace</a>
+                <a class="btn" href="contact.html">Purchase</a>
               </div>
             </div>
           </article>
@@ -571,10 +639,16 @@
       // ---- Story loading for collection grid ----
       const storyHost = document.getElementById('qd-story');
       if (storyHost) {
-        const storySrc = blockMeta ? storyUrlForBlock(blockMeta, 0) : '';
+        // For per_item blocks, default to item 1; for shared blocks, use 0 (shared)
+        const defaultItem = (blockMeta?.story_mode === 'per_item') ? 1 : 0;
+        const storySrc = blockMeta ? storyUrlForBlock(blockMeta, defaultItem) : '';
         if (storySrc) {
           document.body.dataset.storySrc = storySrc;
-          delete document.body.dataset.storyItem; // shared story, no per-item extraction
+          if (defaultItem > 0) {
+            document.body.dataset.storyItem = String(defaultItem);
+          } else {
+            delete document.body.dataset.storyItem;
+          }
           if (window.__QD?.loadStory) window.__QD.loadStory();
         } else {
           delete document.body.dataset.storySrc;
@@ -587,17 +661,15 @@
     const go = async (batchNum) => {
       const b = Math.min(Math.max(batchNum, 1), TOTAL_BATCHES);
 
-      // If this batch belongs to a different series page, redirect.
-      const targetPage = pageForBatch(runtimeCfg, b);
-      if (targetPage && targetPage !== colPage) {
-        const sp = new URLSearchParams(location.search);
-        sp.set('batch', String(b));
-        sp.delete('set');
-        location.href = `${targetPage}?${sp.toString()}`;
-        return;
+      // Resolve block for the target batch and update page metadata in-place
+      const targetMeta = await getBlockMeta(runtimeCfg, b);
+      if (targetMeta) {
+        updatePageMeta(runtimeCfg, targetMeta, b);
+      } else {
+        // No block meta — just update the batch in the URL
+        setUrlBatch(b);
       }
 
-      setUrlBatch(b);
       await renderBatch(b);
     };
 
@@ -714,10 +786,42 @@
       // no-op
     }
 
-    // Backlink
+    // Certificate links
+    const certLinkEl = document.getElementById('qd-cert-link');
+    const verifyLinkEl = document.getElementById('qd-verify-link');
+    const downloadLinkEl = document.getElementById('qd-download-link');
+    const cnftNum = nft.match(/(\d{7})$/);
+    if (cnftNum) {
+      const certId = `QDCERT-${bar}-${cnftNum[1]}`;
+      if (certLinkEl) {
+        certLinkEl.href = `/cert?cert=${encodeURIComponent(certId)}`;
+        certLinkEl.style.display = '';
+      }
+      if (verifyLinkEl) {
+        verifyLinkEl.href = `/verify?cert=${encodeURIComponent(certId)}`;
+        verifyLinkEl.style.display = '';
+      }
+      if (downloadLinkEl) {
+        downloadLinkEl.href = `/download.php?cert=${encodeURIComponent(certId)}`;
+        downloadLinkEl.style.display = '';
+      }
+    }
+
+    // Backlink (supports both new clean URLs and legacy col= param)
     if (backEl) {
-      const colPage = sp.get('col') || 'collection-silverbar-01.html';
-      backEl.href = `${colPage}?batch=${encodeURIComponent(String(batch))}`;
+      const colParam = sp.get('col') || '';
+      if (colParam.startsWith('/collection/')) {
+        backEl.href = `${colParam}?batch=${encodeURIComponent(String(batch))}`;
+      } else if (blockMeta) {
+        const barNum = sp.get('barnum') || '01';
+        const bSlug = slugForBlock(blockMeta);
+        backEl.href = bSlug
+          ? `/collection/silverbar-${barNum}/${bSlug}?batch=${encodeURIComponent(String(batch))}`
+          : `/collection-silverbar-01?batch=${encodeURIComponent(String(batch))}`;
+      } else {
+        const fallback = colParam || 'collection-silverbar-01';
+        backEl.href = `${fallback}?batch=${encodeURIComponent(String(batch))}`;
+      }
     }
   }
 
