@@ -139,10 +139,13 @@ foreach ($blocks as $b) {
       $itemsHtml = file_get_contents($itemsPath);
       if ($itemsHtml !== false && trim($itemsHtml) !== '') {
         // Wrap in a root element so DOMDocument parses it as a fragment.
+        // IMPORTANT: prepend <?xml encoding="UTF-8"> so libxml treats the input
+        // as UTF-8, not Latin-1. Without this, multi-byte characters like — and ·
+        // are mangled into mojibake (e.g. â€” and Â·) before being stored in the DB.
         $dom = new DOMDocument('1.0', 'utf-8');
         libxml_use_internal_errors(true);
         $dom->loadHTML(
-          '<!DOCTYPE html><html><body>' . $itemsHtml . '</body></html>',
+          '<?xml encoding="UTF-8"><!DOCTYPE html><html><body>' . $itemsHtml . '</body></html>',
           LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
         libxml_clear_errors();
