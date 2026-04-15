@@ -356,7 +356,7 @@
       host.innerHTML = '<p class="muted small" style="margin:0;">Loading story…</p>';
     }
 
-    fetch(src, { cache: "force-cache" })
+    fetch(src, { cache: "default" })
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
         return r.text();
