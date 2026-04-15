@@ -27,8 +27,9 @@ ErrorDocument 403 /404.html
   RewriteCond %{HTTP_HOST} ^www\.rarefolio\.io$ [NC]
   RewriteRule ^(.*)$ https://rarefolio.io/$1 [L,R=301]
 
-  # --- Redirect /collections and /collections/ to collections.html (directory shadows .html rule) ---
-  RewriteRule ^collections/?$ collections.html [L]
+  # --- collections hub: redirect trailing slash, then internally serve collections.html ---
+  RewriteRule ^collections/$ /collections [R=301,L]
+  RewriteRule ^collections$ collections.html [L]
 
   # --- Collection block router (scalable sub-pages via single PHP template) ---
   # /collection/silverbar-01/aquarius?batch=13 -> collections/block.php?bar=01&block=aquarius&batch=13
