@@ -113,9 +113,12 @@ $slugE       = htmlspecialchars($slug, ENT_QUOTES, 'UTF-8');
 $pageTitle   = "Silver Bar {$barNum} | {$label} | Tokenized Silver Bar CNFTs | Rarefolio.io";
 $collTitle   = "Bar {$barNum} • {$label}";
 $canonicalUrl= "https://rarefolio.io/collection/silverbar-{$barNum}/{$slugE}?batch={$batchParam}";
-$storySrc    = "/assets/stories/{$blockId}/shared.html";
 
-$cssVersion  = '20260414';
+// DB-format block_id for story API (e.g. E101837-block0001)
+$dbBlockId   = $barSerial . '-block' . str_pad((string)$block['batch'], 4, '0', STR_PAD_LEFT);
+$storySrc    = '/api/blocks/story.php?block=' . urlencode($dbBlockId) . '&item=0';
+
+$cssVersion  = '20260415';
 ?>
 <!doctype html>
 <html lang="en">
