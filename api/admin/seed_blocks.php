@@ -117,6 +117,8 @@ foreach ($blocks as $b) {
   }
 
   // Load per-item stories (1-8)
+  // First try individual N.html files; if none exist, fall back to items.html parser.
+  $perItemFound = 0;
   for ($i = 1; $i <= 8; $i++) {
     $itemPath = $storyBase . DIRECTORY_SEPARATOR . $staticDir . DIRECTORY_SEPARATOR . $i . '.html';
     if (file_exists($itemPath)) {
@@ -124,6 +126,41 @@ foreach ($blocks as $b) {
       if ($html !== false && trim($html) !== '') {
         $storyStmt->execute([$blockId, $i, $html]);
         $entry['stories'][] = $i;
+        $perItemFound++;
+      }
+    }
+  }
+
+  // Fallback: parse items.html if no individual files were found.
+  // items.html contains all per-item articles as <article data-item="N">...</article>.
+  if ($perItemFound === 0) {
+    $itemsPath = $storyBase . DIRECTORY_SEPARATOR . $staticDir . DIRECTORY_SEPARATOR . 'items.html';
+    if (file_exists($itemsPath)) {
+      $itemsHtml = file_get_contents($itemsPath);
+      if ($itemsHtml !== false && trim($itemsHtml) !== '') {
+        // Wrap in a root element so DOMDocument parses it as a fragment.
+        $dom = new DOMDocument('1.0', 'utf-8');
+        libxml_use_internal_errors(true);
+        $dom->loadHTML(
+          '<!DOCTYPE html><html><body>' . $itemsHtml . '</body></html>',
+          LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
+        libxml_clear_errors();
+
+        $xpath    = new DOMXPath($dom);
+        $articles = $xpath->query('//article[@data-item]');
+
+        foreach ($articles as $article) {
+          $itemNum = filter_var($article->getAttribute('data-item'), FILTER_VALIDATE_INT);
+          if ($itemNum === false || $itemNum < 1 || $itemNum > 8) continue;
+
+          // Serialize the article node back to HTML.
+          $articleHtml = $dom->saveHTML($article);
+          if ($articleHtml === false || trim($articleHtml) === '') continue;
+
+          $storyStmt->execute([$blockId, $itemNum, trim($articleHtml)]);
+          $entry['stories'][] = $itemNum;
+        }
       }
     }
   }

@@ -53,21 +53,21 @@
      via the API (/api/blocks/resolve.php). This map is the instant offline fallback.
   */
   const QD_BLOCKS = {
-    block00: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac — Taurus',       story_mode: 'shared',   shared_story: '/assets/stories/block00/shared.html' },
-    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors', story_mode: 'per_item',   shared_story: '/assets/stories/block01/shared.html' },
-    block02: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',        story_mode: 'shared', shared_story: '/assets/stories/block02/shared.html' },
-    block03: { folder: 'scnft_sp_robot_butler',    label: 'Steampunk — Robot Butler', story_mode: 'per_item', shared_story: '/assets/stories/block03/shared.html' },
-    block04: { folder: 'scnft_zodiac_gemini',      label: 'Zodiac — Gemini',       story_mode: 'shared',   shared_story: '/assets/stories/block04/shared.html' },
-    block05: { folder: 'scnft_zodiac_cancer',      label: 'Zodiac — Cancer',       story_mode: 'shared',   shared_story: '/assets/stories/block05/shared.html' },
-    block06: { folder: 'scnft_zodiac_leo',         label: 'Zodiac — Leo',          story_mode: 'shared',   shared_story: '/assets/stories/block06/shared.html' },
-    block07: { folder: 'scnft_zodiac_virgo',       label: 'Zodiac — Virgo',        story_mode: 'shared',   shared_story: '/assets/stories/block07/shared.html' },
-    block08: { folder: 'scnft_zodiac_libra',       label: 'Zodiac — Libra',        story_mode: 'shared',   shared_story: '/assets/stories/block08/shared.html' },
-    block09: { folder: 'scnft_zodiac_scorpio',     label: 'Zodiac — Scorpio',      story_mode: 'shared',   shared_story: '/assets/stories/block09/shared.html' },
-    block10: { folder: 'scnft_zodiac_sagittarius', label: 'Zodiac — Sagittarius',  story_mode: 'shared',   shared_story: '/assets/stories/block10/shared.html' },
-    block11: { folder: 'scnft_zodiac_capricorn',   label: 'Zodiac — Capricorn',    story_mode: 'shared',   shared_story: '/assets/stories/block11/shared.html' },
-    block12: { folder: 'scnft_zodiac_aquarius',    label: 'Zodiac — Aquarius',     story_mode: 'shared',   shared_story: '/assets/stories/block12/shared.html' },
-    block13: { folder: 'scnft_zodiac_pisces',      label: 'Zodiac — Pisces',       story_mode: 'shared',   shared_story: '/assets/stories/block13/shared.html' },
-    block14: { folder: 'scnft_new_series',         label: 'New Series',            story_mode: 'shared',   shared_story: '/assets/stories/block14/shared.html' },
+    block00: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac — Taurus',          story_mode: 'shared'   },
+    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors',    story_mode: 'per_item' },
+    block02: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',           story_mode: 'shared'   },
+    block03: { folder: 'scnft_sp_robot_butler',    label: 'Steampunk — Robot Butler', story_mode: 'per_item' },
+    block04: { folder: 'scnft_zodiac_gemini',      label: 'Zodiac — Gemini',          story_mode: 'shared'   },
+    block05: { folder: 'scnft_zodiac_cancer',      label: 'Zodiac — Cancer',          story_mode: 'shared'   },
+    block06: { folder: 'scnft_zodiac_leo',         label: 'Zodiac — Leo',             story_mode: 'shared'   },
+    block07: { folder: 'scnft_zodiac_virgo',       label: 'Zodiac — Virgo',           story_mode: 'shared'   },
+    block08: { folder: 'scnft_zodiac_libra',       label: 'Zodiac — Libra',           story_mode: 'shared'   },
+    block09: { folder: 'scnft_zodiac_scorpio',     label: 'Zodiac — Scorpio',         story_mode: 'shared'   },
+    block10: { folder: 'scnft_zodiac_sagittarius', label: 'Zodiac — Sagittarius',     story_mode: 'shared'   },
+    block11: { folder: 'scnft_zodiac_capricorn',   label: 'Zodiac — Capricorn',       story_mode: 'shared'   },
+    block12: { folder: 'scnft_zodiac_aquarius',    label: 'Zodiac — Aquarius',        story_mode: 'shared'   },
+    block13: { folder: 'scnft_zodiac_pisces',      label: 'Zodiac — Pisces',          story_mode: 'shared'   },
+    block14: { folder: 'scnft_new_series',         label: 'New Series',               story_mode: 'shared'   },
   };
 
   /* ---- Block slug map (block_id → URL slug for clean URLs) ---- */
@@ -110,7 +110,6 @@
     body.dataset.blockId = blockMeta.block_id;
     body.dataset.storyMode = blockMeta.story_mode || 'shared';
     body.dataset.collectionTitle = collTitle;
-    if (blockMeta.shared_story) body.dataset.storySrc = blockMeta.shared_story;
 
     // Update URL via pushState (no reload)
     const slug = slugForBlock(blockMeta);
@@ -189,7 +188,7 @@
    *   2) Batch rules (static)
    *   3) Static QD_BLOCKS (Bar I batches 1-15)
    *   4) API /api/blocks/resolve.php (all bars, all batches)
-   * Returns normalized meta: { block_id, folder, label, story_mode, _source, shared_story? }
+   * Returns normalized meta: { block_id, folder, label, story_mode, _source }
    */
   async function getBlockMeta(runtimeCfg, batchNum) {
     if (!batchNum) return null;
@@ -197,7 +196,7 @@
     // 1) Page-level override
     if (runtimeCfg.blockId && QD_BLOCKS[runtimeCfg.blockId]) {
       const s = QD_BLOCKS[runtimeCfg.blockId];
-      return { block_id: runtimeCfg.blockId, folder: s.folder, label: s.label, story_mode: s.story_mode, shared_story: s.shared_story, _source: 'static' };
+      return { block_id: runtimeCfg.blockId, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
     }
 
     // 2) Batch rules
@@ -206,7 +205,7 @@
         const from = Number(r.from), to = Number(r.to), block = String(r.block || '');
         if (QD_BLOCKS[block] && Number.isFinite(from) && Number.isFinite(to) && batchNum >= from && batchNum <= to) {
           const s = QD_BLOCKS[block];
-          return { block_id: block, folder: s.folder, label: s.label, story_mode: s.story_mode, shared_story: s.shared_story, _source: 'static' };
+          return { block_id: block, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
         }
       }
     }
@@ -215,7 +214,7 @@
     const staticId = blockIdForBatch(batchNum);
     if (staticId && QD_BLOCKS[staticId]) {
       const s = QD_BLOCKS[staticId];
-      return { block_id: staticId, folder: s.folder, label: s.label, story_mode: s.story_mode, shared_story: s.shared_story, _source: 'static' };
+      return { block_id: staticId, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
     }
 
     // 4) API
@@ -225,16 +224,9 @@
   /** Build the story URL for a resolved block meta. */
   function storyUrlForBlock(meta, itemNum) {
     if (!meta) return '';
-    if (meta._source === 'api') {
-      // DB-driven: use the story API (server extracts per-item)
-      const item = (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) ? itemNum : 0;
-      return `/api/blocks/story.php?block=${encodeURIComponent(meta.block_id)}&item=${item}`;
-    }
-    // Static: single items.html contains all 8 per-item stories (extracted client-side)
-    if (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) {
-      return `/assets/stories/${meta.block_id}/items.html`;
-    }
-    return meta.shared_story || `/assets/stories/${meta.block_id}/shared.html`;
+    // All stories (static blocks 00-14 and DB blocks 15+) are served via the API.
+    const item = (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) ? itemNum : 0;
+    return `/api/blocks/story.php?block=${encodeURIComponent(meta.block_id)}&item=${item}`;
   }
 
   async function loadConfigIfPresent(body) {
@@ -763,17 +755,6 @@
 
       if (!storySrc && blockMeta) {
         storySrc = storyUrlForBlock(blockMeta, item || 0);
-      }
-
-      // For static blocks: preflight check + fallback chain
-      if (storySrc && blockMeta?._source === 'static') {
-        try {
-          const r = await fetch(storySrc, { cache: 'no-store' });
-          if (!r.ok) throw new Error(String(r.status));
-        } catch {
-          // Fall back to shared story
-          storySrc = storyUrlForBlock(blockMeta, 0);
-        }
       }
 
       if (storySrc) {

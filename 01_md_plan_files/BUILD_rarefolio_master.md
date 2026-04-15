@@ -2,6 +2,32 @@
 **Master build log for rarefolio.io — newest plans go at the top.**
 
 ---
+## 2026-04-15 — Static-to-DB Story Migration
+
+### What Changed
+All 15 static story files in `assets/stories/block00`–`block14` are now migrated into the `qd_stories` DB table. Stories for all blocks (00–5,000+) are served exclusively via `/api/blocks/story.php`.
+
+### Files Modified
+- `assets/js/qd-wire.js`
+  - `QD_BLOCKS` entries: removed `shared_story` property from all 15 entries
+  - `getBlockMeta()`: removed `shared_story` from returned meta objects
+  - `updatePageMeta()`: removed `shared_story`-based `storySrc` assignment
+  - `storyUrlForBlock()`: removed `_source === 'api'` gate — always builds `/api/blocks/story.php` URL
+  - `renderNftDetail()`: removed static-only preflight fetch block
+- `api/admin/seed_blocks.php`: added `items.html` fallback parser using `DOMDocument` + `DOMXPath` to extract `<article data-item="N">` elements and seed each as a separate `item_num` row in `qd_stories`
+
+### Deploy Steps (run once on server)
+1. FTP upload `assets/js/qd-wire.js` and `api/admin/seed_blocks.php`
+2. Hit `https://rarefolio.io/api/admin/seed_blocks.php` (Basic Auth) — idempotent, safe to re-run
+3. Smoke test: `story.php?block=E101837-block0000&item=0` (Taurus shared) and `story.php?block=E101837-block0001&item=1` (Inventors per-item)
+4. After confirming stories load, delete `assets/stories/block00`–`block14` from server and local repo
+
+### Architecture After Migration
+- `QD_BLOCKS` in `qd-wire.js` remains as a **fast block metadata cache** (folder slugs, labels, story modes) for Bar I batches 1–15 — no static file paths
+- All stories (blocks 00–5,000+, all bars) served from `qd_stories` via `story.php`
+- `assets/stories/` directory to be deleted post-verification
+
+---
 What's left is all deploy + manual testing (Day 2):
 
 1. Run 3 SQL schemas in BlueHost phpMyAdmin — CERT_DB_SCHEMA.sql, BLOCKS_DB_SCHEMA.sql, ARTIST_APP_DB_SCHEMA.sql
