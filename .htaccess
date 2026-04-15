@@ -1,4 +1,4 @@
-# <<<|||\\\---*** This is in the root https://rarefolio.io/ Rarefolio.io site ***---///|||>>>
+﻿# <<<|||\\\---*** This is in the root https://rarefolio.io/ Rarefolio.io site ***---///|||>>>
 # Last updated: 2026-03-11
 # Backup of previous version: .htaccess.old1
 
@@ -28,7 +28,7 @@ ErrorDocument 403 /404.html
   RewriteRule ^(.*)$ https://rarefolio.io/$1 [L,R=301]
 
   # --- Redirect /collections and /collections/ to collections.html (directory shadows .html rule) ---
-  RewriteRule ^collections/?$ /collections.html [R=301,L]
+  RewriteRule ^collections/?$ collections.html [L]
 
   # --- Collection block router (scalable sub-pages via single PHP template) ---
   # /collection/silverbar-01/aquarius?batch=13 -> collections/block.php?bar=01&block=aquarius&batch=13
