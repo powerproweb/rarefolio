@@ -72,9 +72,7 @@ MySQL (`rarefolio_cnftcert`), three tables:
 **Block ID format**: `{barSerial}-block{NNNN}` (e.g., `E101837-block0042`). Globally unique across all bars.
 
 **Story resolution** (`storyUrlForBlock()` in qd-wire.js):
-- API-sourced blocks → `/api/blocks/story.php?block=X&item=Y` (DB-driven, server extracts per-item)
-- Static shared blocks → `/assets/stories/blockNN/shared.html`
-- Static per-item blocks → `/assets/stories/blockNN/items.html` (single file, all 8 articles with `data-item="1"`–`"8"` attributes; client-side `DOMParser` extracts the matching article via `data-story-item` on `<body>`)
+All stories (blocks 00–5,000+, all bars) are served exclusively via `/api/blocks/story.php`. The static `assets/stories/` folder has been deleted. `QD_BLOCKS` in `qd-wire.js` is a fast metadata cache (folder slug, label, story mode) — it no longer holds story file paths. Each static block's DB-format block ID is computed via `story_block_id` (e.g., `block00` → `E101837-block0001`) before calling the story API.
 **Per-item
 ```
 <article data-item="1">...story for item 1...</article>
@@ -110,6 +108,24 @@ All certificate and vault IDs follow deterministic patterns:
 - No build step — deploy by uploading files directly
 - Dompdf is vendored in `dompdf/` (loaded via `dompdf/autoload.inc.php`)
 
+### CRITICAL: Editing .htaccess on Windows
+
+**NEVER use PowerShell `Set-Content` or `[System.Text.Encoding]::UTF8` to write `.htaccess`.** Both add a UTF-8 BOM (`EF BB BF`) or write UTF-16 LE. Apache on Linux cannot parse a BOM-prefixed `.htaccess` — it silently breaks ALL requests site-wide with 500 errors, including the ErrorDocument handler itself.
+
+**Always use `[System.Text.Encoding]::UTF8` is wrong. The correct pattern is:**
+```powershell
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+$content = [System.IO.File]::ReadAllText($path, $utf8NoBom)
+# ... make changes to $content ...
+[System.IO.File]::WriteAllText($path, $content, $utf8NoBom)
+```
+**Always verify after writing:**
+```powershell
+$bytes = [System.IO.File]::ReadAllBytes($path)
+"First byte: $($bytes[0])"  # Must be 35 (#), never 239 (BOM)
+```
+If the first byte is 239 (0xEF), the file has a BOM and will break Apache. Rewrite immediately.
+
 ## Conventions
 
 - All JS is vanilla ES6+, wrapped in IIFEs — no modules, no bundler, no npm
@@ -117,6 +133,7 @@ All certificate and vault IDs follow deterministic patterns:
 - Image fallback chain: clean folder path → prefixed folder path (`01_scnft_...`) → placeholder image, handled via `onerror` on `<img>` tags
 - Dark theme (navy base `#050a18`, gold `#d9b46c`, maroon `#7a1f2a`, lavender `#b9a7ff`) defined in CSS custom properties in `assets/css/styles.css`
 - Nav/header/footer markup is duplicated across all HTML files (no includes or templating)
+- **All `href` values in HTML files must use absolute paths (leading `/`).** Never use relative paths like `href="collections.html"` — use `href="/collections.html"`. Relative links break when pages are served via `.htaccess` rewrites at non-root URLs (e.g., `/collections/` trailing slash). The regex to bulk-fix: `href="(?!https?://|/|#|mailto:)([^"]+)"` → `href="/$1"` applied with `[System.IO.File]` and `UTF8Encoding($false)`.
 - The `window.__QD` namespace is used for cross-script communication (tilt rebinding, story loading)
 
 ## Important Notes
