@@ -193,10 +193,17 @@
   async function getBlockMeta(runtimeCfg, batchNum) {
     if (!batchNum) return null;
 
+    // Helper: build the DB-format block_id (e.g. 'E101837-block0001') from a
+    // 0-indexed static key (e.g. 'block00') and the bar serial.
+    const dbBlockId = (staticKey, serial) => {
+      const idx = parseInt(String(staticKey).replace('block', ''), 10);
+      return `${serial}-block${String(idx + 1).padStart(4, '0')}`;
+    };
+
     // 1) Page-level override
     if (runtimeCfg.blockId && QD_BLOCKS[runtimeCfg.blockId]) {
       const s = QD_BLOCKS[runtimeCfg.blockId];
-      return { block_id: runtimeCfg.blockId, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
+      return { block_id: runtimeCfg.blockId, story_block_id: dbBlockId(runtimeCfg.blockId, runtimeCfg.serial), folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
     }
 
     // 2) Batch rules
@@ -205,7 +212,7 @@
         const from = Number(r.from), to = Number(r.to), block = String(r.block || '');
         if (QD_BLOCKS[block] && Number.isFinite(from) && Number.isFinite(to) && batchNum >= from && batchNum <= to) {
           const s = QD_BLOCKS[block];
-          return { block_id: block, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
+          return { block_id: block, story_block_id: `${runtimeCfg.serial}-block${String(batchNum).padStart(4, '0')}`, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
         }
       }
     }
@@ -214,7 +221,7 @@
     const staticId = blockIdForBatch(batchNum);
     if (staticId && QD_BLOCKS[staticId]) {
       const s = QD_BLOCKS[staticId];
-      return { block_id: staticId, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
+      return { block_id: staticId, story_block_id: `${runtimeCfg.serial}-block${String(batchNum).padStart(4, '0')}`, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
     }
 
     // 4) API
@@ -224,9 +231,12 @@
   /** Build the story URL for a resolved block meta. */
   function storyUrlForBlock(meta, itemNum) {
     if (!meta) return '';
-    // All stories (static blocks 00-14 and DB blocks 15+) are served via the API.
+    // All stories served via the API.
+    // story_block_id holds the DB-format ID (e.g. 'E101837-block0001') for static blocks;
+    // API blocks already use the full ID in block_id.
+    const blockId = meta.story_block_id || meta.block_id;
     const item = (meta.story_mode === 'per_item' && itemNum >= 1 && itemNum <= 8) ? itemNum : 0;
-    return `/api/blocks/story.php?block=${encodeURIComponent(meta.block_id)}&item=${item}`;
+    return `/api/blocks/story.php?block=${encodeURIComponent(blockId)}&item=${item}`;
   }
 
   async function loadConfigIfPresent(body) {
