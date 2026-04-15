@@ -98,6 +98,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Register a new block
+    if ($action === 'register_block') {
+        $barSerial  = trim((string)($in['barSerial']  ?? ''));
+        $batchNum   = isset($in['batchNum']) ? (int)$in['batchNum'] : 0;
+        $folderSlug = trim((string)($in['folderSlug'] ?? ''));
+        $label      = trim((string)($in['label']      ?? ''));
+        $storyMode  = trim((string)($in['storyMode']  ?? 'shared'));
+
+        if (!$barSerial)  { echo json_encode(['error' => 'Missing barSerial']);  exit; }
+        if ($batchNum < 1){ echo json_encode(['error' => 'Invalid batchNum']);   exit; }
+        if (!$folderSlug) { echo json_encode(['error' => 'Missing folderSlug']); exit; }
+        if (!$label)      { echo json_encode(['error' => 'Missing label']);      exit; }
+        if (!in_array($storyMode, ['shared', 'per_item'], true)) {
+            echo json_encode(['error' => 'storyMode must be shared or per_item']); exit;
+        }
+
+        $blockId = $barSerial . '-block' . str_pad((string)$batchNum, 4, '0', STR_PAD_LEFT);
+        try {
+            $pdo = qd_pdo();
+            $sql = 'INSERT INTO qd_blocks (block_id, bar_serial, batch_num, folder_slug, label, story_mode)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE
+                      folder_slug = VALUES(folder_slug),
+                      label       = VALUES(label),
+                      story_mode  = VALUES(story_mode),
+                      updated_at  = CURRENT_TIMESTAMP';
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$blockId, $barSerial, $batchNum, $folderSlug, $label, $storyMode]);
+            echo json_encode([
+                'ok'       => true,
+                'block_id' => $blockId,
+                'mode'     => $stmt->rowCount() === 1 ? 'created' : 'updated',
+            ]);
+        } catch (Throwable $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        exit;
+    }
+
     echo json_encode(['error' => 'Unknown action']);
     exit;
 }
@@ -121,28 +160,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif;
-       font-size: 14px; min-height: 100vh; padding: 28px 24px; }
+       font-size: 14px; min-height: 100vh; padding: 20px 24px; }
 
-h1 { color: var(--gold); font-size: 22px; font-weight: 700; margin-bottom: 6px; letter-spacing: -.01em; }
-.subtitle { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+h1 { color: var(--gold); font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.topbar { display: flex; align-items: center; justify-content: space-between;
+          flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
 
 .section-label { color: var(--muted); font-size: 11px; text-transform: uppercase;
-                 letter-spacing: .07em; font-weight: 600; margin-bottom: 6px; }
+                 letter-spacing: .07em; font-weight: 600; margin-bottom: 5px; }
 
-.row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-
-select {
-  background: var(--surface); border: 1px solid var(--border); color: var(--text);
-  border-radius: 6px; padding: 9px 14px; font-size: 14px; outline: none;
-  cursor: pointer; min-width: 300px;
+/* New block panel */
+.new-block-bar { background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px; margin-bottom: 18px; }
+.new-block-bar .fields { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.new-block-bar input, .new-block-bar select {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  border-radius: 6px; padding: 7px 11px; font-size: 13px; outline: none;
 }
-select:focus { border-color: var(--gold); }
+.new-block-bar input:focus, .new-block-bar select:focus { border-color: var(--gold); }
+.new-block-bar input[name=label]  { min-width: 200px; }
+.new-block-bar input[name=folder] { min-width: 200px; }
+.new-block-bar input[name=batch]  { width: 80px; }
+.new-block-bar input[name=bar]    { width: 110px; }
+.new-block-bar select             { min-width: 140px; }
+.nb-toggle { background: none; border: 1px solid var(--border); color: var(--muted);
+  border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
+.nb-toggle:hover { border-color: var(--gold); color: var(--gold); }
 
-.pills { display: flex; gap: 7px; flex-wrap: wrap; }
+/* Controls row */
+.controls-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+
+select.block-sel {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  border-radius: 6px; padding: 8px 13px; font-size: 14px; outline: none;
+  cursor: pointer; min-width: 320px;
+}
+select.block-sel:focus { border-color: var(--gold); }
+
+.pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .pill {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
-  border-radius: 20px; padding: 6px 16px; cursor: pointer; font-size: 13px;
+  border-radius: 20px; padding: 5px 15px; cursor: pointer; font-size: 13px;
   transition: all .15s; user-select: none;
 }
 .pill:hover  { border-color: var(--gold); color: var(--gold); }
@@ -150,8 +209,8 @@ select:focus { border-color: var(--gold); }
 
 .btn {
   background: var(--gold); color: #050a18; border: none; border-radius: 6px;
-  padding: 10px 22px; cursor: pointer; font-weight: 700; font-size: 14px;
-  transition: opacity .15s;
+  padding: 8px 18px; cursor: pointer; font-weight: 700; font-size: 13px;
+  transition: opacity .15s; white-space: nowrap;
 }
 .btn:hover { opacity: .85; }
 .btn.secondary {
@@ -159,87 +218,134 @@ select:focus { border-color: var(--gold); }
   border: 1px solid var(--border);
 }
 .btn.secondary:hover { border-color: var(--gold); color: var(--gold); }
+.btn.sm { padding: 6px 14px; font-size: 12px; }
 
-.editor-wrap { position: relative; margin-bottom: 14px; }
+/* Side-by-side layout */
+.editor-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px) { .editor-layout { grid-template-columns: 1fr; } }
+
+.pane-label { color: var(--gold); font-size: 11px; text-transform: uppercase;
+  letter-spacing: .07em; font-weight: 700; margin-bottom: 6px; }
+
 textarea {
-  width: 100%; min-height: 480px; background: var(--surface); border: 1px solid var(--border);
-  color: var(--text); border-radius: 8px; padding: 14px; font-family: 'Courier New', monospace;
-  font-size: 13px; line-height: 1.6; resize: vertical; outline: none;
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 12px; font-family: 'Courier New', monospace;
+  font-size: 12px; line-height: 1.6; resize: none; outline: none;
+  height: calc(100vh - 280px); min-height: 400px;
 }
 textarea:focus { border-color: var(--gold); }
 
-.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+.preview-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 20px; overflow-y: auto; line-height: 1.75;
+  height: calc(100vh - 280px); min-height: 400px;
+}
+.preview-panel h2 { color: var(--gold); margin-bottom: 10px; font-size: 16px; }
+.preview-panel h3 { color: var(--gold); margin: 14px 0 6px; }
+.preview-panel p  { margin-bottom: 12px; color: var(--text); }
+.preview-panel hr { margin: 14px 0; border: none; border-top: 1px solid var(--border); }
+.preview-panel img { max-width: 160px; height: auto; border-radius: 6px; float: right;
+                     margin: 0 0 12px 14px; }
+.preview-placeholder { color: var(--muted); font-size: 13px; padding: 20px 0; }
+
+.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 
 .status {
-  font-size: 13px; padding: 7px 14px; border-radius: 5px;
+  font-size: 12px; padding: 6px 12px; border-radius: 5px;
   display: none; white-space: nowrap;
 }
 .status.ok  { background: #0d2b1c; color: var(--ok);  border: 1px solid var(--ok);  display: inline-block; }
 .status.err { background: #2b0d0d; color: var(--err); border: 1px solid var(--err); display: inline-block; }
 .status.loading { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); display: inline-block; }
 
-.meta-bar { color: var(--muted); font-size: 12px; margin-bottom: 10px; min-height: 18px; }
-
-hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-
-.preview-panel {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-  padding: 24px; max-height: 600px; overflow-y: auto; line-height: 1.7;
-}
-.preview-panel h2 { color: var(--gold); margin-bottom: 10px; }
-.preview-panel h3 { color: var(--gold); margin: 14px 0 6px; }
-.preview-panel p  { margin-bottom: 12px; }
-.preview-panel hr { margin: 14px 0; }
-.preview-panel img { max-width: 180px; height: auto; border-radius: 6px; float: right;
-                     margin: 0 0 12px 16px; }
+.meta-bar { color: var(--muted); font-size: 11px; margin-bottom: 8px; min-height: 16px; }
+hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 </style>
 </head>
 <body>
 
-<h1>⬡ Story Editor</h1>
-<p class="subtitle">Rarefolio Admin &mdash; Edit shared and per-item stories for any collection block.</p>
+<!-- Top bar -->
+<div class="topbar">
+  <h1>⬡ Rarefolio Story Editor</h1>
+  <button class="nb-toggle" onclick="toggleNewBlock()">+ Register New Block</button>
+</div>
 
-<!-- Block selector -->
-<div class="row">
+<!-- New Block panel (collapsed by default) -->
+<div class="new-block-bar" id="new-block-panel" style="display:none;">
+  <div class="section-label" style="margin-bottom:10px;">Register New Block</div>
+  <div class="fields">
+    <div class="field">
+      <div class="section-label">Bar Serial</div>
+      <input name="bar" id="nb-bar" value="E101837" />
+    </div>
+    <div class="field">
+      <div class="section-label">Batch #</div>
+      <input name="batch" id="nb-batch" type="number" min="1" placeholder="16" />
+    </div>
+    <div class="field">
+      <div class="section-label">Folder Slug</div>
+      <input name="folder" id="nb-folder" placeholder="scnft_zodiac_leo" />
+    </div>
+    <div class="field">
+      <div class="section-label">Label</div>
+      <input name="label" id="nb-label" placeholder="Zodiac &mdash; Leo" />
+    </div>
+    <div class="field">
+      <div class="section-label">Story Mode</div>
+      <select id="nb-mode">
+        <option value="shared">Shared only</option>
+        <option value="per_item">Per-item (shared + 8 items)</option>
+      </select>
+    </div>
+    <div class="field" style="justify-content:flex-end;">
+      <button class="btn" onclick="registerBlock()">Register Block</button>
+    </div>
+  </div>
+  <div class="status" id="nb-status" style="margin-top:10px;"></div>
+</div>
+
+<!-- Controls row -->
+<div class="controls-row">
   <div class="field">
     <div class="section-label">Block</div>
-    <select id="block-select">
+    <select class="block-sel" id="block-select">
       <option value="">Loading blocks from DB&hellip;</option>
     </select>
   </div>
-</div>
-
-<!-- Story type pills -->
-<div class="field" style="margin-bottom:20px;">
-  <div class="section-label">Story</div>
-  <div class="pills" id="item-pills">
-    <button class="pill active" data-item="0">Shared</button>
+  <div class="field">
+    <div class="section-label">Story</div>
+    <div class="pills" id="item-pills">
+      <button class="pill active" data-item="0">Shared</button>
+    </div>
   </div>
-</div>
-
-<!-- Load button + meta -->
-<div class="row" style="margin-bottom:8px;">
-  <button class="btn secondary" onclick="loadStory()">&#8593; Load Story</button>
-</div>
-<div class="meta-bar" id="meta-bar"></div>
-
-<!-- Editor -->
-<div class="editor-wrap">
-  <textarea id="editor" placeholder="Select a block and story type, then click Load Story&hellip;" spellcheck="false"></textarea>
-</div>
-
-<!-- Save toolbar -->
-<div class="toolbar">
-  <button class="btn" onclick="saveStory()">&#8595; Save Story</button>
-  <button class="btn secondary" onclick="togglePreview()">&#9654; Preview</button>
+  <div class="field" style="justify-content:flex-end;">
+    <button class="btn secondary" onclick="loadStory()">&#8593; Load</button>
+  </div>
+  <div class="field" style="justify-content:flex-end;">
+    <button class="btn" onclick="saveStory()">&#8595; Save</button>
+  </div>
   <div class="status" id="status"></div>
 </div>
 
-<!-- Live preview -->
-<div id="preview-wrap" style="display:none;">
-  <hr />
-  <div class="section-label" style="margin-bottom:12px;">Preview</div>
-  <div class="preview-panel" id="preview-content"></div>
+<div class="meta-bar" id="meta-bar"></div>
+
+<!-- Side-by-side editor + preview -->
+<div class="editor-layout">
+  <div>
+    <div class="pane-label">HTML Editor</div>
+    <textarea id="editor" placeholder="Select a block and story, then click Load&hellip;" spellcheck="false"></textarea>
+  </div>
+  <div>
+    <div class="pane-label">Live Preview</div>
+    <div class="preview-panel" id="preview-content">
+      <p class="preview-placeholder">Preview will appear here after loading a story.</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -259,20 +365,25 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       });
       const d = await res.json();
       if (!d.ok) { alert('Failed to load blocks: ' + (d.error || 'unknown')); return; }
-
-      const sel = $('block-select');
-      sel.innerHTML = '<option value="">— Select a block —</option>';
-      d.blocks.forEach(b => {
-        const opt = document.createElement('option');
-        opt.value          = b.block_id;
-        opt.dataset.mode   = b.story_mode;
-        opt.dataset.batch  = b.batch_num;
-        opt.textContent    = `${b.label}  ·  batch ${b.batch_num}  ·  ${b.story_mode === 'per_item' ? 'shared + 8 items' : 'shared only'}`;
-        sel.appendChild(opt);
-      });
+      populateBlockSelect(d.blocks);
     } catch (e) {
       alert('Error loading blocks: ' + e.message);
     }
+  }
+
+  function populateBlockSelect(blocks) {
+    const sel = $('block-select');
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">\u2014 Select a block \u2014</option>';
+    blocks.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value        = b.block_id;
+      opt.dataset.mode = b.story_mode;
+      opt.textContent  = `${b.label}  \u00b7  batch ${b.batch_num}  \u00b7  ${
+        b.story_mode === 'per_item' ? 'shared + 8 items' : 'shared only'}`;
+      sel.appendChild(opt);
+    });
+    if (prev) sel.value = prev;
   }
 
   // ---- Block selection ----
@@ -284,6 +395,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     buildPills();
     $('editor').value = '';
     $('meta-bar').textContent = '';
+    $('preview-content').innerHTML = '<p class="preview-placeholder">Load a story to see the preview.</p>';
     showStatus('', '');
   });
 
@@ -291,22 +403,21 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
   function buildPills() {
     const container = $('item-pills');
     container.innerHTML = '';
-
-    const pills = ['Shared'];
+    const labels = ['Shared'];
     if (storyMode === 'per_item') {
-      for (let i = 1; i <= 8; i++) pills.push('Item ' + i);
+      for (let i = 1; i <= 8; i++) labels.push('Item ' + i);
     }
-
-    pills.forEach((label, idx) => {
+    labels.forEach((label, idx) => {
       const btn = document.createElement('button');
-      btn.className   = 'pill' + (idx === currentItem ? ' active' : '');
-      btn.textContent = label;
+      btn.className    = 'pill' + (idx === currentItem ? ' active' : '');
+      btn.textContent  = label;
       btn.dataset.item = idx;
       btn.addEventListener('click', () => {
         currentItem = idx;
         container.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p === btn));
         $('editor').value = '';
         $('meta-bar').textContent = '';
+        $('preview-content').innerHTML = '<p class="preview-placeholder">Load a story to see the preview.</p>';
         showStatus('', '');
       });
       container.appendChild(btn);
@@ -317,7 +428,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
   async function loadStory() {
     if (!currentBlock) { showStatus('Select a block first.', 'err'); return; }
     showStatus('Loading\u2026', 'loading');
-
     try {
       const res = await fetch(location.pathname, {
         method:  'POST',
@@ -326,13 +436,12 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       });
       const d = await res.json();
       if (d.error) { showStatus('Error: ' + d.error, 'err'); return; }
-
       $('editor').value = d.html_content || '';
       $('meta-bar').textContent = d.updated_at
         ? 'Last saved: ' + d.updated_at
         : (d.note || 'No story yet \u2014 write content and save.');
       showStatus(d.html_content ? 'Story loaded.' : 'No story yet.', 'ok');
-      if ($('preview-wrap').style.display !== 'none') renderPreview();
+      renderPreview();
     } catch (e) {
       showStatus('Network error: ' + e.message, 'err');
     }
@@ -344,7 +453,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     const html = $('editor').value.trim();
     if (!html) { showStatus('Content is empty.', 'err'); return; }
     showStatus('Saving\u2026', 'loading');
-
     try {
       const res = await fetch(location.pathname, {
         method:  'POST',
@@ -353,39 +461,75 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       });
       const d = await res.json();
       if (d.error) { showStatus('Error: ' + d.error, 'err'); return; }
-      const now = new Date().toLocaleString();
-      $('meta-bar').textContent = 'Last saved: ' + now;
+      $('meta-bar').textContent = 'Last saved: ' + new Date().toLocaleString();
       showStatus('\u2713 Saved (' + (d.mode || 'updated') + ')', 'ok');
-      if ($('preview-wrap').style.display !== 'none') renderPreview();
+      renderPreview();
     } catch (e) {
       showStatus('Network error: ' + e.message, 'err');
     }
   }
 
-  // ---- Preview ----
+  // ---- Register new block ----
+  async function registerBlock() {
+    const barSerial  = $('nb-bar').value.trim();
+    const batchNum   = parseInt($('nb-batch').value, 10);
+    const folderSlug = $('nb-folder').value.trim();
+    const label      = $('nb-label').value.trim();
+    const storyModeVal = $('nb-mode').value;
+
+    if (!barSerial || !batchNum || !folderSlug || !label) {
+      showNbStatus('Fill in all fields.', 'err'); return;
+    }
+    showNbStatus('Registering\u2026', 'loading');
+    try {
+      const res = await fetch(location.pathname, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'register_block', barSerial, batchNum, folderSlug, label, storyMode: storyModeVal }),
+      });
+      const d = await res.json();
+      if (d.error) { showNbStatus('Error: ' + d.error, 'err'); return; }
+      showNbStatus('\u2713 ' + d.block_id + ' ' + d.mode, 'ok');
+      // Refresh block list and select the new block
+      await loadBlocks();
+      $('block-select').value = d.block_id;
+      $('block-select').dispatchEvent(new Event('change'));
+    } catch (e) {
+      showNbStatus('Network error: ' + e.message, 'err');
+    }
+  }
+
+  function toggleNewBlock() {
+    const p = $('new-block-panel');
+    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // ---- Live preview (updates as you type) ----
   function renderPreview() {
-    $('preview-content').innerHTML = $('editor').value;
+    $('preview-content').innerHTML = $('editor').value || '<p class="preview-placeholder">Nothing to preview.</p>';
   }
+  $('editor').addEventListener('input', renderPreview);
 
-  function togglePreview() {
-    const wrap = $('preview-wrap');
-    wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
-    if (wrap.style.display !== 'none') renderPreview();
-  }
-
-  // ---- Status display ----
+  // ---- Status helpers ----
   function showStatus(msg, type) {
     const s = $('status');
     s.textContent = msg;
     s.className   = 'status' + (type ? ' ' + type : '');
   }
+  function showNbStatus(msg, type) {
+    const s = $('nb-status');
+    s.textContent = msg;
+    s.className   = 'status' + (type ? ' ' + type : '');
+  }
 
   // Expose for onclick
-  window.loadStory    = loadStory;
-  window.saveStory    = saveStory;
-  window.togglePreview = togglePreview;
+  window.loadStory      = loadStory;
+  window.saveStory      = saveStory;
+  window.registerBlock  = registerBlock;
+  window.toggleNewBlock = toggleNewBlock;
 
   // Init
+  buildPills();
   loadBlocks();
 })();
 </script>
