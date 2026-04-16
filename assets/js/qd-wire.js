@@ -70,6 +70,15 @@
     block14: { folder: 'scnft_new_series',         label: 'New Series',               story_mode: 'shared'   },
   };
 
+  /* ---- Sold tokens ----
+     Add token slugs here when a piece sells. The Purchase button on the
+     NFT detail page will automatically switch to a SOLD state.
+     Example: 'qd-silver-0000009'
+  */
+  const QD_SOLD = new Set([
+    // 'qd-silver-0000009',
+  ]);
+
   /* ---- Per-item names for named-character blocks ----
      Key = story_block_id (DB format, e.g. 'E101837-block0002').
      Array is 0-indexed: index 0 = item 1, index 7 = item 8.
@@ -819,6 +828,25 @@
       }
     } catch {
       // no-op
+    }
+
+    // Purchase / SOLD button
+    const purchaseEl = document.getElementById('qd-purchase');
+    if (purchaseEl) {
+      if (QD_SOLD.has(nft)) {
+        purchaseEl.textContent = 'SOLD';
+        purchaseEl.removeAttribute('href');
+        purchaseEl.classList.remove('primary');
+        purchaseEl.classList.add('btn-sold');
+        purchaseEl.setAttribute('aria-disabled', 'true');
+        purchaseEl.setAttribute('title', 'This piece has found its keeper.');
+      } else {
+        purchaseEl.textContent = 'Purchase';
+        purchaseEl.setAttribute('href', '/contact.html');
+        purchaseEl.classList.add('primary');
+        purchaseEl.classList.remove('btn-sold');
+        purchaseEl.removeAttribute('aria-disabled');
+      }
     }
 
     // Certificate links

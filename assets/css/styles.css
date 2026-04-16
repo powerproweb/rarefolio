@@ -212,6 +212,75 @@
 }
 
 
+/* ============================================================
+   SOLD button — appears on NFT detail page when QD_SOLD contains the token
+   ============================================================ */
+.btn-sold {
+  position: relative;
+  background: linear-gradient(135deg, #2a0a0a 0%, #1a0505 100%) !important;
+  color: rgba(200, 60, 60, 0.90) !important;
+  border: 1px solid rgba(180, 40, 40, 0.55) !important;
+  cursor: not-allowed !important;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow:
+    0 0 0 1px rgba(180, 40, 40, 0.20),
+    inset 0 0 18px rgba(180, 20, 20, 0.12);
+  transition: box-shadow 0.25s ease, color 0.25s ease;
+  overflow: hidden;
+}
+
+/* Diagonal strikethrough bar */
+.btn-sold::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 5px,
+    rgba(180, 40, 40, 0.07) 5px,
+    rgba(180, 40, 40, 0.07) 6px
+  );
+  pointer-events: none;
+}
+
+/* Tooltip text on hover */
+.btn-sold::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(18, 4, 4, 0.96);
+  color: rgba(220, 180, 180, 0.90);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(180, 40, 40, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.btn-sold:hover {
+  color: rgba(220, 80, 80, 0.95) !important;
+  box-shadow:
+    0 0 0 1px rgba(180, 40, 40, 0.45),
+    0 0 20px rgba(180, 20, 20, 0.25),
+    inset 0 0 24px rgba(180, 20, 20, 0.18);
+}
+
+.btn-sold:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* ***=======@@@@@@@~~~|||||||>>> CUSTOM MISC ELEMENTS <<<|||||||~~~@@@@@@@=======*** */
 	
 .mas_txt_clr {
