@@ -70,7 +70,35 @@
     block14: { folder: 'scnft_new_series',         label: 'New Series',               story_mode: 'shared'   },
   };
 
-  /* ---- Block slug map (block_id → URL slug for clean URLs) ---- */
+  /* ---- Per-item names for named-character blocks ----
+     Key = story_block_id (DB format, e.g. 'E101837-block0002').
+     Array is 0-indexed: index 0 = item 1, index 7 = item 8.
+     To add a new block: add a new entry keyed by its story_block_id.
+  */
+  const QD_ITEM_NAMES = {
+    'E101837-block0002': [ // Steampunk \u2014 Inventors Guild
+      'Miss Nyla Vantress \u2014 The Stormglass Prodigy',
+      'Elowen Thrice \u2014 Mistress of Clockwork Nerves',
+      'Clara Penhalwick \u2014 The Brassheart Aeronaut',
+      'Edmund Vale \u2014 The Iron Wit of Gallowmere',
+      'Vivienne Sloane \u2014 Keeper of the Ember Circuit',
+      'Octavius Bellmere \u2014 The Grand Old Gearsmith',
+      'Thaddeus Crowle \u2014 The Furnace Baron',
+      'Ludorian Marrow \u2014 Architect of the Impossible Hour',
+    ],
+    'E101837-block0004': [ // Steampunk \u2014 Robot Butler
+      'Alistair Valecourt',
+      'Edmund Aurellian',
+      'Theodore Valemont',
+      'Lucian Everford',
+      'Julian Ashcombe',
+      'Reginald Fairbourne',
+      'Augustin Wrenhall',
+      'Benedict Harrowvale',
+    ],
+  };
+
+  /* ---- Block slug map (block_id \u2192 URL slug for clean URLs) ---- */
   const BLOCK_SLUGS = {
     block00: 'taurus',      block01: 'inventors',     block02: 'aries',
     block03: 'robot-butler', block04: 'gemini',       block05: 'cancer',
@@ -605,6 +633,15 @@
         const title = `${runtimeCfg.title} \u2014 ${slug}`;
         const viewLink = buildViewLink(slug, batchNum, itemIndex);
 
+        // Look up per-item character name if this block has named items
+        const _storyBlockId = blockMeta?.story_block_id || blockMeta?.block_id || '';
+        const _itemName = (blockMeta?.story_mode === 'per_item' && _storyBlockId)
+          ? (QD_ITEM_NAMES[_storyBlockId]?.[itemIndex - 1] || '')
+          : '';
+        const _cardDesc = _itemName
+          ? `<p class="cnft-desc"><strong class="mas_txt_clr">${_itemName}</strong><br><span class="muted small">Cardano \u00b7 Blockchain data pending</span></p>`
+          : `<p class="cnft-desc muted small">Cardano \u00b7 ${blockMeta?.label || 'Silver Bar I'} \u00b7 Blockchain data pending</p>`;
+
         cards.push(`
           <article class="cnft-card tilt">
             <div class="cnft-media">
@@ -620,10 +657,10 @@
                 <span class="badge">Bar Serial \u2022 ${runtimeCfg.serial}</span>
               </div>
               <h3 class="cnft-title">${title}</h3>
-              <p class="cnft-desc">Collector-grade artifact render (config-driven). Replace with traits, lore, marketplace links when ready.</p>
+              ${_cardDesc}
               <div class="cnft-actions">
                 <a class="btn primary" href="${viewLink}">View</a>
-                <a class="btn" href="contact.html">Purchase</a>
+                <a class="btn" href="/contact.html">Purchase</a>
               </div>
             </div>
           </article>
