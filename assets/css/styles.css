@@ -63,20 +63,9 @@
   overflow: hidden;
 }
 
-/* Large decorative open-quote watermark — same personality as blockquote */
 .owner-footer-inner::before {
-  content: "\270C"; /* quill/pen ✌ symbol for "written word" personality */
-  position: absolute;
-  bottom: -10px;
-  right: 20px;
-  font-size: 130px;
-  line-height: 1;
-  color: rgba(217, 180, 108, 0.055);
-  font-style: normal;
-  font-family: Georgia, serif;
+  content: "";
   pointer-events: none;
-  user-select: none;
-  z-index: 0;
 }
 
 /* Dual ambient glow: top-right warm + bottom-left cool */

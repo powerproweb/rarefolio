@@ -262,10 +262,7 @@ textarea:focus { border-color: var(--gold); }
   border-radius: 0 18px 18px 0; overflow: hidden;
   box-shadow: 0 20px 56px rgba(0,0,0,.60), 0 6px 18px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,239,189,.14), 0 0 0 1px rgba(217,180,108,.08);
 }
-.preview-panel .owner-footer-inner::before {
-  content:"\270C"; position:absolute; bottom:-10px; right:18px; font-size:110px; line-height:1;
-  color:rgba(217,180,108,0.055); font-family:Georgia,serif; pointer-events:none; user-select:none; z-index:0;
-}
+.preview-panel .owner-footer-inner::before { content:""; pointer-events:none; }
 .preview-panel .owner-footer-inner::after {
   content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit; z-index:0;
   background: radial-gradient(ellipse at 92% 5%,rgba(240,200,80,.12) 0%,transparent 40%), radial-gradient(ellipse at 8% 92%,rgba(185,167,255,.06) 0%,transparent 35%);
