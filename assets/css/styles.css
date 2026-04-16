@@ -38,115 +38,122 @@
 /* ***=======@@@@@@@~~~|||||||>>> CUSTOM Story Footers <<<|||||||~~~@@@@@@@=======*** */
 
 .owner-footer {
-  margin: 48px auto 16px auto;
+  margin: 52px auto 16px auto;
   padding: 0;
   clear: both;
 }
 
 .owner-footer-inner {
   position: relative;
-  padding: 36px 32px 30px 32px;
+  padding: 40px 36px 32px 44px; /* extra left padding for the accent bar */
   background:
-    linear-gradient(160deg,
-      rgba(52, 38, 14, 0.97) 0%,
-      rgba(30, 22, 8, 0.99) 55%,
-      rgba(20, 14, 4, 1.00) 100%);
-  border: 1px solid rgba(217, 180, 108, 0.32);
-  border-radius: 18px;
+    linear-gradient(155deg,
+      rgba(62, 44, 14, 0.98) 0%,
+      rgba(36, 26, 8, 1.00) 45%,
+      rgba(18, 12, 3, 1.00) 100%);
+  border: 1px solid rgba(217, 180, 108, 0.28);
+  border-left: 4px solid rgba(217, 180, 108, 0.70); /* left accent matching blockquote */
+  border-radius: 0 18px 18px 0; /* flat left, rounded right — matches blockquote shape */
   box-shadow:
-    0 18px 48px rgba(0, 0, 0, 0.55),
-    0  4px 12px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 239, 189, 0.18),
-    inset 0 0 40px rgba(217, 180, 108, 0.05);
+    0 20px 56px rgba(0, 0, 0, 0.60),
+    0  6px 18px rgba(0, 0, 0, 0.40),
+    inset 0 1px 0 rgba(255, 239, 189, 0.14),
+    inset 0 0 60px rgba(217, 180, 108, 0.04),
+    0 0 0 1px rgba(217, 180, 108, 0.08); /* subtle outer ring */
   overflow: hidden;
 }
 
-/* Gold accent bar across the top */
+/* Large decorative open-quote watermark — same personality as blockquote */
 .owner-footer-inner::before {
-  content: "";
+  content: "\270C"; /* quill/pen ✌ symbol for "written word" personality */
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(217, 180, 108, 0.55) 20%,
-    rgba(240, 215, 161, 0.90) 50%,
-    rgba(217, 180, 108, 0.55) 80%,
-    transparent 100%
-  );
-  border-radius: 18px 18px 0 0;
+  bottom: -10px;
+  right: 20px;
+  font-size: 130px;
+  line-height: 1;
+  color: rgba(217, 180, 108, 0.055);
+  font-style: normal;
+  font-family: Georgia, serif;
   pointer-events: none;
+  user-select: none;
+  z-index: 0;
 }
 
-/* Ambient corner glow */
+/* Dual ambient glow: top-right warm + bottom-left cool */
 .owner-footer-inner::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 90% 0%,   rgba(217,180,108,0.10) 0%, transparent 45%),
-    radial-gradient(ellipse at 10% 100%, rgba(217,180,108,0.06) 0%, transparent 40%);
+    radial-gradient(ellipse at 92% 5%,  rgba(240, 200, 80, 0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at  8% 92%, rgba(185, 167, 255, 0.06) 0%, transparent 35%),
+    radial-gradient(ellipse at 50% 0%,  rgba(217, 180, 108, 0.07) 0%, transparent 30%);
   pointer-events: none;
   border-radius: inherit;
+  z-index: 0;
 }
 
-/* Gold pill badge — e.g. "A Word From The Creator" */
+/* Gold pill badge with glow */
 .owner-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 16px;
-  padding: 5px 14px 5px 10px;
+  gap: 7px;
+  margin-bottom: 18px;
+  padding: 6px 16px 6px 12px;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 10px;
-  letter-spacing: 1.8px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: #1e1406;
-  background: linear-gradient(135deg, #f0d7a1 0%, #d9b46c 100%);
+  color: #1a1004;
+  background: linear-gradient(135deg, #f5e0a8 0%, #d9a84c 100%);
   border-radius: 999px;
   box-shadow:
-    0 2px 10px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(255, 239, 189, 0.25);
+    0 3px 14px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 225, 130, 0.30),
+    0 0 18px rgba(217, 160, 60, 0.25); /* gold glow matching blockquote accent */
   position: relative;
   z-index: 1;
+  transition: box-shadow 0.2s ease;
 }
 .owner-badge::before {
-  content: "\2666"; /* diamond ◆ */
-  font-size: 8px;
-  color: rgba(30, 20, 6, 0.65);
+  content: "\2767"; /* ❧ floral heart/ornament */
+  font-size: 11px;
+  color: rgba(28, 18, 4, 0.55);
 }
 
-/* Main heading */
+/* Main heading — larger, more presence */
 .owner-title {
-  margin: 0 0 16px 0;
+  margin: 0 0 18px 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 26px;
-  line-height: 1.25;
-  color: #ffefbd;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.50);
-  letter-spacing: 0.02em;
+  font-size: 24px;
+  line-height: 1.3;
+  color: #fff5d6;
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.55),
+    0 0 28px rgba(217, 180, 108, 0.18); /* soft gold halo */
+  letter-spacing: 0.025em;
   position: relative;
   z-index: 1;
 }
 
 /* Body message */
 .owner-message {
-  margin: 0 0 22px 0;
+  margin: 0 0 24px 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 16px;
-  line-height: 1.90;
-  color: #f0e4c0;
+  line-height: 1.95;
+  color: #edddb8;
+  font-style: italic; /* give it the feel of a handwritten letter */
   position: relative;
   z-index: 1;
 }
 
-/* Decorative divider between message and signoff */
+/* Decorative ornamental divider */
 .owner-divider {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 0 0 20px 0;
+  gap: 14px;
+  margin: 0 0 22px 0;
   position: relative;
   z-index: 1;
 }
@@ -155,12 +162,20 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(217,180,108,0.40), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(217, 180, 108, 0.55) 40%,
+    rgba(240, 215, 161, 0.80) 50%,
+    rgba(217, 180, 108, 0.55) 60%,
+    transparent
+  );
 }
 .owner-divider span {
-  font-size: 14px;
-  color: rgba(217, 180, 108, 0.65);
-  letter-spacing: 4px;
+  font-size: 13px;
+  color: rgba(240, 215, 161, 0.75);
+  letter-spacing: 5px;
+  text-shadow: 0 0 8px rgba(217, 180, 108, 0.45); /* subtle glow on the symbols */
 }
 
 /* Sign-off block */
@@ -176,27 +191,35 @@
 }
 .owner-signoff .owner-closing {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-size: 15px;
   font-style: italic;
-  color: #d4bc80;
+  color: #c8aa6a;
+  letter-spacing: 0.03em;
 }
 .owner-signoff span {
   display: block;
   margin-top: 2px;
-  font-size: 21px;
+  font-size: 23px;
   font-weight: bold;
-  color: #ffefbd;
-  letter-spacing: 0.4px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.40);
+  color: #fff5d6;
+  letter-spacing: 0.5px;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.50),
+    0 0 20px rgba(217, 180, 108, 0.22); /* name gets a gold halo */
 }
 .owner-signoff em {
   display: block;
-  margin-top: 3px;
-  font-size: 13px;
-  font-style: italic;
-  letter-spacing: 0.5px;
-  color: rgba(217, 180, 108, 0.75);
+  margin-top: 5px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
+  color: rgba(217, 180, 108, 0.65);
+  border-top: 1px solid rgba(217, 180, 108, 0.18);
+  padding-top: 8px;
+  margin-top: 10px;
 }
 
 
