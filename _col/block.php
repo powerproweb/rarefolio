@@ -165,8 +165,8 @@ $cssVersion  = '20260415';
 <!-- Styles -->
 <link rel="preload" as="style" href="/assets/css/styles.css?v=<?= $cssVersion ?>" />
 <link rel="stylesheet" href="/assets/css/styles.css?v=<?= $cssVersion ?>" />
-<link rel="preload" as="style" href="/assets/css/custom.css?v=<?= $cssVersion ?>" />
-<link rel="stylesheet" href="/assets/css/custom.css?v=<?= $cssVersion ?>" />
+" />
+" />
 
 <!-- Structured Data (Organization) -->
 <script type="application/ld+json">
