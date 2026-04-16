@@ -764,12 +764,19 @@
     // Resolve block via full chain (static → API)
     const blockMeta = await getBlockMeta(runtimeCfg, batch);
 
-    titleEl.textContent = nft.toUpperCase();
-    tokenEl.textContent = nft;
-    badgeEl.textContent = `Bar Serial • ${bar}`;
+    // Title: use character name for per_item blocks, block label for shared, slug as final fallback
+    const _dStoryBlockId = blockMeta?.story_block_id || blockMeta?.block_id || '';
+    const _dItemName = (blockMeta?.story_mode === 'per_item' && item && _dStoryBlockId)
+      ? (QD_ITEM_NAMES[_dStoryBlockId]?.[item - 1] || null)
+      : null;
+    titleEl.textContent = (_dItemName || blockMeta?.label || nft).toUpperCase();
 
-    const blockLine = blockMeta?.label ? ` • ${blockMeta.block_id.toUpperCase()} • ${blockMeta.label}` : '';
-    subEl.textContent = `Bar ${bar} • Set ${set} • ${runtimeCfg.batch.labelPrefix} ${batch}${blockLine}`;
+    tokenEl.textContent = nft;
+    // badgeEl is hidden in HTML; keep setting it for any JS that reads it
+    badgeEl.textContent = `Bar Serial \u2022 ${bar}`;
+
+    const blockLine = blockMeta?.label ? ` \u2022 ${blockMeta.block_id.toUpperCase()} \u2022 ${blockMeta.label}` : '';
+    subEl.textContent = `Bar ${bar} \u2022 Set ${set} \u2022 ${runtimeCfg.batch.labelPrefix} ${batch}${blockLine}`;
 
     // Image resolution
     const imgTpl = sp.get('img');
