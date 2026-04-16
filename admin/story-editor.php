@@ -253,6 +253,40 @@ textarea:focus { border-color: var(--gold); }
                      margin: 0 0 12px 14px; }
 .preview-placeholder { color: var(--muted); font-size: 13px; padding: 20px 0; }
 
+/* ---- Story Footer styles — mirrors site styles.css ---- */
+.preview-panel .owner-footer { margin: 32px auto 10px; clear: both; }
+.preview-panel .owner-footer-inner {
+  position: relative; padding: 30px 26px 26px;
+  background: linear-gradient(160deg, rgba(52,38,14,.97) 0%, rgba(30,22,8,.99) 55%, rgba(20,14,4,1) 100%);
+  border: 1px solid rgba(217,180,108,.32); border-radius: 18px; overflow: hidden;
+  box-shadow: 0 18px 48px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,239,189,.18);
+}
+.preview-panel .owner-footer-inner::before {
+  content: ""; position: absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg,transparent,rgba(240,215,161,.90) 50%,transparent);
+  border-radius: 18px 18px 0 0; pointer-events:none;
+}
+.preview-panel .owner-footer-inner::after {
+  content: ""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background: radial-gradient(ellipse at 90% 0%,rgba(217,180,108,.10) 0%,transparent 45%);
+}
+.preview-panel .owner-badge {
+  display:inline-flex; align-items:center; gap:6px; margin-bottom:14px; padding:5px 14px 5px 10px;
+  font-family:Georgia,serif; font-size:10px; letter-spacing:1.8px; text-transform:uppercase;
+  color:#1e1406; background:linear-gradient(135deg,#f0d7a1,#d9b46c); border-radius:999px;
+  box-shadow:0 2px 10px rgba(0,0,0,.35); position:relative; z-index:1;
+}
+.preview-panel .owner-badge::before { content:"\2666"; font-size:8px; color:rgba(30,20,6,.65); }
+.preview-panel .owner-title { margin:0 0 14px; font-family:Georgia,serif; font-size:22px; line-height:1.25; color:#ffefbd; text-shadow:0 2px 8px rgba(0,0,0,.50); position:relative; z-index:1; }
+.preview-panel .owner-message { margin:0 0 18px; font-family:Georgia,serif; font-size:15px; line-height:1.90; color:#f0e4c0; position:relative; z-index:1; }
+.preview-panel .owner-divider { display:flex; align-items:center; gap:12px; margin:0 0 16px; position:relative; z-index:1; }
+.preview-panel .owner-divider::before,.preview-panel .owner-divider::after { content:""; flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(217,180,108,.40),transparent); }
+.preview-panel .owner-divider span { font-size:14px; color:rgba(217,180,108,.65); letter-spacing:4px; }
+.preview-panel .owner-signoff { font-family:Georgia,serif; font-size:15px; line-height:1.75; color:#e8d49a; position:relative; z-index:1; }
+.preview-panel .owner-signoff .owner-closing { display:block; margin-bottom:6px; font-style:italic; color:#d4bc80; }
+.preview-panel .owner-signoff span { display:block; margin-top:2px; font-size:20px; font-weight:bold; color:#ffefbd; }
+.preview-panel .owner-signoff em { display:block; margin-top:3px; font-size:12px; font-style:italic; letter-spacing:.5px; color:rgba(217,180,108,.75); text-transform:uppercase; }
+
 /* ---- Blockquote styles — mirrors site styles.css so preview matches live ---- */
 .preview-panel blockquote,
 .preview-panel .blockquote {
