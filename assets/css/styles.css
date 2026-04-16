@@ -786,7 +786,117 @@ hr.sep{
     .qd-lightbox__dialog { margin:4vh auto; padding:12px; }
     .qd-lightbox__nav { width:40px; height:40px; }
   }
+  
+/* ============================================================
+   Rarefolio.io — Blockquotes for Stories (dark theme card style)
+   Usage: <blockquote><p>Quote text.</p><cite>— Attribution</cite></blockquote>
+   Variants: add class bq-gold | bq-maroon | bq-lavender | bq-subtle
+   ============================================================ */
 
-   
-   
+blockquote,
+.blockquote {
+  position: relative;
+  display: block;
+  margin: 28px 0;
+  padding: 26px 28px 22px 36px;
+  background: rgba(13, 21, 38, 0.75);
+  border-left: 4px solid #d9b46c;
+  border-radius: 0 10px 10px 0;
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(217, 180, 108, 0.10);
+  font-style: italic;
+  font-size: 1.06rem;
+  line-height: 1.80;
+  color: #c8d4e8;
+}
+
+blockquote::before,
+.blockquote::before {
+  content: '\201C';
+  position: absolute;
+  top: 4px;
+  left: 12px;
+  font-size: 64px;
+  font-style: normal;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #d9b46c;
+  opacity: 0.45;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+blockquote p,
+.blockquote p {
+  margin: 0 0 8px;
+  position: relative;
+  z-index: 1;
+}
+blockquote p:last-of-type,
+.blockquote p:last-of-type { margin-bottom: 0; }
+
+/* Attribution line — <cite> or <footer> inside blockquote */
+blockquote cite,
+.blockquote cite,
+blockquote footer,
+.blockquote footer {
+  display: block;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(217, 180, 108, 0.18);
+  font-size: 0.88rem;
+  font-style: normal;
+  font-weight: 600;
+  color: #d9b46c;
+  letter-spacing: 0.02em;
+}
+
+/* --- Variants --- */
+
+/* Gold: prominent, warm accent */
+blockquote.bq-gold,
+.blockquote.bq-gold {
+  border-left-color: #d9b46c;
+  background: rgba(30, 22, 8, 0.70);
+  box-shadow: 0 6px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(217,180,108,.15);
+}
+blockquote.bq-gold::before,
+.blockquote.bq-gold::before { color: #d9b46c; opacity: 0.55; }
+
+/* Maroon: dramatic, deep red accent */
+blockquote.bq-maroon,
+.blockquote.bq-maroon {
+  border-left-color: #a8304a;
+  background: rgba(28, 10, 14, 0.70);
+  box-shadow: 0 6px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(168,48,74,.15);
+}
+blockquote.bq-maroon::before,
+.blockquote.bq-maroon::before { color: #a8304a; opacity: 0.55; }
+blockquote.bq-maroon cite,
+.blockquote.bq-maroon cite { color: #c85070; border-top-color: rgba(168,48,74,.25); }
+
+/* Lavender: ethereal, soft accent */
+blockquote.bq-lavender,
+.blockquote.bq-lavender {
+  border-left-color: #b9a7ff;
+  background: rgba(18, 12, 36, 0.70);
+  box-shadow: 0 6px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(185,167,255,.12);
+}
+blockquote.bq-lavender::before,
+.blockquote.bq-lavender::before { color: #b9a7ff; opacity: 0.50; }
+blockquote.bq-lavender cite,
+.blockquote.bq-lavender cite { color: #b9a7ff; border-top-color: rgba(185,167,255,.22); }
+
+/* Subtle: no quote mark, minimal frame — for inline use */
+blockquote.bq-subtle,
+.blockquote.bq-subtle {
+  padding: 16px 20px;
+  font-size: 0.97rem;
+  background: rgba(13, 21, 38, 0.45);
+  box-shadow: none;
+}
+blockquote.bq-subtle::before,
+.blockquote.bq-subtle::before { display: none; }
+
    

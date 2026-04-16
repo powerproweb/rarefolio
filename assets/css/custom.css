@@ -9,9 +9,13 @@
 #content-desktop {display: none;}
 #content-mobile {display: block;} }
 
-/* this is to make links dk red #980a00 and underline with hover */
-/* a:hover { text-decoration: underline !important; } */
-/* a { color: #eb4a6e !important; } */
+
+	
+.stories_title_center {
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: bold !important;
+	font-size: 24px;
+    text-align: center; }
 
 /* ============================================================
    Rarefolio.io - Custom CSS
@@ -637,53 +641,7 @@ div.div_float_r_rl {
 		bottom: 5%;
 	}
 }
-/* ***=======@@@@@@@~~~|||||||>>> CUSTOM MISC ELEMENTS <<<|||||||~~~@@@@@@@=======*** */
 
-div.center {
-	margin: 0 auto !important;
-	text-align:center !important; }
-	
-h1.center {
-	margin: 0 auto !important;
-	text-align:center !important; }
-	
-h2.center {
-	margin: 0 auto !important;
-	text-align:center !important; }
-	
-h3.center {
-	margin: 0 auto !important;
-	text-align:center !important; }
-	
-h4.center {
-	margin: 0 auto !important;
-	text-align:center !important; }
-	
-h5.center {
-	margin: 0 auto !important;
-	text-align:center !important; }
-
-.move_up_01 { 
-	margin-top: -25px !important; }
-.move_up_02 { 
-	margin-top: -35px !important; }
-.move_up_03 { 
-	margin-top: -45px !important; }
-.move_up_04 { 
-	margin-top: -55px !important; }
-.move_up_05 { 
-	margin-top: -65px !important; }
-.move_up_06 { 
-	margin-top: -75px !important; }
-	
-.move_down_01 { 
-	margin-top: 25px !important; }
-.move_down_02 { 
-	margin-top: 35px !important; }
-.move_down_03 { 
-	margin-top: 45px !important; }
-.move_down_04 { 
-	margin-top: 55px !important; }
 	
 /* ***=======@@@@@@@~~~|||||||>>> Typography Elements <<<|||||||~~~@@@@@@@=======*** */
 
@@ -854,72 +812,7 @@ div.number-block6 {background: url(images/typo/number-6.png) 0 0 no-repeat;}
 .who-we-are-single img { width:90%;
 	margin:0 auto; }
 
-.blockquote_sg {
-	display: block;
-	/* font-style: italic; */
-	font-size: 120%;
-	line-height: 150%;
-	width: auto;
-	padding: 10px 20px 10px 20px;
-	margin: 15px 0;
-	background: #fff5cc;
-	border-top: 1px solid #000000;
-	border-right: 1px solid #000000;
-	border-left: 1px solid #000000;
-	border-bottom: 1px solid #000000; 
-	/* box-shadow: 5px 5px 1px 0px rgba(0,0,0,0.25); */
-	-webkit-box-shadow: 5px 5px 2px 0px rgba(0,0,0,0.18); }
-	
-.blockquote {
-	display: block;
-	font-style: italic;
-	font-size: 120%;
-	line-height: 150%;
-	width: auto;
-	padding: 10px 20px 10px 20px;
-	margin: 15px 0;
-	background: #f6f6f6;
-	border-top: 1px solid #e5e5e5;
-	border-right: 1px solid #e5e5e5;
-	border-left: 1px solid #e5e5e5;
-	border-bottom: 1px solid #e5e5e5; }
-	
-.blockquote_gold,.blockquote_ltgold, .blockquote_blue, .blockquote_red, .blockquote_green, .blockquote_purple, .blockquote_orange, .blockquote_brown, .blockquote_grey {
-	display: block;
-	font-style: italic;
-	font-size: 120%;
-	line-height: 150%;
-	width: auto;
-	padding: 0px 20px;
-	margin: 15px 0;
-	border: 0;
-	background: 0; }
-	
-.blockquote_gold{color: #FFD700;}
-.blockquote_ltgold{color: #ffe452;}
-.blockquote_blue{color: #0D507A;}
-.blockquote_red{color: #D12E2E;}
-.blockquote_green{color: #74A824;}
-.blockquote_purple{color: #9E0E87;}
-.blockquote_orange{color: #CC8300;}
-.blockquote_brown{color: #8B6846;}
-.blockquote_grey {color: #666;}
-
-.blockquote_quotes {
-	display: block;
-	background: url(images/typo/quote-start.png) 0 5px no-repeat;
-	padding: 0px 20px 0 38px;
-	margin: 20px 0;
-	font-size: 148%;
-	line-height: 150%;
-	width: auto;
-	/* color: #666; */
-	border: 0; }
-	
-.blockquote_quotes p {
-	padding: 0 38px 0 0;
-	margin-top: 0;
-	background: url(images/typo/quote-end.png) 100% 100% no-repeat; }
+/* blockquote styles are defined in styles.css — do not duplicate here */
 
 
 
