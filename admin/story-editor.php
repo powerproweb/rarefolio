@@ -347,9 +347,9 @@ textarea:focus { border-color: var(--gold); }
 .preview-panel .blockquote.bq-lavender { border-left-color:#b9a7ff; background:rgba(18,12,36,.70); box-shadow:0 6px 28px rgba(0,0,0,.35),inset 0 0 0 1px rgba(185,167,255,.12); }
 .preview-panel blockquote.bq-lavender::before { color:#b9a7ff; opacity:.50; }
 .preview-panel blockquote.bq-lavender cite  { color:#b9a7ff; border-top-color:rgba(185,167,255,.22); }
-.preview-panel blockquote.bq-subtle,
-.preview-panel .blockquote.bq-subtle { padding:14px 18px; font-size:.97rem; background:rgba(13,21,38,.45); box-shadow:none; }
-.preview-panel blockquote.bq-subtle::before { display:none; }
+.preview-panel blockquote.bq-subtle, .preview-panel blockquote.bq-minimal,
+.preview-panel .blockquote.bq-subtle, .preview-panel .blockquote.bq-minimal { padding:14px 18px; font-size:.97rem; background:rgba(13,21,38,.45); box-shadow:none; }
+.preview-panel blockquote.bq-subtle::before, .preview-panel blockquote.bq-minimal::before { display:none; }
 
 .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 

@@ -1053,16 +1053,16 @@ blockquote.bq-lavender::before,
 blockquote.bq-lavender cite,
 .blockquote.bq-lavender cite { color: #b9a7ff; border-top-color: rgba(185,167,255,.22); }
 
-/* Subtle: no quote mark, minimal frame — for inline use */
-blockquote.bq-subtle,
-.blockquote.bq-subtle {
+/* Subtle / Minimal: no quote mark, minimal frame — for inline use */
+blockquote.bq-subtle, blockquote.bq-minimal,
+.blockquote.bq-subtle, .blockquote.bq-minimal {
   padding: 16px 20px;
   font-size: 0.97rem;
   background: rgba(13, 21, 38, 0.45);
   box-shadow: none;
 }
-blockquote.bq-subtle::before,
-.blockquote.bq-subtle::before { display: none; }
+blockquote.bq-subtle::before, blockquote.bq-minimal::before,
+.blockquote.bq-subtle::before, .blockquote.bq-minimal::before { display: none; }
 
 /* ============================================================
    Rarefolio.io — Custom Styles (consolidated from custom.css)
