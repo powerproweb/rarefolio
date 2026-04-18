@@ -141,7 +141,14 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       <div class="qdv-row"><div class="qdv-k">Network</div><div class="qdv-v" id="v-net">—</div></div>
       <div class="qdv-row"><div class="qdv-k">Tx Hash</div><div class="qdv-v mono" id="v-tx">—</div></div>
 
+      <!-- Live marketplace data (only populated when ?cnft=... is present) -->
+      <div class="qdv-row"><div class="qdv-k">Mint Status</div><div class="qdv-v" id="v-mintstatus">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Listing</div><div class="qdv-v" id="v-listing">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Current Owner</div><div class="qdv-v mono" id="v-owner">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Asset Fingerprint</div><div class="qdv-v mono" id="v-fingerprint">—</div></div>
+
       <div style="margin-top:12px;opacity:.8;font-size:13px;" id="v-msg"></div>
+      <div style="margin-top:6px;opacity:.6;font-size:12px;" id="v-market-msg"></div>
     </div>
   </div>
 </section>
@@ -161,11 +168,16 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   <a href="#top" aria-label="Back to top">Back to top</a>
 </div>
 
+<!-- Configure marketplace API base (override locally by editing this line) -->
+<script>window.RF_MARKET_BASE = 'https://market.rarefolio.io';</script>
 <script src="/assets/js/main.js?v=20260412"></script>
+<script src="/assets/js/rf-market.js?v=20260417"></script>
 <script>
 (function(){
   const qs = new URLSearchParams(location.search);
   const cert = qs.get('cert') || '';
+  const cnft = qs.get('cnft') || qs.get('nft') || '';
+  const barQ = qs.get('bar') || '';
 
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || '—'; };
   const badge = (state) => {
@@ -209,6 +221,35 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       badge('unverified');
       document.getElementById('v-msg').textContent = 'No verification record found for this certificate ID.';
     });
+
+  // ── Additive live enrichment: if ?cnft=... is present, call the
+  //    marketplace API and fill in minting/listing/ownership fields.
+  //    This does NOT change the cert-verification badge logic above.
+  const marketMsg = document.getElementById('v-market-msg');
+  if (cnft && window.RFMarket) {
+    if (barQ) set('v-bar', barQ);
+    set('v-cnft', cnft);
+    marketMsg.textContent = 'Loading live marketplace data…';
+
+    window.RFMarket.getToken(cnft)
+      .then(t => {
+        set('v-cnft',        t.cnft_id || cnft);
+        set('v-bar',         t.bar_serial || barQ || '—');
+        set('v-net',         (t.chain && t.chain.network) || '—');
+        set('v-tx',          (t.chain && t.chain.mint_tx_hash) || '—');
+        set('v-fingerprint', (t.chain && t.chain.asset_fingerprint) || '—');
+        set('v-mintstatus',  (t.status && t.status.primary_sale) || '—');
+        set('v-listing',     (t.status && t.status.listing) || '—');
+        set('v-owner',       t.owner_display || '—');
+        marketMsg.textContent = 'Live data from marketplace as of ' + (t.updated_at || 'now') + '.';
+      })
+      .catch(err => {
+        marketMsg.textContent =
+          (err && err.status === 404)
+            ? 'No marketplace record yet for ' + cnft + '.'
+            : 'Marketplace temporarily unavailable.';
+      });
+  }
 })();
 </script>
 </body>

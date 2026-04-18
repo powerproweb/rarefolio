@@ -1,0 +1,16 @@
+# Main-site webhook receivers
+#
+# - No directory listing
+# - Shared library (_hmac.php) must not be served directly
+Options -Indexes
+
+<FilesMatch "^_">
+  Require all denied
+</FilesMatch>
+
+# Defensive headers
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Cache-Control "no-store"
+</IfModule>

@@ -167,6 +167,19 @@ The NFT detail page (`nft.html`) automatically shows **View Certificate**, **Ver
 - `api/admin/manage_blocks.php` — Block CRUD
 - `api/admin/manage_stories.php` — Story CRUD
 
+### Marketplace Integration (signed webhooks)
+- `api/webhook/mint-complete.php` — Receives `mint.complete` events from the marketplace
+- `api/webhook/ownership-change.php` — Receives `ownership.change` events
+- `api/webhook/_hmac.php` — Shared HMAC verifier + replay protection (not web-reachable)
+- `assets/js/rf-market.js` — Browser client that `verify.html` and `nft.html` use to fetch live marketplace data
+
+Full setup walkthrough lives in the marketplace repo:
+`../01a_rarefolio_marketplace/docs/CONFIG.md`
+
+The main site needs exactly one env var: `RF_WEBHOOK_SECRET`. See
+`api/webhook/README.md` for hosting-specific instructions (cPanel, Apache,
+nginx+fpm, or local dev).
+
 ---
 
 ## Project Structure

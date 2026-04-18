@@ -227,6 +227,26 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
           <p class="muted small" style="margin:0;">Loading story…</p>
         </div>
 
+        <hr class="sep" />
+
+        <!-- Live Marketplace Data (populated from market.rarefolio.io/api/v1) -->
+        <div class="section-title" style="margin:0 0 10px 0;">
+          <h3 style="margin:0;">Live Marketplace Data</h3>
+        </div>
+        <div id="rf-market-panel" class="panel pad" style="margin:0; font-size:14px;">
+          <div style="display:grid; grid-template-columns: 160px 1fr; gap:6px 10px;">
+            <div style="opacity:.7;font-weight:800;">Mint Status</div>      <div id="rf-m-status">—</div>
+            <div style="opacity:.7;font-weight:800;">Listing</div>          <div id="rf-m-listing">—</div>
+            <div style="opacity:.7;font-weight:800;">Current Owner</div>    <div id="rf-m-owner" style="font-family:ui-monospace,monospace;">—</div>
+            <div style="opacity:.7;font-weight:800;">Network</div>          <div id="rf-m-network">—</div>
+            <div style="opacity:.7;font-weight:800;">Policy ID</div>        <div id="rf-m-policy" style="font-family:ui-monospace,monospace;overflow-wrap:anywhere;">—</div>
+            <div style="opacity:.7;font-weight:800;">Fingerprint</div>      <div id="rf-m-fingerprint" style="font-family:ui-monospace,monospace;overflow-wrap:anywhere;">—</div>
+            <div style="opacity:.7;font-weight:800;">Mint Tx</div>          <div id="rf-m-tx" style="font-family:ui-monospace,monospace;overflow-wrap:anywhere;">—</div>
+            <div style="opacity:.7;font-weight:800;">Minted At</div>        <div id="rf-m-mintedat">—</div>
+          </div>
+          <p id="rf-m-msg" class="muted small" style="margin:10px 0 0 0;">Waiting for marketplace data…</p>
+        </div>
+
       </div>
     </div>
 
@@ -249,5 +269,47 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 
 <!-- Image + detail rendering handled entirely by qd-wire.js (resolves {id} templates, block routing, fallbacks) -->
 <script src="/assets/js/qd-wire.js?v=20260412"></script>
+
+<!-- Marketplace API bridge -->
+<script>window.RF_MARKET_BASE = 'https://market.rarefolio.io';</script>
+<script src="/assets/js/rf-market.js?v=20260417"></script>
+<script>
+(function(){
+  var qs   = new URLSearchParams(location.search);
+  var cnft = qs.get('nft') || qs.get('cnft') || '';
+  var msg  = document.getElementById('rf-m-msg');
+  function set(id, v){ var el = document.getElementById(id); if (el) el.textContent = (v == null || v === '') ? '—' : v; }
+
+  if (!cnft) {
+    msg.textContent = 'No CNFT ID in URL — live data unavailable.';
+    return;
+  }
+  if (!window.RFMarket) {
+    msg.textContent = 'Marketplace client unavailable.';
+    return;
+  }
+
+  msg.textContent = 'Loading live marketplace data…';
+  window.RFMarket.getToken(cnft)
+    .then(function (t) {
+      set('rf-m-status',      (t.status && t.status.primary_sale) || '—');
+      set('rf-m-listing',     (t.status && t.status.listing) || '—');
+      set('rf-m-owner',       t.owner_display || '—');
+      set('rf-m-network',     (t.chain && t.chain.network) || '—');
+      set('rf-m-policy',      (t.chain && t.chain.policy_id) || '—');
+      set('rf-m-fingerprint', (t.chain && t.chain.asset_fingerprint) || '—');
+      set('rf-m-tx',          (t.chain && t.chain.mint_tx_hash) || '—');
+      set('rf-m-mintedat',    (t.chain && t.chain.minted_at) || '—');
+      msg.textContent = 'Live data as of ' + (t.updated_at || 'now') + '.';
+    })
+    .catch(function (err) {
+      if (err && err.status === 404) {
+        msg.textContent = 'No marketplace record yet for ' + cnft + '.';
+      } else {
+        msg.textContent = 'Marketplace temporarily unavailable.';
+      }
+    });
+})();
+</script>
 </body>
 </html>

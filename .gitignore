@@ -2,6 +2,14 @@
 # SECRETS & CREDENTIALS  -- never commit these
 # ============================================================
 api/_config.php
+.env
+api/webhook/.env
+
+# ============================================================
+# WEBHOOK RUNTIME STATE  -- nonces, delivery logs (server-only)
+# ============================================================
+uploads/webhook-log/
+rf_webhook_nonces/
 
 # ============================================================
 # BACKUP / BROKEN FILES

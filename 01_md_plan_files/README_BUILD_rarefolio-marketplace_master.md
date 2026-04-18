@@ -1,6 +1,26 @@
 # BUILD_rarefolio_master.md
 **Master build log for rarefolio.io — newest plans go at the top.**
 
+
+1. Set a real CORS_ALLOWED_ORIGINS (e.g. https://rarefolio.io).
+2. Generate one 32-byte hex secret and set it as both:
+◦  RF_WEBHOOK_SECRET on the main site
+◦  PUBLIC_SITE_WEBHOOK_SECRET on the marketplace
+
+To ChatGPT: Generate one 32-byte hex secret | `5f9c1b74a8e2d6c34071fe9ab25cd8834a6f19d0be7c52a18df3460c9e1b72af`
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 ## 2026-04-15 — Static-to-DB Story Migration
 
