@@ -204,7 +204,7 @@
       const res = await fetch(url, { cache: 'default' });
       if (!res.ok) { _apiBlockCache.set(key, null); return null; }
       const d = await res.json();
-    const meta = {
+      const meta = {
         block_id:        d.block_id,
         folder:          d.folder_slug,
         label:           d.label,
