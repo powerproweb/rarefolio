@@ -43,35 +43,27 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p 22 ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Silence .bashrc for non-interactive shells
-        run: |
-          # BlueHost's .bashrc prints output on login which breaks rsync protocol negotiation.
-          # Prepend a non-interactive guard if it's not already present.
-          ssh -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -p 22 \
-            ${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }} \
-            'grep -q "rsync-safe" ~/.bashrc || printf "# rsync-safe: skip for non-interactive shells\n[ -z \"\$PS1\" ] && return\n" | cat - ~/.bashrc > /tmp/.bashrc_tmp && mv /tmp/.bashrc_tmp ~/.bashrc && echo "patched" || echo "already patched"'
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
 
-      - name: Test SSH connection (debug)
+      - name: Deploy via lftp SFTP
         run: |
-          ssh -vvv -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=yes \
-            -p 22 \
-            ${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }} \
-            "echo SSH_CONNECTION_OK" || true
-
-      - name: Deploy via rsync over SSH
-        run: |
-          rsync -az --checksum --delete \
-            --exclude '.git/' \
-            --exclude '.gitignore' \
-            --exclude '.gitattributes' \
-            --exclude 'README.md' \
-            --exclude 'index_OLD.html' \
-            --exclude '01_md_plan_files/' \
-            --exclude '.github/' \
-            --exclude '*.log' \
-            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -p 22" \
-            ./ ${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}:${{ secrets.SFTP_REMOTE_DIR }}/
+          # lftp SFTP uses the SSH SFTP subsystem — works without shell access on BlueHost
+          lftp -c "
+            set sftp:auto-confirm yes
+            set sftp:connect-program 'ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -p 22 -q'
+            set net:timeout 60
+            set net:max-retries 3
+            open sftp://${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}
+            mirror --reverse --verbose --only-newer \\
+              --exclude-glob .git/ \\
+              --exclude-glob .gitignore \\
+              --exclude-glob .gitattributes \\
+              --exclude-glob README.md \\
+              --exclude-glob index_OLD.html \\
+              --exclude-glob 01_md_plan_files/ \\
+              --exclude-glob .github/ \\
+              --exclude-glob '*.log' \\
+              ./ ${{ secrets.SFTP_REMOTE_DIR }}/
+            bye
+          "
