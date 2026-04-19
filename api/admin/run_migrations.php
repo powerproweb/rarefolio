@@ -13,22 +13,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../_config.php';
 
-// ---- Basic Auth ----
-$u = $_SERVER['PHP_AUTH_USER'] ?? '';
-$p = $_SERVER['PHP_AUTH_PW']   ?? '';
-$auth = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
-if (($u === '' || $p === '') && $auth !== '') {
-    if (stripos($auth, 'basic ') === 0) {
-        $decoded = base64_decode(substr($auth, 6));
-        if ($decoded !== false && strpos($decoded, ':') !== false) {
-            [$u, $p] = explode(':', $decoded, 2);
-        }
-    }
-}
-if ($u !== ADMIN_USER || $p !== ADMIN_PASS) {
-    header('WWW-Authenticate: Basic realm="Rarefolio Admin"');
-    http_response_code(401);
-    exit('Unauthorized');
+// ---- Token auth (URL param) ----
+$token = $_GET['token'] ?? '';
+if ($token !== 'rf_migrate_2026') {
+    http_response_code(403);
+    exit('Forbidden — append ?token=rf_migrate_2026 to the URL');
 }
 
 header('Content-Type: text/plain; charset=utf-8');
