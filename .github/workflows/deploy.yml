@@ -43,6 +43,16 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p 22 ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Silence .bashrc for non-interactive shells
+        run: |
+          # BlueHost's .bashrc prints output on login which breaks rsync protocol negotiation.
+          # Prepend a non-interactive guard if it's not already present.
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -p 22 \
+            ${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }} \
+            'grep -q "rsync-safe" ~/.bashrc || printf "# rsync-safe: skip for non-interactive shells\n[ -z \"\$PS1\" ] && return\n" | cat - ~/.bashrc > /tmp/.bashrc_tmp && mv /tmp/.bashrc_tmp ~/.bashrc && echo "patched" || echo "already patched"'
+
       - name: Test SSH connection (debug)
         run: |
           ssh -vvv -i ~/.ssh/deploy_key \
