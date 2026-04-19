@@ -42,6 +42,15 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p 22 ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Test SSH connection (debug)
+        run: |
+          ssh -vvv -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o BatchMode=yes \
+            -p 22 \
+            ${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }} \
+            "echo SSH_CONNECTION_OK" || true
+
       - name: Deploy via rsync over SSH
         run: |
           rsync -az --checksum --delete \
