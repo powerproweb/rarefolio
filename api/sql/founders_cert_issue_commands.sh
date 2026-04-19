@@ -8,7 +8,11 @@
 #    1. Replace MAINNET_TX_HASH_NNN with the real mint_tx_hash for each token
 #    2. Replace MAINNET_POLICY_ID with the actual Cardano policy ID
 #    3. Replace FOUNDER_WALLET_ADDR with the founder's Cardano wallet address
-#    4. Set ADMIN_PASS below to match ADMIN_PASS in api/_config.php
+#    4. Export ADMIN_USER and ADMIN_PASS in your shell (values live in
+#       api/_config.php on the server / your password manager), for example:
+#         export ADMIN_USER='<from api/_config.php ADMIN_USER>'
+#         export ADMIN_PASS='<from api/_config.php ADMIN_PASS>'
+#       This script will fail fast if either is unset.
 #
 #  Template/seal assignments are deterministic (cnft_num mod pool_size):
 #    CNFT#   num    template    seal
@@ -26,7 +30,8 @@
 # =============================================================================
 
 BASE_URL="https://rarefolio.io"
-ADMIN_PASS="***REDACTED-ROTATED-2026-04-19***"
+: "${ADMIN_USER:?ADMIN_USER env var required (see api/_config.php ADMIN_USER)}"
+: "${ADMIN_PASS:?ADMIN_PASS env var required (see api/_config.php ADMIN_PASS)}"
 BAR_SERIAL="E101837"
 COLLECTION="Founders Collection — Silver Bar I"
 NETWORK="mainnet"
@@ -41,7 +46,7 @@ issue_cert() {
   local TOKEN_ID="$5"
 
   curl -s -X POST "${BASE_URL}/api/admin/issue_cert.php" \
-    -u "qd_admin_legacy:${ADMIN_PASS}" \
+    -u "${ADMIN_USER}:${ADMIN_PASS}" \
     -H "Content-Type: application/json" \
     -d "{
       \"certId\":                  \"QDCERT-${BAR_SERIAL}-${CNFT_NUM}\",

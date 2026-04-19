@@ -1,6 +1,7 @@
 # OPERATIONS.md
-**Rarefolio.io — Site Operations & Credentials**
-*Private repo — contains live credentials. Do not share.*
+**Rarefolio.io — Site Operations**
+*This repo is PUBLIC on GitHub. Do not put live credentials here.*
+*Credential values live ONLY in: (a) the server's gitignored `api/_config.php`, (b) the operator's password manager. See `SECURITY_NOTES.md` for the rotation runbook.*
 
 ---
 
@@ -26,25 +27,31 @@
 
 ---
 
-## Credentials
+## Credentials (references only — values live in `api/_config.php` on the server)
 
 ### Database (MySQL)
-Stored in `api/_config.php` — do not commit changes to this file's credentials.
+Runtime file: `api/_config.php` (gitignored). Rotation: cPanel → MySQL Databases.
 
-| Item | Value |
+| Item | Source |
 |---|---|
-| Host | `localhost` |
-| Database | `rarefolio_cnftcert` |
-| Username | `rarefolio_cnftcert` |
-| Password | `***REDACTED-ROTATED-2026-04-19***` |
+| Host | `api/_config.php :: DB_HOST` |
+| Database | `api/_config.php :: DB_NAME` (user `rarefolio_cnftcert`) |
+| Username | `api/_config.php :: DB_USER` |
+| Password | `api/_config.php :: DB_PASS` — **never commit** |
 
-### Admin API (Basic Auth)
-Used for all `/api/admin/` endpoints and `/admin/story-editor.php`.
-
-| Item | Value |
+### Admin API (Basic Auth for `/api/admin/*` and `/admin/story-editor.php`)
+| Item | Source |
 |---|---|
-| Username | `qd_admin_legacy` |
-| Password | `***REDACTED-ROTATED-2026-04-19***` |
+| Username | `api/_config.php :: ADMIN_USER` |
+| Password | `api/_config.php :: ADMIN_PASS` — **never commit** |
+
+### Under-development gate (`api/login.php`)
+| Item | Source |
+|---|---|
+| Username | `api/_config.php :: UD_USER` |
+| Password | `api/_config.php :: UD_PASS` — **never commit** |
+
+Operators: pull current values from your password manager. Rotation history + procedures live in `SECURITY_NOTES.md`.
 
 ---
 

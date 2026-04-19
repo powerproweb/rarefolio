@@ -57,3 +57,6 @@ composer.lock
 # ============================================================
 assets/img/collection/
 assets/downloads/
+
+# ggshield scan cache
+.cache_ggshield

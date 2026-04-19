@@ -46,11 +46,16 @@ For each token `qd-silver-0000705` … `qd-silver-0000712`:
 - Click **Mint** → sidecar submits to Blockfrost preprod
 - Wait for `mint_tx_hash` to be populated in `qd_tokens`
 
-Bulk mint can also be triggered via curl:
+Bulk mint can also be triggered via curl. Credentials MUST be sourced from your
+password manager / marketplace `.env` — never hardcode them in this file:
 ```powershell
+# Set these in your shell before running (values live in your password manager):
+$env:QD_ADMIN_USER = '<marketplace ADMIN_USER>'
+$env:QD_ADMIN_PASS = '<marketplace ADMIN_PASS>'
+
 curl -s -X POST http://localhost:8080/admin/mint-new.php `
   -H "Content-Type: application/json" `
-  -u "qd_admin_legacy:***REDACTED-ROTATED-2026-04-19***" `
+  -u "$($env:QD_ADMIN_USER):$($env:QD_ADMIN_PASS)" `
   -d '{"collection_slug":"silverbar-01-founders"}'
 ```
 
