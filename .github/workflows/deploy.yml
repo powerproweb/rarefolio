@@ -36,10 +36,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install SSH key
+        env:
+          KEY_PASS: ${{ secrets.SFTP_KEY_PASS }}
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SFTP_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          # Strip passphrase so rsync can use the key non-interactively
+          ssh-keygen -p -P "$KEY_PASS" -N "" -f ~/.ssh/deploy_key
           ssh-keyscan -p 22 ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
 
       - name: Test SSH connection (debug)
