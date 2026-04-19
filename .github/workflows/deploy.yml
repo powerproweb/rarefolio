@@ -3,15 +3,13 @@
 # ============================================================
 #
 #  Required GitHub repository secrets (Settings → Secrets → Actions):
-#    SFTP_HOST        — e.g. rarefolio.io  (or the BlueHost server IP)
-#    SFTP_USER        — your cPanel/FTP username
-#    SFTP_PASS        — your cPanel/FTP password
-#    SFTP_PORT        — 21 (FTPS/FTP over TLS)
+#    SFTP_HOST        — e.g. rarefolio.io
+#    SFTP_USER        — your cPanel username
+#    SFTP_PASS        — your cPanel password
 #    SFTP_REMOTE_DIR  — /home/rarefolio/public_html
 #
-#  First run: uploads all included files.
-#  Subsequent runs: uploads ONLY files changed since last deploy
-#  (state tracked in .ftp-deploy-sync-state.json on the server).
+#  Uses lftp over SFTP (SSH port 22) — mirror with exclusions.
+#  Only transfers files newer than what is already on the server.
 #
 #  Trigger manually:
 #    GitHub → Actions → Deploy to BlueHost → Run workflow
@@ -33,28 +31,29 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2   # needed for diff-based change detection
 
-      - name: Deploy changed files via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server:       ${{ secrets.SFTP_HOST }}
-          username:     ${{ secrets.SFTP_USER }}
-          password:     ${{ secrets.SFTP_PASS }}
-          port:         ${{ secrets.SFTP_PORT }}
-          protocol:     ftps
-          local-dir:    ./
-          server-dir:   ${{ secrets.SFTP_REMOTE_DIR }}/
-          dangerous-clean-slate: false   # never delete files on server not in repo
-          exclude: |
-            **/.git*
-            **/.git*/**
-            01_md_plan_files/**
-            .github/**
-            README.md
-            index_OLD.html
-            **/*.log
-            **/node_modules/**
-            .gitattributes
-            .gitignore
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
+      - name: Deploy via lftp SFTP
+        env:
+          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+        run: |
+          lftp -c "
+            set sftp:auto-confirm yes
+            set net:timeout 60
+            set net:max-retries 3
+            set net:reconnect-interval-base 5
+            open sftp://${{ secrets.SFTP_USER }}:\$SFTP_PASS@${{ secrets.SFTP_HOST }}:22
+            mirror --reverse --verbose --only-newer \\
+              --exclude-glob .git \\
+              --exclude-glob .gitignore \\
+              --exclude-glob .gitattributes \\
+              --exclude-glob README.md \\
+              --exclude-glob index_OLD.html \\
+              --exclude-glob '01_md_plan_files/' \\
+              --exclude-glob '.github/' \\
+              --exclude-glob '*.log' \\
+              ./ ${{ secrets.SFTP_REMOTE_DIR }}
+            bye
+          "
