@@ -50,7 +50,8 @@ if (!$barSerial || $slug === '') {
 }
 
 // ---- Resolve block metadata ----
-$block = null;
+$block      = null;
+$blockFromDb = false; // true when resolved from qd_blocks (block_id is authoritative)
 
 // 1) Try static map first (instant, no DB)
 if (isset($STATIC_BLOCKS[$slug])) {
@@ -89,6 +90,7 @@ if (!$block) {
         'story_mode' => $row['story_mode'],
         'batch'      => (int)$row['batch_num'],
       ];
+      $blockFromDb = true;
       if ($batchParam === 0) $batchParam = $block['batch'];
     }
   } catch (Throwable $e) {
@@ -114,9 +116,13 @@ $pageTitle   = "Silver Bar {$barNum} | {$label} | Tokenized Silver Bar CNFTs | R
 $collTitle   = "Bar {$barNum} • {$label}";
 $canonicalUrl= "https://rarefolio.io/collection/silverbar-{$barNum}/{$slugE}?batch={$batchParam}";
 
-// DB-format block_id for story API (e.g. E101837-block0001)
-$dbBlockId   = $barSerial . '-block' . str_pad((string)$block['batch'], 4, '0', STR_PAD_LEFT);
-$storySrc    = '/api/blocks/story.php?block=' . urlencode($dbBlockId) . '&item=0';
+// Story block ID for the story API.
+// DB-resolved blocks use their stored block_id directly (may be non-standard, e.g. 'block88').
+// Static-map blocks reconstruct the DB-format ID from bar serial + batch number.
+$storyBlockId = $blockFromDb
+  ? $block['block_id']
+  : ($barSerial . '-block' . str_pad((string)$block['batch'], 4, '0', STR_PAD_LEFT));
+$storySrc    = '/api/blocks/story.php?block=' . urlencode($storyBlockId) . '&item=0';
 
 $cssVersion  = '20260415';
 ?>
