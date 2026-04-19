@@ -54,7 +54,7 @@ jobs:
             set sftp:connect-program 'ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -p 22 -q'
             set net:timeout 60
             set net:max-retries 3
-            open sftp://${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}
+            open -u "${{ secrets.SFTP_USER }}," sftp://${{ secrets.SFTP_HOST }}
             mirror --reverse --verbose --only-newer \\
               --exclude-glob .git/ \\
               --exclude-glob .gitignore \\
