@@ -1,0 +1,60 @@
+# ============================================================
+#  Rarefolio.io — Auto-deploy to BlueHost on push to main
+# ============================================================
+#
+#  Required GitHub repository secrets (Settings → Secrets → Actions):
+#    SFTP_HOST        — e.g. rarefolio.io  (or the BlueHost server IP)
+#    SFTP_USER        — your cPanel/FTP username
+#    SFTP_PASS        — your cPanel/FTP password
+#    SFTP_PORT        — 22 for SFTP (SSH), 21 for plain FTP
+#    SFTP_REMOTE_DIR  — /home/rarefolio/public_html
+#
+#  First run: uploads all included files.
+#  Subsequent runs: uploads ONLY files changed since last deploy
+#  (state tracked in .ftp-deploy-sync-state.json on the server).
+#
+#  Trigger manually:
+#    GitHub → Actions → Deploy to BlueHost → Run workflow
+# ============================================================
+
+name: Deploy to BlueHost
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: SFTP deploy → BlueHost
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # needed for diff-based change detection
+
+      - name: Deploy changed files via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:       ${{ secrets.SFTP_HOST }}
+          username:     ${{ secrets.SFTP_USER }}
+          password:     ${{ secrets.SFTP_PASS }}
+          port:         ${{ secrets.SFTP_PORT }}
+          protocol:     sftp
+          local-dir:    ./
+          server-dir:   ${{ secrets.SFTP_REMOTE_DIR }}/
+          dangerous-clean-slate: false   # never delete files on server not in repo
+          exclude: |
+            **/.git*
+            **/.git*/**
+            01_md_plan_files/**
+            .github/**
+            README.md
+            index_OLD.html
+            **/*.log
+            **/node_modules/**
+            .gitattributes
+            .gitignore
