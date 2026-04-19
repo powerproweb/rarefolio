@@ -40,7 +40,8 @@ jobs:
           KEY_PASS: ${{ secrets.SFTP_KEY_PASS }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SFTP_KEY }}" > ~/.ssh/deploy_key
+          # Decode base64-encoded key — avoids CRLF/echo corruption
+          echo "${{ secrets.SFTP_KEY }}" | base64 -d > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           # Strip passphrase so rsync can use the key non-interactively
           ssh-keygen -p -P "$KEY_PASS" -N "" -f ~/.ssh/deploy_key
