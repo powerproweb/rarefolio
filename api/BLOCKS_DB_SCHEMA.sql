@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS qd_blocks (
   batch_num   INT UNSIGNED NOT NULL,
   folder_slug VARCHAR(120) NOT NULL,
   label       VARCHAR(200) NOT NULL,
-  story_mode  ENUM('shared','per_item') NOT NULL DEFAULT 'shared',
+  story_mode       ENUM('shared','per_item') NOT NULL DEFAULT 'shared',
+  character_names  TEXT NULL DEFAULT NULL COMMENT 'JSON-encoded array of up to 8 per-item display names. NULL for shared-mode blocks.',
 
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

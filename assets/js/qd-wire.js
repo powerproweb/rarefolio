@@ -204,12 +204,13 @@
       const res = await fetch(url, { cache: 'default' });
       if (!res.ok) { _apiBlockCache.set(key, null); return null; }
       const d = await res.json();
-      const meta = {
-        block_id:   d.block_id,
-        folder:     d.folder_slug,
-        label:      d.label,
-        story_mode: d.story_mode,
-        _source:    'api',
+    const meta = {
+        block_id:        d.block_id,
+        folder:          d.folder_slug,
+        label:           d.label,
+        story_mode:      d.story_mode,
+        character_names: Array.isArray(d.character_names) ? d.character_names : null,
+        _source:         'api',
       };
       _apiBlockCache.set(key, meta);
       return meta;
@@ -642,10 +643,11 @@
         const title = `${runtimeCfg.title} \u2014 ${slug}`;
         const viewLink = buildViewLink(slug, batchNum, itemIndex);
 
-        // Look up per-item character name if this block has named items
+        // Look up per-item character name.
+        // Priority: DB-backed character_names from block meta → legacy hardcoded QD_ITEM_NAMES → empty.
         const _storyBlockId = blockMeta?.story_block_id || blockMeta?.block_id || '';
         const _itemName = (blockMeta?.story_mode === 'per_item' && _storyBlockId)
-          ? (QD_ITEM_NAMES[_storyBlockId]?.[itemIndex - 1] || '')
+          ? (blockMeta.character_names?.[itemIndex - 1] || QD_ITEM_NAMES[_storyBlockId]?.[itemIndex - 1] || '')
           : '';
         const _cardDesc = _itemName
           ? `<p class="cnft-desc"><strong class="mas_txt_clr">${_itemName}</strong><br><span class="muted small">Cardano \u00b7 Blockchain data pending</span></p>`
@@ -775,8 +777,9 @@
 
     // Title: use character name for per_item blocks, block label for shared, slug as final fallback
     const _dStoryBlockId = blockMeta?.story_block_id || blockMeta?.block_id || '';
+    // Priority: DB-backed character_names → legacy hardcoded QD_ITEM_NAMES → null.
     const _dItemName = (blockMeta?.story_mode === 'per_item' && item && _dStoryBlockId)
-      ? (QD_ITEM_NAMES[_dStoryBlockId]?.[item - 1] || null)
+      ? (blockMeta.character_names?.[item - 1] || QD_ITEM_NAMES[_dStoryBlockId]?.[item - 1] || null)
       : null;
     titleEl.textContent = (_dItemName || blockMeta?.label || nft).toUpperCase();
 

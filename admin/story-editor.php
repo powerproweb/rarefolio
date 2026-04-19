@@ -100,11 +100,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Register a new block
     if ($action === 'register_block') {
-        $barSerial  = trim((string)($in['barSerial']  ?? ''));
-        $batchNum   = isset($in['batchNum']) ? (int)$in['batchNum'] : 0;
-        $folderSlug = trim((string)($in['folderSlug'] ?? ''));
-        $label      = trim((string)($in['label']      ?? ''));
-        $storyMode  = trim((string)($in['storyMode']  ?? 'shared'));
+        $barSerial      = trim((string)($in['barSerial']      ?? ''));
+        $batchNum       = isset($in['batchNum']) ? (int)$in['batchNum'] : 0;
+        $folderSlug     = trim((string)($in['folderSlug']     ?? ''));
+        $label          = trim((string)($in['label']          ?? ''));
+        $storyMode      = trim((string)($in['storyMode']      ?? 'shared'));
+        $characterNames = $in['characterNames'] ?? null;
 
         if (!$barSerial)  { echo json_encode(['error' => 'Missing barSerial']);  exit; }
         if ($batchNum < 1){ echo json_encode(['error' => 'Invalid batchNum']);   exit; }
@@ -114,18 +115,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['error' => 'storyMode must be shared or per_item']); exit;
         }
 
+        $characterNamesJson = null;
+        if (is_array($characterNames) && count($characterNames) > 0) {
+            $sanitized = [];
+            foreach (array_slice($characterNames, 0, 8) as $n) {
+                $sanitized[] = trim((string)$n);
+            }
+            $characterNamesJson = json_encode($sanitized, JSON_UNESCAPED_UNICODE);
+        }
+
         $blockId = $barSerial . '-block' . str_pad((string)$batchNum, 4, '0', STR_PAD_LEFT);
         try {
             $pdo = qd_pdo();
-            $sql = 'INSERT INTO qd_blocks (block_id, bar_serial, batch_num, folder_slug, label, story_mode)
-                    VALUES (?, ?, ?, ?, ?, ?)
+            $sql = 'INSERT INTO qd_blocks (block_id, bar_serial, batch_num, folder_slug, label, story_mode, character_names)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE
-                      folder_slug = VALUES(folder_slug),
-                      label       = VALUES(label),
-                      story_mode  = VALUES(story_mode),
-                      updated_at  = CURRENT_TIMESTAMP';
+                      folder_slug     = VALUES(folder_slug),
+                      label           = VALUES(label),
+                      story_mode      = VALUES(story_mode),
+                      character_names = COALESCE(VALUES(character_names), character_names),
+                      updated_at      = CURRENT_TIMESTAMP';
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$blockId, $barSerial, $batchNum, $folderSlug, $label, $storyMode]);
+            $stmt->execute([$blockId, $barSerial, $batchNum, $folderSlug, $label, $storyMode, $characterNamesJson]);
             echo json_encode([
                 'ok'       => true,
                 'block_id' => $blockId,
@@ -183,6 +194,13 @@ h1 { color: var(--gold); font-size: 20px; font-weight: 700; letter-spacing: -.01
 .new-block-bar input[name=batch]  { width: 80px; }
 .new-block-bar input[name=bar]    { width: 110px; }
 .new-block-bar select             { min-width: 140px; }
+.nb-names-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px; margin-top: 8px; }
+.nb-names-grid input { background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  border-radius: 6px; padding: 6px 10px; font-size: 12px; width: 100%; outline: none; }
+.nb-names-grid input:focus { border-color: var(--gold); }
+.nb-names-label { color: var(--muted); font-size: 11px; text-transform: uppercase;
+  letter-spacing: .07em; font-weight: 600; margin-bottom: 3px; }
 .nb-toggle { background: none; border: 1px solid var(--border); color: var(--muted);
   border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
 .nb-toggle:hover { border-color: var(--gold); color: var(--gold); }
@@ -402,6 +420,11 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
       <button class="btn" onclick="registerBlock()">Register Block</button>
     </div>
   </div>
+  <!-- Per-item character names (shown only when storyMode = per_item) -->
+  <div id="nb-names-wrap" style="display:none; margin-top:12px;">
+    <div class="nb-names-label">Character Names (1 – 8) &mdash; shown on collection cards &amp; NFT detail</div>
+    <div class="nb-names-grid" id="nb-names-grid"></div>
+  </div>
   <div class="status" id="nb-status" style="margin-top:10px;"></div>
 </div>
 
@@ -577,11 +600,14 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
       showNbStatus('Fill in all fields.', 'err'); return;
     }
     showNbStatus('Registering\u2026', 'loading');
+    const characterNames = storyModeVal === 'per_item' ? getCharacterNames() : null;
     try {
+      const payload = { action: 'register_block', barSerial, batchNum, folderSlug, label, storyMode: storyModeVal };
+      if (characterNames) payload.characterNames = characterNames;
       const res = await fetch(location.pathname, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'register_block', barSerial, batchNum, folderSlug, label, storyMode: storyModeVal }),
+        body: JSON.stringify(payload),
       });
       const d = await res.json();
       if (d.error) { showNbStatus('Error: ' + d.error, 'err'); return; }
@@ -595,9 +621,42 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
     }
   }
 
+  // ---- Per-item names grid ----
+  function buildNamesGrid() {
+    const grid = $('nb-names-grid');
+    grid.innerHTML = '';
+    for (let i = 1; i <= 8; i++) {
+      const inp = document.createElement('input');
+      inp.id          = `nb-name-${i}`;
+      inp.type        = 'text';
+      inp.placeholder = `Item ${i} name`;
+      grid.appendChild(inp);
+    }
+  }
+
+  function getCharacterNames() {
+    const names = [];
+    for (let i = 1; i <= 8; i++) {
+      const v = ($(`nb-name-${i}`)?.value || '').trim();
+      names.push(v);
+    }
+    // Only return the array if at least one name is filled
+    return names.some(n => n !== '') ? names : null;
+  }
+
+  // Show / hide names grid based on mode selection
+  $('nb-mode').addEventListener('change', function () {
+    const isPerItem = this.value === 'per_item';
+    $('nb-names-wrap').style.display = isPerItem ? 'block' : 'none';
+    if (isPerItem && !$('nb-name-1')) buildNamesGrid();
+  });
+
   function toggleNewBlock() {
     const p = $('new-block-panel');
-    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    const nowVisible = p.style.display === 'none';
+    p.style.display = nowVisible ? 'block' : 'none';
+    // Ensure names grid is pre-built when panel opens
+    if (nowVisible && !$('nb-name-1')) buildNamesGrid();
   }
 
   // ---- Live preview (updates as you type) ----

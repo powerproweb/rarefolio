@@ -27,7 +27,7 @@ if ($batchNum === false || $batchNum < 1) {
 try {
   $pdo  = qd_pdo();
   $stmt = $pdo->prepare(
-    'SELECT block_id, bar_serial, batch_num, folder_slug, label, story_mode
+    'SELECT block_id, bar_serial, batch_num, folder_slug, label, story_mode, character_names
        FROM qd_blocks
       WHERE bar_serial = ? AND batch_num = ?
       LIMIT 1'
@@ -39,13 +39,21 @@ try {
     respond(404, ['error' => 'No block registered for this bar/batch.', 'bar' => $bar, 'batch' => $batchNum]);
   }
 
+  // Decode character_names JSON; null if not set or invalid
+  $characterNames = null;
+  if ($row['character_names'] !== null) {
+    $decoded = json_decode($row['character_names'], true);
+    if (is_array($decoded)) $characterNames = array_values($decoded);
+  }
+
   respond(200, [
-    'block_id'    => $row['block_id'],
-    'bar_serial'  => $row['bar_serial'],
-    'batch_num'   => (int)$row['batch_num'],
-    'folder_slug' => $row['folder_slug'],
-    'label'       => $row['label'],
-    'story_mode'  => $row['story_mode'],
+    'block_id'        => $row['block_id'],
+    'bar_serial'      => $row['bar_serial'],
+    'batch_num'       => (int)$row['batch_num'],
+    'folder_slug'     => $row['folder_slug'],
+    'label'           => $row['label'],
+    'story_mode'      => $row['story_mode'],
+    'character_names' => $characterNames,
   ]);
 
 } catch (Throwable $e) {

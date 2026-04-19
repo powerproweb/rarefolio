@@ -40,11 +40,12 @@ if ($method === 'POST') {
   $in  = is_string($raw) ? json_decode($raw, true) : [];
   if (!is_array($in)) $in = [];
 
-  $barSerial  = trim((string)($in['barSerial']  ?? ''));
-  $batchNum   = $in['batchNum']   ?? null;
-  $folderSlug = trim((string)($in['folderSlug'] ?? ''));
-  $label      = trim((string)($in['label']      ?? ''));
-  $storyMode  = trim((string)($in['storyMode']  ?? 'shared'));
+  $barSerial      = trim((string)($in['barSerial']      ?? ''));
+  $batchNum       = $in['batchNum']       ?? null;
+  $folderSlug     = trim((string)($in['folderSlug']     ?? ''));
+  $label          = trim((string)($in['label']          ?? ''));
+  $storyMode      = trim((string)($in['storyMode']      ?? 'shared'));
+  $characterNames = $in['characterNames'] ?? null;
 
   if ($barSerial === '') respond(400, ['error' => 'Missing barSerial.']);
   if ($folderSlug === '') respond(400, ['error' => 'Missing folderSlug.']);
@@ -59,22 +60,34 @@ if ($method === 'POST') {
     respond(400, ['error' => 'storyMode must be shared or per_item.']);
   }
 
+  // Validate and encode characterNames (optional; max 8 strings)
+  $characterNamesJson = null;
+  if (is_array($characterNames) && count($characterNames) > 0) {
+    $sanitized = [];
+    foreach (array_slice($characterNames, 0, 8) as $n) {
+      $sanitized[] = trim((string)$n);
+    }
+    $characterNamesJson = json_encode($sanitized, JSON_UNESCAPED_UNICODE);
+  }
+
   $blockId = $barSerial . '-block' . str_pad((string)$batchNum, 4, '0', STR_PAD_LEFT);
 
   try {
     $pdo = qd_pdo();
 
-    // Upsert: insert or update on duplicate key
-    $sql = 'INSERT INTO qd_blocks (block_id, bar_serial, batch_num, folder_slug, label, story_mode)
-            VALUES (?, ?, ?, ?, ?, ?)
+    // Upsert: insert or update on duplicate key.
+    // COALESCE on character_names: a non-null submission replaces; omitting it preserves the existing value.
+    $sql = 'INSERT INTO qd_blocks (block_id, bar_serial, batch_num, folder_slug, label, story_mode, character_names)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
-              folder_slug = VALUES(folder_slug),
-              label       = VALUES(label),
-              story_mode  = VALUES(story_mode),
-              updated_at  = CURRENT_TIMESTAMP';
+              folder_slug      = VALUES(folder_slug),
+              label            = VALUES(label),
+              story_mode       = VALUES(story_mode),
+              character_names  = COALESCE(VALUES(character_names), character_names),
+              updated_at       = CURRENT_TIMESTAMP';
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$blockId, $barSerial, $batchNum, $folderSlug, $label, $storyMode]);
+    $stmt->execute([$blockId, $barSerial, $batchNum, $folderSlug, $label, $storyMode, $characterNamesJson]);
 
     respond(200, [
       'ok'       => true,
