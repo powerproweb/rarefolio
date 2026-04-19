@@ -60,7 +60,6 @@ jobs:
               --exclude-glob .gitignore \\
               --exclude-glob .gitattributes \\
               --exclude-glob README.md \\
-              --exclude-glob index_OLD.html \\
               --exclude-glob 01_md_plan_files/ \\
               --exclude-glob .github/ \\
               --exclude-glob '*.log' \\
