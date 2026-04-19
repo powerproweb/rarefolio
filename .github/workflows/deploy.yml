@@ -3,13 +3,16 @@
 # ============================================================
 #
 #  Required GitHub repository secrets (Settings → Secrets → Actions):
-#    SFTP_HOST        — e.g. rarefolio.io
-#    SFTP_USER        — your cPanel username
-#    SFTP_PASS        — your cPanel password
+#    SFTP_HOST        — rarefolio.io
+#    SFTP_USER        — BlueHost SSH username (see cPanel → SSH Access)
+#    SFTP_KEY         — private SSH key (see setup instructions below)
 #    SFTP_REMOTE_DIR  — /home/rarefolio/public_html
 #
-#  Uses lftp over SFTP (SSH port 22) — mirror with exclusions.
-#  Only transfers files newer than what is already on the server.
+#  SSH key setup (one-time, run locally in Git Bash or WSL):
+#    ssh-keygen -t ed25519 -C "github-deploy" -f ~/.ssh/rarefolio_deploy
+#    # Add ~/.ssh/rarefolio_deploy.pub to BlueHost:
+#    #   cPanel → SSH Access → Manage SSH Keys → Import Key
+#    # Add ~/.ssh/rarefolio_deploy (private key) as GitHub secret SFTP_KEY
 #
 #  Trigger manually:
 #    GitHub → Actions → Deploy to BlueHost → Run workflow
@@ -25,35 +28,30 @@ on:
 
 jobs:
   deploy:
-    name: SFTP deploy → BlueHost
+    name: rsync → BlueHost
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install lftp
-        run: sudo apt-get install -y lftp
-
-      - name: Deploy via lftp SFTP
-        env:
-          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+      - name: Install SSH key
         run: |
-          lftp -c "
-            set sftp:auto-confirm yes
-            set net:timeout 60
-            set net:max-retries 3
-            set net:reconnect-interval-base 5
-            open sftp://${{ secrets.SFTP_USER }}:\$SFTP_PASS@${{ secrets.SFTP_HOST }}:22
-            mirror --reverse --verbose --only-newer \\
-              --exclude-glob .git \\
-              --exclude-glob .gitignore \\
-              --exclude-glob .gitattributes \\
-              --exclude-glob README.md \\
-              --exclude-glob index_OLD.html \\
-              --exclude-glob '01_md_plan_files/' \\
-              --exclude-glob '.github/' \\
-              --exclude-glob '*.log' \\
-              ./ ${{ secrets.SFTP_REMOTE_DIR }}
-            bye
-          "
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SFTP_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p 22 ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via rsync over SSH
+        run: |
+          rsync -az --checksum --delete \
+            --exclude '.git/' \
+            --exclude '.gitignore' \
+            --exclude '.gitattributes' \
+            --exclude 'README.md' \
+            --exclude 'index_OLD.html' \
+            --exclude '01_md_plan_files/' \
+            --exclude '.github/' \
+            --exclude '*.log' \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -p 22" \
+            ./ ${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}:${{ secrets.SFTP_REMOTE_DIR }}/
