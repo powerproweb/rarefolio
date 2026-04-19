@@ -6,7 +6,7 @@
 #    SFTP_HOST        — e.g. rarefolio.io  (or the BlueHost server IP)
 #    SFTP_USER        — your cPanel/FTP username
 #    SFTP_PASS        — your cPanel/FTP password
-#    SFTP_PORT        — 22 for SFTP (SSH), 21 for plain FTP
+#    SFTP_PORT        — 21 (FTPS/FTP over TLS)
 #    SFTP_REMOTE_DIR  — /home/rarefolio/public_html
 #
 #  First run: uploads all included files.
@@ -43,7 +43,7 @@ jobs:
           username:     ${{ secrets.SFTP_USER }}
           password:     ${{ secrets.SFTP_PASS }}
           port:         ${{ secrets.SFTP_PORT }}
-          protocol:     sftp
+          protocol:     ftps
           local-dir:    ./
           server-dir:   ${{ secrets.SFTP_REMOTE_DIR }}/
           dangerous-clean-slate: false   # never delete files on server not in repo
