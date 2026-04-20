@@ -1,13 +1,13 @@
 /**
  * rf-market.js — Rarefolio main-site client for the marketplace API.
  *
- * Single point of contact for all fetch() calls to marketplace.rarefolio.io.
+ * Single point of contact for all fetch() calls to market.rarefolio.io.
  * Centralizes: base URL, timeouts, error handling, and light in-memory
  * caching for the current page load.
  *
  * Configure the base URL by adding this to any page BEFORE loading this file:
  *
- *   <script>window.RF_MARKET_BASE = 'https://marketplace.rarefolio.io';</script>
+ *   <script>window.RF_MARKET_BASE = 'https://market.rarefolio.io';</script>
  *
  * Defaults to same-origin "/market-api" which is a useful local-dev fallback
  * when you reverse-proxy the marketplace under the main domain during testing.

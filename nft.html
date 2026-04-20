@@ -50,8 +50,11 @@
 <link rel="preload" as="style" href="/assets/css/styles.css?v=20260412" />
 <link rel="stylesheet" href="/assets/css/styles.css?v=20260412" />
 
-<!-- Marketplace base URL (used by qd-wire.js for Purchase button + My Collection) -->
-<script>window.RF_MARKET_BASE = 'https://marketplace.rarefolio.io';</script>
+<!-- Marketplace base URL (used by qd-wire.js for Purchase button + My Collection)
+     NOTE: Points to a /market subpath on the main domain while the
+     market.rarefolio.io subdomain is being DNS-configured. Flip back to
+     'https://market.rarefolio.io' in one edit when the subdomain goes live. -->
+<script>window.RF_MARKET_BASE = 'https://rarefolio.io/market';</script>
 
 <!-- Structured Data (Organization) -->
 <script type="application/ld+json">
@@ -143,7 +146,7 @@
       </div>
 
       <div class="dropdown align-right">
-        <a class="dropbtn" href="https://marketplace.rarefolio.io/my-collection.php"
+        <a class="dropbtn" href="https://rarefolio.io/market/my-collection.php"
            target="_blank" rel="noopener" aria-haspopup="false">
           My Collection
         </a>
@@ -240,7 +243,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 
         <hr class="sep" />
 
-        <!-- Live Marketplace Data (populated from marketplace.rarefolio.io/api/v1) -->
+        <!-- Live Marketplace Data (populated from market.rarefolio.io/api/v1) -->
         <div class="section-title" style="margin:0 0 10px 0;">
           <h3 style="margin:0;">Live Marketplace Data</h3>
         </div>
@@ -281,8 +284,8 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 <!-- Image + detail rendering handled entirely by qd-wire.js (resolves {id} templates, block routing, fallbacks) -->
 <script src="/assets/js/qd-wire.js?v=20260412"></script>
 
-<!-- Marketplace API bridge -->
-<script>window.RF_MARKET_BASE = 'https://marketplace.rarefolio.io';</script>
+<!-- Marketplace API bridge (temporary /market subpath — see head for notes) -->
+<script>window.RF_MARKET_BASE = 'https://rarefolio.io/market';</script>
 <script src="/assets/js/rf-market.js?v=20260417"></script>
 <script>
 (function(){
