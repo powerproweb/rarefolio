@@ -81,14 +81,10 @@
 
   /* ---- Marketplace config ----
      RF_MARKET_BASE is set by the page (window.RF_MARKET_BASE) or falls back
-     to a /market subpath on the main domain. The buy page lives at
+     to the production marketplace URL. The buy page lives at
      {RF_MARKET_BASE}/buy.php?token={cnft_id}
-
-     NOTE: The fallback is a temporary subpath on the main domain while the
-     market.rarefolio.io subdomain is being DNS-configured. Once the
-     subdomain is live, flip the fallback back to 'https://market.rarefolio.io'.
   */
-  const RF_MARKET_BASE = (window.RF_MARKET_BASE || 'https://rarefolio.io/market').replace(/\/$/, '');
+  const RF_MARKET_BASE = (window.RF_MARKET_BASE || 'https://marketplace.rarefolio.io').replace(/\/$/, '');
 
   /**
    * Fetch the live sold/available status of a CNFT from the marketplace API.
