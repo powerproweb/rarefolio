@@ -70,14 +70,40 @@
     block14: { folder: 'scnft_new_series',         label: 'New Series',               story_mode: 'shared'   },
   };
 
-  /* ---- Sold tokens ----
-     Add token slugs here when a piece sells. The Purchase button on the
-     NFT detail page will automatically switch to a SOLD state.
-     Example: 'qd-silver-0000009'
+  /* ---- Sold tokens (static fallback) ----
+     The Purchase button is now driven by the live marketplace API.
+     This set is kept as an offline fallback only — add a token slug here
+     if you need an instant SOLD state before the API reflects it.
   */
   const QD_SOLD = new Set([
     // 'qd-silver-0000009',
   ]);
+
+  /* ---- Marketplace config ----
+     RF_MARKET_BASE is set by the page (window.RF_MARKET_BASE) or falls back
+     to the production marketplace URL. The buy page lives at
+     {RF_MARKET_BASE}/buy.php?token={cnft_id}
+  */
+  const RF_MARKET_BASE = (window.RF_MARKET_BASE || 'https://market.rarefolio.io').replace(/\/$/, '');
+
+  /**
+   * Fetch the live sold/available status of a CNFT from the marketplace API.
+   * Returns 'sold' | 'available' | null (null = API unavailable, use fallback).
+   */
+  async function fetchTokenStatus(cnftId) {
+    try {
+      const resp = await fetch(`${RF_MARKET_BASE}/api/v1/tokens/${encodeURIComponent(cnftId)}`, {
+        signal: AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined,
+      });
+      if (!resp.ok) return null;
+      const j = await resp.json();
+      const status = j?.data?.status?.primary_sale ?? j?.data?.status?.primary_sale_status ?? null;
+      if (status === 'sold' || status === 'sold_pre_marketplace') return 'sold';
+      return 'available';
+    } catch {
+      return null;  // network error — fall back to QD_SOLD
+    }
+  }
 
   /* ---- Per-item names for named-character blocks ----
      Key = story_block_id (DB format, e.g. 'E101837-block0002').
@@ -836,20 +862,42 @@
     // Purchase / SOLD button
     const purchaseEl = document.getElementById('qd-purchase');
     if (purchaseEl) {
+      // Set initial state from static fallback while API call is in flight
       if (QD_SOLD.has(nft)) {
-        purchaseEl.textContent = 'SOLD';
-        purchaseEl.removeAttribute('href');
-        purchaseEl.classList.remove('primary');
-        purchaseEl.classList.add('btn-sold');
-        purchaseEl.setAttribute('aria-disabled', 'true');
-        purchaseEl.setAttribute('title', 'This piece has found its keeper.');
+        setSold(purchaseEl);
       } else {
-        purchaseEl.textContent = 'Purchase';
-        purchaseEl.setAttribute('href', '/contact.html');
-        purchaseEl.classList.add('primary');
-        purchaseEl.classList.remove('btn-sold');
-        purchaseEl.removeAttribute('aria-disabled');
+        setAvailable(purchaseEl, nft);
       }
+
+      // Non-blocking: update from live marketplace API
+      fetchTokenStatus(nft).then(liveStatus => {
+        if (liveStatus === 'sold') {
+          setSold(purchaseEl);
+        } else if (liveStatus === 'available') {
+          setAvailable(purchaseEl, nft);
+        }
+        // null = API unavailable, keep the static fallback state
+      });
+    }
+
+    function setSold(el) {
+      el.textContent = 'SOLD';
+      el.removeAttribute('href');
+      el.classList.remove('primary');
+      el.classList.add('btn-sold');
+      el.setAttribute('aria-disabled', 'true');
+      el.setAttribute('title', 'This piece has found its keeper.');
+    }
+
+    function setAvailable(el, cnftId) {
+      el.textContent = 'Purchase';
+      el.setAttribute('href', `${RF_MARKET_BASE}/buy.php?token=${encodeURIComponent(cnftId)}`);
+      el.classList.add('primary');
+      el.classList.remove('btn-sold');
+      el.removeAttribute('aria-disabled');
+      el.setAttribute('title', 'Purchase this piece on RareFolio Marketplace');
+      el.setAttribute('target', '_blank');
+      el.setAttribute('rel', 'noopener');
     }
 
     // Certificate links
