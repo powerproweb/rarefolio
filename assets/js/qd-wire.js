@@ -697,7 +697,7 @@
               ${_cardDesc}
               <div class="cnft-actions">
                 <a class="btn primary" href="${viewLink}">View</a>
-                <a class="btn" href="/contact.html">Purchase</a>
+                <a class="btn rf-buy-btn" data-cnft-id="${slug}" href="${RF_MARKET_BASE}/buy.php?token=${encodeURIComponent(slug)}" target="_blank" rel="noopener">Purchase</a>
               </div>
             </div>
           </article>
@@ -706,6 +706,26 @@
 
       grid.innerHTML = cards.join('');
       bindTilt(grid);
+
+      // Non-blocking: live sold/available status per card.
+      // fetchTokenStatus returns 'sold'|'available'|null (null = API unavailable).
+      // Default state is already 'available' → buy.php; only sold needs updating.
+      for (let _i = 0; _i < BATCH_SIZE; _i++) {
+        (function (_slug) {
+          fetchTokenStatus(_slug).then(function (live) {
+            if (live !== 'sold') return;
+            var btn = grid.querySelector('[data-cnft-id="' + _slug + '"]');
+            if (!btn) return;
+            btn.textContent = 'SOLD';
+            btn.removeAttribute('href');
+            btn.removeAttribute('target');
+            btn.removeAttribute('rel');
+            btn.classList.add('btn-sold');
+            btn.setAttribute('aria-disabled', 'true');
+            btn.setAttribute('title', 'This piece has found its keeper.');
+          });
+        }(makeSlug(startN + _i)));
+      }
 
       if (prevBtn) prevBtn.disabled = batchNum <= 1;
       if (nextBtn) nextBtn.disabled = batchNum >= TOTAL_BATCHES;

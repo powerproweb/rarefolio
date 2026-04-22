@@ -50,4 +50,26 @@ $line = json_encode([
 ], JSON_UNESCAPED_SLASHES);
 @file_put_contents($logDir . '/ownership-change.log', $line . "\n", FILE_APPEND | LOCK_EX);
 
+// Merge ownership update into the per-token JSON cache.
+$cacheDir = __DIR__ . '/../../uploads/webhook-cache';
+if (!is_dir($cacheDir)) { @mkdir($cacheDir, 0700, true); }
+$safeName = preg_replace('/[^a-z0-9\-]/', '', strtolower((string) $data['cnft_id']));
+$cacheFile = $cacheDir . '/' . $safeName . '.json';
+
+$cache = [];
+if (is_file($cacheFile)) {
+    $existing = @json_decode((string) file_get_contents($cacheFile), true);
+    if (is_array($existing)) $cache = $existing;
+}
+
+$cache['cnft_id']          = $data['cnft_id'];
+$cache['owner_display']    = $data['new_owner_display']      ?? null;
+$cache['prev_owner']       = $data['previous_owner_display'] ?? null;
+$cache['ownership_tx']     = $data['tx_hash']                ?? null;
+$cache['owner_changed_at'] = $data['changed_at'];
+$cache['last_event']       = 'ownership.change';
+$cache['last_event_at']    = gmdate('c');
+
+@file_put_contents($cacheFile, json_encode($cache, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT), LOCK_EX);
+
 rf_webhook_ok(['recorded' => true]);

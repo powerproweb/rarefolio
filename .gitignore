@@ -10,9 +10,10 @@ api/webhook/.env.*
 !api/webhook/.env.example
 
 # ============================================================
-# WEBHOOK RUNTIME STATE  -- nonces, delivery logs (server-only)
+# WEBHOOK RUNTIME STATE  -- nonces, delivery logs, token cache (server-only)
 # ============================================================
 uploads/webhook-log/
+uploads/webhook-cache/
 rf_webhook_nonces/
 
 # ============================================================
