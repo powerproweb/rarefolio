@@ -177,10 +177,8 @@ $cssVersion  = '20260424';
 <!-- Styles -->
 <link rel="preload" as="style" href="/assets/css/styles.css?v=<?= $cssVersion ?>" />
 <link rel="stylesheet" href="/assets/css/styles.css?v=<?= $cssVersion ?>" />
-" />
-" />
 
-<!-- Structured Data (Organization) -->
+<!-- Structured Data
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
