@@ -110,6 +110,14 @@ if (!$block) {
   exit;
 }
 
+// Redirect to canonical URL if no batch param was supplied.
+// Without it, qd-wire.js defaults to batch=1 which shows wrong tokens.
+if (!isset($_GET['batch'])) {
+  $canonBatch = $batchParam ?: ($block['batch'] ?? 1);
+  header('Location: /collection/silverbar-' . $barNum . '/' . $slugE . '?batch=' . $canonBatch, true, 302);
+  exit;
+}
+
 // ---- Computed values ----
 $blockId     = htmlspecialchars($block['block_id'], ENT_QUOTES, 'UTF-8');
 $storyMode   = htmlspecialchars($block['story_mode'], ENT_QUOTES, 'UTF-8');
