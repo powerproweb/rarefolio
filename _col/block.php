@@ -298,6 +298,15 @@ $totalBatches = (int) ($block['total_batches'] ?? 5000);
   </div>
 </header>
 
+<?php if ($slugE === 'founders'): ?>
+<div style="background:rgba(217,180,108,.10);border-bottom:1px solid rgba(217,180,108,.25);padding:10px 0;text-align:center;">
+  <p style="margin:0;font-size:0.85rem;letter-spacing:0.06em;color:#d9b46c;">
+    <strong>&#9733; PREVIEW MODE</strong> &mdash; Founders Block 88 is live for browsing.
+    Mainnet minting opens soon. &nbsp;<a href="/contact.html" style="color:#d9b46c;text-decoration:underline;">Join the waitlist</a>
+  </p>
+</div>
+<?php endif; ?>
+
 <section class="section">
   <div class="container">
 
