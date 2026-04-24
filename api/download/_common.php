@@ -18,11 +18,13 @@ function rf_download_env(string $key): string
         $envFile  = __DIR__ . DIRECTORY_SEPARATOR . '.env';
         if (is_file($envFile) && is_readable($envFile)) {
             foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {
+                $line = ltrim((string) $line, "\xEF\xBB\xBF");
                 $line = trim($line);
                 if ($line === '' || $line[0] === '#') continue;
                 $eq = strpos($line, '=');
                 if ($eq === false) continue;
                 $k = trim(substr($line, 0, $eq));
+                $k = ltrim($k, "\xEF\xBB\xBF");
                 $val = trim(substr($line, $eq + 1));
                 if ((str_starts_with($val, '"') && str_ends_with($val, '"')) ||
                     (str_starts_with($val, "'") && str_ends_with($val, "'"))) {
