@@ -12,6 +12,12 @@ ErrorDocument 403 /404.html
 # 2. REWRITES — HTTPS + NON-WWW CANONICALIZATION
 #    All traffic → https://rarefolio.io (matches canonical URLs)
 # ===========================================================================
+<IfModule mod_env.c>
+  SetEnv RF_MARKET_OWNERSHIP_VERIFY_URL https://market.rarefolio.io/api/private/ownership-verify.php
+  SetEnv RF_MARKET_OWNERSHIP_VERIFY_SECRET ***REMOVED_SECRET***
+  SetEnv RF_DOWNLOAD_TICKET_SECRET ***REMOVED_SECRET***
+  SetEnv RF_DOWNLOAD_TICKET_REQUIRED true
+</IfModule>
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
