@@ -35,6 +35,8 @@ $STATIC_BLOCKS = [
   'aquarius'    => ['block_id' => 'block12', 'folder' => 'scnft_zodiac_aquarius',    'label' => 'Zodiac — Aquarius',            'story_mode' => 'shared',   'batch' => 13],
   'pisces'      => ['block_id' => 'block13', 'folder' => 'scnft_zodiac_pisces',      'label' => 'Zodiac — Pisces',              'story_mode' => 'shared',   'batch' => 14],
   'new-series'  => ['block_id' => 'block14', 'folder' => 'scnft_new_series',         'label' => 'New Series',                   'story_mode' => 'shared',   'batch' => 15],
+  // Founders Block 88 — 8 unique tokens (qd-silver-0000705 through 0000712), batch 89 on Bar I
+  'founders'    => ['block_id' => 'block88', 'folder' => 'scnft_founders',           'label' => 'Founders Block 88',            'story_mode' => 'per_item', 'batch' => 89, 'start_index' => 705, 'total_batches' => 1],
 ];
 
 // ---- Read params ----
@@ -189,16 +191,21 @@ $cssVersion  = '20260415';
 </script>
 </head>
 
+<?php
+// Per-block overrides for display range (used by Founders and similar limited-edition blocks)
+$startIndex   = (int) ($block['start_index']   ?? 1);
+$totalBatches = (int) ($block['total_batches'] ?? 5000);
+?>
 <body id="top"
   data-block-id="<?= $blockId ?>"
   data-story-mode="<?= $storyMode ?>"
   data-bar-serial="<?= $barSerialE ?>"
   data-bar-num="<?= $barNum ?>"
   data-set="1"
-  data-total-batches="5000"
-  data-demo-batches="5000"
+  data-total-batches="<?= $totalBatches ?>"
+  data-demo-batches="<?= $totalBatches ?>"
   data-batch-size="8"
-  data-start-index="1"
+  data-start-index="<?= $startIndex ?>"
   data-collection-title="<?= $collTitle ?>"
   data-image-template="/assets/img/nfts/sys/placeholder.jpg"
   data-fallback-image="/assets/img/nfts/sys/placeholder.jpg"

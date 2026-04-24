@@ -68,6 +68,8 @@
     block12: { folder: 'scnft_zodiac_aquarius',    label: 'Zodiac — Aquarius',        story_mode: 'shared'   },
     block13: { folder: 'scnft_zodiac_pisces',      label: 'Zodiac — Pisces',          story_mode: 'shared'   },
     block14: { folder: 'scnft_new_series',         label: 'New Series',               story_mode: 'shared'   },
+    // Founders Block 88 — 8 unique tokens (qd-silver-0000705 through 0000712)
+    block88: { folder: 'scnft_founders',            label: 'Founders Block 88',        story_mode: 'per_item' },
   };
 
   /* ---- Sold tokens (static fallback) ----
@@ -140,6 +142,7 @@
     block06: 'leo',          block07: 'virgo',        block08: 'libra',
     block09: 'scorpio',      block10: 'sagittarius',  block11: 'capricorn',
     block12: 'aquarius',     block13: 'pisces',       block14: 'new-series',
+    block88: 'founders',
   };
 
   function slugForBlock(blockMeta) {
@@ -192,6 +195,8 @@
     if (!Number.isFinite(b)) return null;
     // Static map: batch 1..15 → block00..block14 (Bar I only)
     if (b >= 1 && b <= 15) return 'block' + String(b - 1).padStart(2, '0');
+    // Founders Block 88 = batch 89 on Bar I (tokens 0000705–0000712)
+    if (b === 89) return 'block88';
     return null;
   }
 
