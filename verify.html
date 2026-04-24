@@ -185,13 +185,17 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     const t = document.getElementById('qdv-badge-text');
     t.textContent = (state === 'verified') ? 'VERIFIED' : 'UNVERIFIED';
   };
+  const claimUrl = (certId, cnftId) =>
+    certId
+      ? `/claim-download.html?cert=${encodeURIComponent(certId)}${cnftId ? `&cnft=${encodeURIComponent(cnftId)}` : ''}`
+      : '#';
 
   set('v-cert', cert);
 
   const openCert = document.getElementById('qdv-open-cert');
   const download = document.getElementById('qdv-download');
   openCert.href = cert ? `/cert.html?cert=${encodeURIComponent(cert)}` : '/cert.html';
-  download.href = cert ? `/download.php?cert=${encodeURIComponent(cert)}` : '#';
+  download.href = claimUrl(cert, cnft);
 
   if (!cert) {
     badge('unverified');
@@ -211,7 +215,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       set('v-net', p.chain?.network || '—');
       set('v-tx', p.chain?.txHash || '—');
 
-      download.href = p.pdf?.downloadUrl ? p.pdf.downloadUrl : `/download.php?cert=${encodeURIComponent(cert)}`;
+      download.href = claimUrl(cert, p.cnft?.id || cnft);
 
       document.getElementById('v-msg').textContent =
         (p.status === 'verified')
