@@ -126,7 +126,7 @@ $storyBlockId = $blockFromDb
   : ($barSerial . '-block' . str_pad((string)$block['batch'], 4, '0', STR_PAD_LEFT));
 $storySrc    = '/api/blocks/story.php?block=' . urlencode($storyBlockId) . '&item=0';
 
-$cssVersion  = '20260415';
+$cssVersion  = '20260424';
 ?>
 <!doctype html>
 <html lang="en">
