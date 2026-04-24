@@ -36,7 +36,11 @@ $STATIC_BLOCKS = [
   'pisces'      => ['block_id' => 'block13', 'folder' => 'scnft_zodiac_pisces',      'label' => 'Zodiac — Pisces',              'story_mode' => 'shared',   'batch' => 14],
   'new-series'  => ['block_id' => 'block14', 'folder' => 'scnft_new_series',         'label' => 'New Series',                   'story_mode' => 'shared',   'batch' => 15],
   // Founders Block 88 — 8 unique tokens (qd-silver-0000705 through 0000712), batch 89 on Bar I
-  'founders'    => ['block_id' => 'block88', 'folder' => 'scnft_founders',           'label' => 'Founders Block 88',            'story_mode' => 'per_item', 'batch' => 89, 'start_index' => 705, 'total_batches' => 1],
+  // Founders Block 88: batch=89 on Bar I, tokens 705-712.
+  // total_batches=89 keeps batch 89 valid (no URL clamping). start_index=1 so the
+  // standard formula (1 + (89-1)*8 = 705) gives the correct token range.
+  // block.php has no batch navigator elements so the 1-89 range is invisible to users.
+  'founders'    => ['block_id' => 'block88', 'folder' => 'scnft_founders',           'label' => 'Founders Block 88',            'story_mode' => 'per_item', 'batch' => 89, 'start_index' => 1, 'total_batches' => 89],
 ];
 
 // ---- Read params ----
