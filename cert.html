@@ -161,6 +161,8 @@
       const actionsEl = document.getElementById('qd-cert-actions');
       const dl = document.getElementById('qd-cert-download');
       const vr = document.getElementById('qd-cert-verify');
+      const claimUrl = (cert, cnft) =>
+        '/claim-download.html?cert=' + encodeURIComponent(cert) + (cnft ? '&cnft=' + encodeURIComponent(cnft) : '');
 
       if (!certId) {
         statusEl.textContent = 'Missing cert parameter. Example: ?cert=QDCERT-E101837-0000001';
@@ -168,7 +170,7 @@
       }
 
       // set action links regardless
-      dl.href = '/download.php?cert=' + encodeURIComponent(certId);
+      dl.href = claimUrl(certId, '');
       vr.href = '/verify.html?cert=' + encodeURIComponent(certId);
       actionsEl.style.display = 'flex';
 
@@ -184,6 +186,8 @@
           statusEl.textContent = 'VERIFIED • ' + certId;
           const box = document.getElementById('qd-cert-render');
           const p = j.payload || j; // depending on your API shape
+          const cnftId = p.cnft?.id || p.cnftId || p.cnft_id || '';
+          dl.href = claimUrl(certId, cnftId);
           box.innerHTML = `
             <div class="panel pad" style="margin-top:12px;">
               <div class="mono">certId: ${certId}</div>

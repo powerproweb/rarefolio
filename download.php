@@ -8,12 +8,43 @@
 //
 // This implementation auto-derives <user> from __DIR__ so you don't have to hardcode it.
 
+require_once __DIR__ . '/api/download/_common.php';
+
 $cert = isset($_GET["cert"]) ? preg_replace("/[^A-Z0-9\-]/", "", $_GET["cert"]) : "";
 if ($cert === "") {
   http_response_code(400);
   header("Content-Type: text/plain; charset=utf-8");
   echo "Missing cert parameter";
   exit;
+}
+
+$ticket        = trim((string)($_GET['ticket'] ?? ''));
+$ticketRequired = rf_download_bool_env('RF_DOWNLOAD_TICKET_REQUIRED', false);
+
+// Compatibility mode:
+// - If RF_DOWNLOAD_TICKET_REQUIRED=true, every request must include a valid ticket.
+// - If false, legacy direct cert downloads still work, but ticketed requests are validated.
+if ($ticketRequired || $ticket !== '') {
+  if ($ticket === '') {
+    http_response_code(401);
+    header("Content-Type: text/plain; charset=utf-8");
+    echo "Download ticket required";
+    exit;
+  }
+  $claims = rf_download_verify_ticket($ticket);
+  if (!is_array($claims)) {
+    http_response_code(403);
+    header("Content-Type: text/plain; charset=utf-8");
+    echo "Invalid or expired download ticket";
+    exit;
+  }
+  $ticketCert = strtoupper((string)($claims['cert_id'] ?? ''));
+  if ($ticketCert === '' || $ticketCert !== strtoupper($cert)) {
+    http_response_code(403);
+    header("Content-Type: text/plain; charset=utf-8");
+    echo "Ticket scope mismatch";
+    exit;
+  }
 }
 
 // Derive /home/<user> from /home/<user>/public_html

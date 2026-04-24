@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<title>Claim Download | Rarefolio.io</title>
+<meta name="description" content="Claim your Rarefolio collector download by proving wallet ownership." />
+<meta name="robots" content="noindex,follow" />
+<link rel="icon" href="/assets/img/rf_logo_site.png" />
+<link rel="apple-touch-icon" href="/assets/img/rf_logo_site.png" />
+<link rel="preload" as="style" href="/assets/css/styles.css?v=20260412" />
+<link rel="stylesheet" href="/assets/css/styles.css?v=20260412" />
+<style>
+  .claim-wrap { max-width: 840px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  .claim-box { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 1.25rem; }
+  .claim-row { display: grid; grid-template-columns: 160px 1fr; gap: .6rem; margin: .5rem 0; }
+  .claim-k { color: #718096; font-size: .9rem; }
+  .claim-v { color: #e2e8f0; font-family: monospace; font-size: .86rem; word-break: break-all; }
+  .claim-status { margin-top: 1rem; min-height: 1.4rem; font-size: .9rem; }
+  .claim-status.ok { color: #68d391; }
+  .claim-status.err { color: #fc8181; }
+  .claim-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+  .claim-note { color: #a0aec0; font-size: .86rem; margin-top: .75rem; }
+  @media(max-width:640px){ .claim-row{grid-template-columns:1fr;} }
+</style>
+</head>
+<body id="top">
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="/index.html">
+      <img src="/assets/img/rf_logo_site.png" alt="Rarefolio.io logo" />
+      <div class="title mas_txt_clr">
+        <strong>Rarefolio.io</strong>
+        <span>Claim Download</span>
+      </div>
+    </a>
+    <a class="btn primary qd-prelaunch-cta" href="/collection/silverbar-01/founders?batch=89">Founders</a>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="claim-wrap">
+      <h1 class="h1 center"><font color="#fae282">Claim Your Download</font></h1>
+      <p class="lead center mas_txt_clr" style="margin:0;">
+        Connect your wallet and sign a one-time nonce to prove ownership.
+      </p>
+
+      <div class="claim-box" style="margin-top:1.1rem;">
+        <div class="claim-row"><div class="claim-k">Certificate</div><div class="claim-v" id="claim-cert">—</div></div>
+        <div class="claim-row"><div class="claim-k">CNFT</div><div class="claim-v" id="claim-cnft">—</div></div>
+        <div class="claim-row"><div class="claim-k">Wallet</div><div class="claim-v" id="claim-wallet">—</div></div>
+
+        <div class="claim-actions">
+          <button class="btn primary" id="btn-claim" type="button">Connect Wallet &amp; Claim</button>
+          <a class="btn" href="/downloads.html">Downloads Info</a>
+          <a class="btn" href="/contact.html#support">Support</a>
+        </div>
+        <div id="claim-status" class="claim-status"></div>
+        <div class="claim-note">
+          The signature never exposes private keys and is valid only for this short-lived claim challenge.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-left">© 2026 Rarefolio.io. All rights reserved.</div>
+    <div class="footer-right">
+      <a href="/downloads.html">Downloads</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js?v=20260412"></script>
+<script>
+(function(){
+  const qs = new URLSearchParams(window.location.search);
+  const certId = (qs.get('cert') || '').trim();
+  const cnftId = (qs.get('cnft') || qs.get('nft') || '').trim().toLowerCase();
+
+  const certEl   = document.getElementById('claim-cert');
+  const cnftEl   = document.getElementById('claim-cnft');
+  const walletEl = document.getElementById('claim-wallet');
+  const statusEl = document.getElementById('claim-status');
+  const btn      = document.getElementById('btn-claim');
+
+  certEl.textContent = certId || 'missing cert query param';
+  cnftEl.textContent = cnftId || 'missing cnft query param';
+
+  function setStatus(msg, cls) {
+    statusEl.textContent = msg;
+    statusEl.className = 'claim-status ' + (cls || '');
+  }
+
+  function utf8ToHex(str) {
+    const bytes = new TextEncoder().encode(str);
+    return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function pickWallet() {
+    const cardano = window.cardano;
+    if (!cardano) throw new Error('No Cardano wallet extension detected.');
+    const preferred = ['eternl','lace','nami','typhon','flint','yoroi'];
+    for (const key of preferred) {
+      if (cardano[key] && typeof cardano[key].enable === 'function') {
+        return { key, api: await cardano[key].enable() };
+      }
+    }
+    const any = Object.keys(cardano).find(k => cardano[k] && typeof cardano[k].enable === 'function');
+    if (!any) throw new Error('No CIP-30 wallet found.');
+    return { key: any, api: await cardano[any].enable() };
+  }
+
+  async function claimFlow() {
+    if (!certId || !cnftId) {
+      setStatus('Missing cert/cnft in URL. Use metadata claim link.', 'err');
+      return;
+    }
+    btn.disabled = true;
+    try {
+      setStatus('Connecting wallet…');
+      const { key, api } = await pickWallet();
+
+      const used = await api.getUsedAddresses().catch(() => []);
+      const change = await api.getChangeAddress().catch(() => null);
+      const signedAddress = (used && used[0]) || change;
+      if (!signedAddress) throw new Error('Wallet returned no signable address.');
+
+      walletEl.textContent = signedAddress.length > 28
+        ? signedAddress.slice(0, 20) + '…' + signedAddress.slice(-8)
+        : signedAddress;
+      setStatus('Requesting one-time challenge…');
+
+      const challengeResp = await fetch('/api/download/challenge.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cert_id: certId, cnft_id: cnftId }),
+      });
+      const challenge = await challengeResp.json();
+      if (!challengeResp.ok || !challenge.ok || !challenge.challenge_id || !challenge.nonce) {
+        throw new Error(challenge.error || 'Could not create challenge.');
+      }
+
+      setStatus('Sign the ownership message in your wallet…');
+      const nonceHex = utf8ToHex(challenge.nonce);
+      const signature = await api.signData(signedAddress, nonceHex);
+
+      setStatus('Verifying ownership…');
+      const claimResp = await fetch('/api/download/claim.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          challenge_id: challenge.challenge_id,
+          signed_address: signedAddress,
+          signature,
+        }),
+      });
+      const claim = await claimResp.json();
+      if (!claimResp.ok || !claim.ok || !claim.download_url) {
+        throw new Error(claim.error || 'Claim failed.');
+      }
+
+      setStatus('Claim approved. Starting download…', 'ok');
+      window.location.href = claim.download_url;
+    } catch (e) {
+      setStatus('Error: ' + (e && e.message ? e.message : String(e)), 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  btn.addEventListener('click', claimFlow);
+})();
+</script>
+</body>
+</html>
