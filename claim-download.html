@@ -17,6 +17,10 @@
   .claim-row { display: grid; grid-template-columns: 160px 1fr; gap: .6rem; margin: .5rem 0; }
   .claim-k { color: #718096; font-size: .9rem; }
   .claim-v { color: #e2e8f0; font-family: monospace; font-size: .86rem; word-break: break-all; }
+  .claim-v.status { font-family: inherit; display: inline-flex; align-items: center; gap: .45rem; }
+  .claim-dot { width: .58rem; height: .58rem; border-radius: 999px; background: #f6ad55; display: inline-block; }
+  .claim-dot.ok { background: #68d391; box-shadow: 0 0 0 4px rgba(104,211,145,.18); }
+  .claim-dot.err { background: #fc8181; }
   .claim-status { margin-top: 1rem; min-height: 1.4rem; font-size: .9rem; }
   .claim-status.ok { color: #68d391; }
   .claim-status.err { color: #fc8181; }
@@ -50,6 +54,7 @@
       <div class="claim-box" style="margin-top:1.1rem;">
         <div class="claim-row"><div class="claim-k">Certificate</div><div class="claim-v" id="claim-cert">—</div></div>
         <div class="claim-row"><div class="claim-k">CNFT</div><div class="claim-v" id="claim-cnft">—</div></div>
+        <div class="claim-row"><div class="claim-k">Wallet Connection</div><div class="claim-v status" id="claim-connection"><span class="claim-dot"></span><span id="claim-connection-text">Checking…</span></div></div>
         <div class="claim-row"><div class="claim-k">Wallet</div><div class="claim-v" id="claim-wallet">—</div></div>
 
         <div class="claim-actions">
@@ -87,6 +92,8 @@
   const certEl   = document.getElementById('claim-cert');
   const cnftEl   = document.getElementById('claim-cnft');
   const walletEl = document.getElementById('claim-wallet');
+  const connEl   = document.getElementById('claim-connection');
+  const connText = document.getElementById('claim-connection-text');
   const statusEl = document.getElementById('claim-status');
   const btn      = document.getElementById('btn-claim');
 
@@ -101,6 +108,52 @@
   function utf8ToHex(str) {
     const bytes = new TextEncoder().encode(str);
     return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  function setConnectionState(label, state) {
+    const dot = connEl ? connEl.querySelector('.claim-dot') : null;
+    if (connText) connText.textContent = label;
+    if (!dot) return;
+    dot.className = 'claim-dot';
+    if (state === 'ok') dot.classList.add('ok');
+    if (state === 'err') dot.classList.add('err');
+  }
+
+  function shortenAddress(addr) {
+    if (!addr) return '—';
+    return addr.length > 28 ? addr.slice(0, 20) + '…' + addr.slice(-8) : addr;
+  }
+
+  async function detectConnectedWallet() {
+    const cardano = window.cardano;
+    if (!cardano) {
+      setConnectionState('No Cardano wallet extension detected', 'err');
+      walletEl.textContent = '—';
+      return;
+    }
+    const preferred = ['eternl','lace','nami','typhon','flint','yoroi'];
+    const names = preferred.filter((key) => cardano[key] && typeof cardano[key].enable === 'function');
+    if (!names.length) {
+      setConnectionState('No CIP-30 wallet found', 'err');
+      walletEl.textContent = '—';
+      return;
+    }
+    for (const key of names) {
+      const wallet = cardano[key];
+      if (typeof wallet.isEnabled === 'function') {
+        const enabled = await wallet.isEnabled().catch(() => false);
+        if (enabled) {
+          const api = await wallet.enable();
+          const used = await api.getUsedAddresses().catch(() => []);
+          const change = await api.getChangeAddress().catch(() => null);
+          const signedAddress = (used && used[0]) || change || '';
+          setConnectionState(`Connected (${key})`, 'ok');
+          walletEl.textContent = shortenAddress(signedAddress);
+          return;
+        }
+      }
+    }
+    setConnectionState(`Detected (${names.join(', ')}) — not connected`, '');
+    walletEl.textContent = '—';
   }
 
   async function pickWallet() {
@@ -131,10 +184,8 @@
       const change = await api.getChangeAddress().catch(() => null);
       const signedAddress = (used && used[0]) || change;
       if (!signedAddress) throw new Error('Wallet returned no signable address.');
-
-      walletEl.textContent = signedAddress.length > 28
-        ? signedAddress.slice(0, 20) + '…' + signedAddress.slice(-8)
-        : signedAddress;
+      setConnectionState(`Connected (${key})`, 'ok');
+      walletEl.textContent = shortenAddress(signedAddress);
       setStatus('Requesting one-time challenge…');
 
       const challengeResp = await fetch('/api/download/challenge.php', {
@@ -176,6 +227,7 @@
   }
 
   btn.addEventListener('click', claimFlow);
+  detectConnectedWallet();
 })();
 </script>
 </body>
