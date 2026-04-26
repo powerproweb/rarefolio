@@ -265,14 +265,36 @@
     // Helper: build the DB-format block_id (e.g. 'E101837-block0001') from a
     // 0-indexed static key (e.g. 'block00') and the bar serial.
     const dbBlockId = (staticKey, serial) => {
+      if (String(staticKey).toLowerCase() === 'block88') return 'block88';
       const idx = parseInt(String(staticKey).replace('block', ''), 10);
+      if (!Number.isFinite(idx)) return String(staticKey);
       return `${serial}-block${String(idx + 1).padStart(4, '0')}`;
+    };
+
+    // Enrich static meta with DB-authoritative block_id/character names when available.
+    // This preserves static labels/slugs while ensuring story lookups match editor data.
+    const enrichStaticMeta = async (meta) => {
+      const apiMeta = await _fetchBlockFromApi(runtimeCfg.serial, batchNum);
+      if (!apiMeta) return meta;
+      return {
+        ...meta,
+        story_block_id: apiMeta.block_id || meta.story_block_id,
+        character_names: Array.isArray(apiMeta.character_names) ? apiMeta.character_names : (meta.character_names || null),
+      };
     };
 
     // 1) Page-level override
     if (runtimeCfg.blockId && QD_BLOCKS[runtimeCfg.blockId]) {
       const s = QD_BLOCKS[runtimeCfg.blockId];
-      return { block_id: runtimeCfg.blockId, story_block_id: dbBlockId(runtimeCfg.blockId, runtimeCfg.serial), folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
+      return enrichStaticMeta({
+        block_id: runtimeCfg.blockId,
+        story_block_id: dbBlockId(runtimeCfg.blockId, runtimeCfg.serial),
+        folder: s.folder,
+        label: s.label,
+        story_mode: s.story_mode,
+        character_names: null,
+        _source: 'static',
+      });
     }
 
     // 2) Batch rules
@@ -281,7 +303,15 @@
         const from = Number(r.from), to = Number(r.to), block = String(r.block || '');
         if (QD_BLOCKS[block] && Number.isFinite(from) && Number.isFinite(to) && batchNum >= from && batchNum <= to) {
           const s = QD_BLOCKS[block];
-          return { block_id: block, story_block_id: `${runtimeCfg.serial}-block${String(batchNum).padStart(4, '0')}`, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
+          return enrichStaticMeta({
+            block_id: block,
+            story_block_id: dbBlockId(block, runtimeCfg.serial),
+            folder: s.folder,
+            label: s.label,
+            story_mode: s.story_mode,
+            character_names: null,
+            _source: 'static',
+          });
         }
       }
     }
@@ -290,7 +320,15 @@
     const staticId = blockIdForBatch(batchNum);
     if (staticId && QD_BLOCKS[staticId]) {
       const s = QD_BLOCKS[staticId];
-      return { block_id: staticId, story_block_id: `${runtimeCfg.serial}-block${String(batchNum).padStart(4, '0')}`, folder: s.folder, label: s.label, story_mode: s.story_mode, _source: 'static' };
+      return enrichStaticMeta({
+        block_id: staticId,
+        story_block_id: dbBlockId(staticId, runtimeCfg.serial),
+        folder: s.folder,
+        label: s.label,
+        story_mode: s.story_mode,
+        character_names: null,
+        _source: 'static',
+      });
     }
 
     // 4) API
@@ -797,6 +835,8 @@
     const tokenEl = document.getElementById('qd-token');
     const badgeEl = document.getElementById('qd-badge');
     const subEl = document.getElementById('qd-nft-sub');
+    const topBlockEl = document.getElementById('qd-top-block-label');
+    const topTitleNameEl = document.getElementById('qd-top-title-name');
     const imgEl = document.getElementById('qd-nft-img');
     const backEl = document.getElementById('qd-back');
 
@@ -833,6 +873,22 @@
       ? (blockMeta.character_names?.[item - 1] || QD_ITEM_NAMES[_dStoryBlockId]?.[item - 1] || null)
       : null;
     titleEl.textContent = (_dItemName || blockMeta?.label || nft).toUpperCase();
+
+    if (topBlockEl) {
+      topBlockEl.textContent = blockMeta?.label || 'Collection';
+    }
+    if (topTitleNameEl) {
+      let topTitleName = _dItemName || nft.toUpperCase();
+      if (_dItemName && blockMeta?.story_mode === 'per_item' && item) {
+        const hasPrefix = /^(founders\s*#\d+|item\s*\d+)/i.test(_dItemName);
+        if (!hasPrefix) {
+          topTitleName = /founders/i.test(blockMeta?.label || '')
+            ? `Founders #${item} — ${_dItemName}`
+            : `Item ${item} — ${_dItemName}`;
+        }
+      }
+      topTitleNameEl.textContent = topTitleName;
+    }
 
     tokenEl.textContent = nft;
     // badgeEl is hidden in HTML; keep setting it for any JS that reads it
