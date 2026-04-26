@@ -137,6 +137,23 @@ $canonicalUrl= "https://rarefolio.io/collection/silverbar-{$barNum}/{$slugE}?bat
 $storyBlockId = $blockFromDb
   ? $block['block_id']
   : ($barSerial . '-block' . str_pad((string)$block['batch'], 4, '0', STR_PAD_LEFT));
+$storyBatchNum = (int)($block['batch'] ?? $batchParam);
+if (!$blockFromDb && $storyBatchNum > 0) {
+  try {
+    require_once __DIR__ . '/../api/_config.php';
+    $pdoStory = qd_pdo();
+    $stmtStory = $pdoStory->prepare(
+      'SELECT block_id FROM qd_blocks WHERE bar_serial = ? AND batch_num = ? LIMIT 1'
+    );
+    $stmtStory->execute([$barSerial, $storyBatchNum]);
+    $resolvedStoryBlockId = $stmtStory->fetchColumn();
+    if (is_string($resolvedStoryBlockId) && $resolvedStoryBlockId !== '') {
+      $storyBlockId = $resolvedStoryBlockId;
+    }
+  } catch (Throwable $e) {
+    // Keep computed fallback story block id.
+  }
+}
 $storySrc    = '/api/blocks/story.php?block=' . urlencode($storyBlockId) . '&item=0';
 
 $cssVersion  = '20260424';
