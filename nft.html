@@ -193,6 +193,10 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   <div class="container">
 
     <div class="section-title" style="text-align:center;">
+      <div id="qd-nft-topline" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin:0 0 8px 0;text-align:left;">
+        <span id="qd-top-block-label" style="font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#d9b46c;">Loading block…</span>
+        <span id="qd-top-title-name" style="font-weight:700;letter-spacing:.03em;color:#ffefbd;text-align:right;margin-left:auto;">Loading title…</span>
+      </div>
       <h1 id="qd-nft-title" style="font-weight:bold; letter-spacing:0.05em; text-transform:uppercase; color:#ffefbd;">Loading…</h1>
       <!-- badge hidden from header — data still available below in qd-nft-sub -->
       <p id="qd-badge" style="display:none;"></p>
@@ -303,6 +307,9 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   msg.textContent = 'Loading live marketplace data…';
   window.RFMarket.getToken(cnft)
     .then(function (t) {
+      var topTitleName = [t.title, t.character_name].filter(Boolean).join(' — ');
+      if (topTitleName) set('qd-top-title-name', topTitleName);
+      if (t.collection === 'silverbar-01-founders') set('qd-top-block-label', 'Founders Block 88');
       set('rf-m-status',      (t.status && t.status.primary_sale) || '—');
       set('rf-m-listing',     (t.status && t.status.listing) || '—');
       set('rf-m-owner',       t.owner_display || '—');
