@@ -872,20 +872,24 @@
     const _dItemName = (blockMeta?.story_mode === 'per_item' && item && _dStoryBlockId)
       ? (blockMeta.character_names?.[item - 1] || QD_ITEM_NAMES[_dStoryBlockId]?.[item - 1] || null)
       : null;
-    titleEl.textContent = (_dItemName || blockMeta?.label || nft).toUpperCase();
+    const isFoundersBlock = /founders/i.test(blockMeta?.label || '') || String(blockMeta?.block_id || '').toLowerCase() === 'block88';
+    titleEl.textContent = isFoundersBlock ? '' : (_dItemName || blockMeta?.label || nft).toUpperCase();
 
     if (topBlockEl) {
-      topBlockEl.textContent = blockMeta?.label || 'Collection';
+      topBlockEl.textContent = isFoundersBlock ? 'Founders Block' : (blockMeta?.label || 'Collection');
     }
     if (topTitleNameEl) {
       let topTitleName = _dItemName || nft.toUpperCase();
       if (_dItemName && blockMeta?.story_mode === 'per_item' && item) {
         const hasPrefix = /^(founders\s*#\d+|item\s*\d+)/i.test(_dItemName);
         if (!hasPrefix) {
-          topTitleName = /founders/i.test(blockMeta?.label || '')
-            ? `Founders #${item} — ${_dItemName}`
+          topTitleName = isFoundersBlock
+            ? `Founder #${item} — ${_dItemName}`
             : `Item ${item} — ${_dItemName}`;
         }
+      }
+      if (isFoundersBlock) {
+        topTitleName = topTitleName.replace(/^Founders\s*#/i, 'Founder #');
       }
       topTitleNameEl.textContent = topTitleName;
     }
