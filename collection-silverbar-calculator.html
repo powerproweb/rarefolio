@@ -189,27 +189,355 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     
 <section class="qd-silver-app" aria-label="QD Silver Shard CNFT Valuator" style="margin-top:18px;">
   <style>
-    .qd-silver-app{--bg0:#070A12;--bg1:#0C1330;--card:#0D1636cc;--card2:#0B122Bcc;--text:#EAF0FF;--muted:#A8B4D6;--good:#3BE38B;--warn:#FFCF5A;--bad:#FF5F7A;--accent:#7C5CFF;--accent2:#00D3FF;--shadow:0 22px 60px rgba(0,0,0,.55);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--text);background:radial-gradient(900px 360px at 10% 10%, rgba(124,92,255,.22), transparent 60%),radial-gradient(900px 360px at 90% 0%, rgba(0,211,255,.18), transparent 55%),radial-gradient(900px 420px at 50% 120%, rgba(255,207,90,.12), transparent 55%),linear-gradient(160deg,var(--bg0),var(--bg1));border:1px solid rgba(255,255,255,.08);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;max-width:980px;margin:0 auto;}
-    .qd-wrap{padding:18px 18px 14px}.qd-top{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.qd-title{display:flex;flex-direction:column;gap:6px;min-width:280px}.qd-title h2{margin:0;font-size:18px;letter-spacing:.2px;line-height:1.2}.qd-title p{margin:0;color:var(--muted);font-size:13px;max-width:68ch}.qd-badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.qd-badge{font-size:12px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(12,19,48,.55);color:var(--muted);display:inline-flex;gap:8px;align-items:center;white-space:nowrap}.dot{width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);display:inline-block}.dot.live{background:linear-gradient(180deg,var(--accent2),var(--accent));box-shadow:0 0 18px rgba(0,211,255,.35)}
-    .qd-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}@media(max-width:860px){.qd-grid{grid-template-columns:1fr}}
-    .qd-card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:14px}.qd-card h3{margin:0 0 10px;font-size:13px;color:var(--muted);letter-spacing:.2px;text-transform:uppercase}
-    .qd-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.qd-form{grid-template-columns:1fr}}
-    .qd-field{display:flex;flex-direction:column;gap:6px}.qd-label{font-size:12px;color:var(--muted)}.qd-input{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(5,10,25,.45);color:var(--text);padding:11px 12px;font-size:14px;outline:none;transition:border-color .18s ease,box-shadow .18s ease}.qd-input:focus{border-color:rgba(0,211,255,.45);box-shadow:0 0 0 4px rgba(0,211,255,.12)}
-    .qd-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}.qd-btn{border:1px solid rgba(255,255,255,.14);background:rgba(12,19,48,.55);color:var(--text);padding:10px 12px;border-radius:12px;font-size:14px;cursor:pointer;transition:transform .12s ease,border-color .18s ease,background .18s ease;user-select:none}.qd-btn:hover{transform:translateY(-1px);border-color:rgba(0,211,255,.40)}.qd-btn.primary{background:linear-gradient(135deg, rgba(124,92,255,.65), rgba(0,211,255,.35));border-color:rgba(0,211,255,.35)}.qd-btn.ghost{background:transparent}
-    .qd-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.qd-metrics{grid-template-columns:1fr}}
-    .qd-metric{border:1px solid rgba(255,255,255,.10);background:rgba(5,10,25,.35);border-radius:14px;padding:12px}.qd-metric .k{font-size:12px;color:var(--muted);margin-bottom:7px}.qd-metric .v{font-size:18px;letter-spacing:.2px}.qd-metric .s{font-size:12px;color:var(--muted);margin-top:6px}
-    .qd-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:var(--muted)}.qd-row:last-child{border-bottom:none;padding-bottom:0}.qd-row strong{color:var(--text);font-weight:600}
-    .qd-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(12,19,48,.55);font-size:12px;color:var(--muted)}.qd-pill.good{color:rgba(59,227,139,.95);border-color:rgba(59,227,139,.28)}.qd-pill.warn{color:rgba(255,207,90,.95);border-color:rgba(255,207,90,.28)}.qd-pill.bad{color:rgba(255,95,122,.95);border-color:rgba(255,95,122,.28)}
-    .qd-foot{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}.qd-foot code{color:var(--text)}.qd-small{font-size:12px;color:var(--muted)}.qd-error{color:rgba(255,95,122,.95)}.qd-ok{color:rgba(59,227,139,.95)}
+    .qd-silver-app{
+      --bg0:#070A12;
+      --bg1:#0C1330;
+      --card:#0D1636cc;
+      --card2:#0B122Bcc;
+      --text:#EAF0FF;
+      --muted:#A8B4D6;
+      --good:#3BE38B;
+      --warn:#FFCF5A;
+      --bad:#FF5F7A;
+      --accent:#7C5CFF;
+      --accent2:#00D3FF;
+      --shadow:0 22px 60px rgba(0,0,0,.55);
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(900px 360px at 10% 10%, rgba(124,92,255,.22), transparent 60%),
+        radial-gradient(900px 360px at 90% 0%, rgba(0,211,255,.18), transparent 55%),
+        radial-gradient(900px 420px at 50% 120%, rgba(255,207,90,.12), transparent 55%),
+        linear-gradient(160deg,var(--bg0),var(--bg1));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      max-width:980px;
+      margin:0 auto;
+    }
+    .qd-wrap{
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .qd-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .qd-title h2{
+      margin:0 0 8px;
+      font-size:20px;
+      line-height:1.2;
+    }
+    .qd-title p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      max-width:72ch;
+    }
+    .qd-badges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .qd-badge{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(12,19,48,.55);
+      color:var(--muted);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      white-space:nowrap;
+    }
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:99px;
+      background:rgba(255,255,255,.22);
+      display:inline-block;
+    }
+    .dot.live{
+      background:linear-gradient(180deg,var(--accent2),var(--accent));
+      box-shadow:0 0 18px rgba(0,211,255,.35);
+    }
+    .qd-layout{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:14px;
+    }
+    @media(max-width:860px){
+      .qd-layout{
+        grid-template-columns:1fr;
+      }
+    }
+    .qd-card{
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      padding:14px;
+    }
+    .qd-card h3{
+      margin:0 0 10px;
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:.2px;
+      text-transform:uppercase;
+    }
+    .qd-fields{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .qd-field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .qd-field.full{
+      grid-column:1/-1;
+    }
+    @media(max-width:560px){
+      .qd-fields{
+        grid-template-columns:1fr;
+      }
+      .qd-field.full{
+        grid-column:auto;
+      }
+    }
+    .qd-label{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .qd-input{
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(5,10,25,.45);
+      color:var(--text);
+      padding:11px 12px;
+      font-size:14px;
+      outline:none;
+      transition:border-color .18s ease,box-shadow .18s ease;
+    }
+    .qd-input:focus{
+      border-color:rgba(0,211,255,.45);
+      box-shadow:0 0 0 4px rgba(0,211,255,.12);
+    }
+    .qd-advanced{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      background:rgba(5,10,25,.28);
+      overflow:hidden;
+    }
+    .qd-advanced summary{
+      cursor:pointer;
+      list-style:none;
+      padding:10px 12px;
+      font-size:13px;
+      color:var(--text);
+      font-weight:600;
+    }
+    .qd-advanced summary::-webkit-details-marker{
+      display:none;
+    }
+    .qd-advanced summary::after{
+      content:"＋";
+      float:right;
+      color:var(--muted);
+      transition:transform .2s ease;
+    }
+    .qd-advanced[open] summary::after{
+      transform:rotate(45deg);
+    }
+    .qd-advanced-body{
+      padding:0 12px 12px;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .qd-help{
+      margin:10px 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .qd-actions{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .qd-btn{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(12,19,48,.55);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:14px;
+      cursor:pointer;
+      transition:transform .12s ease,border-color .18s ease,background .18s ease;
+      user-select:none;
+    }
+    .qd-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(0,211,255,.40);
+    }
+    .qd-btn.primary{
+      background:linear-gradient(135deg, rgba(124,92,255,.65), rgba(0,211,255,.35));
+      border-color:rgba(0,211,255,.35);
+    }
+    .qd-btn.ghost{
+      background:transparent;
+    }
+    .qd-status{
+      margin-top:10px;
+      min-height:18px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .qd-error{
+      color:rgba(255,95,122,.95);
+    }
+    .qd-ok{
+      color:rgba(59,227,139,.95);
+    }
+    .qd-hero-metric{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(5,10,25,.35);
+      margin-bottom:10px;
+    }
+    .qd-hero-metric .k{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:7px;
+    }
+    .qd-hero-metric .v{
+      font-size:28px;
+      letter-spacing:.2px;
+      line-height:1.1;
+    }
+    .qd-hero-metric .s{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+    .qd-metric-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media(max-width:560px){
+      .qd-metric-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    .qd-metric{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      padding:10px;
+      background:rgba(5,10,25,.30);
+    }
+    .qd-metric .k{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .qd-metric .v{
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .qd-metric .s{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:5px;
+    }
+    .qd-status-row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:12px;
+      padding-top:10px;
+      border-top:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+      font-size:13px;
+      align-items:center;
+    }
+    .qd-status-row strong{
+      color:var(--text);
+      font-weight:600;
+      text-align:right;
+    }
+    .qd-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(12,19,48,.55);
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .qd-pill.good{
+      color:rgba(59,227,139,.95);
+      border-color:rgba(59,227,139,.28);
+    }
+    .qd-pill.warn{
+      color:rgba(255,207,90,.95);
+      border-color:rgba(255,207,90,.28);
+    }
+    .qd-pill.bad{
+      color:rgba(255,95,122,.95);
+      border-color:rgba(255,95,122,.28);
+    }
+    .qd-foot-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    @media(max-width:700px){
+      .qd-foot-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    .qd-foot-card{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      padding:10px;
+      background:rgba(5,10,25,.22);
+    }
+    .qd-foot-card strong{
+      display:block;
+      color:var(--text);
+      margin-bottom:6px;
+      font-size:12px;
+    }
+    .qd-foot-card code{
+      color:var(--text);
+    }
+    .qd-small{
+      font-size:12px;
+      color:var(--muted);
+    }
   </style>
 
   <div class="qd-wrap">
-    <div class="qd-top">
+    <div class="qd-head">
       <div class="qd-title">
-        <h2>QD Silver Shard CNFT Valuator</h2>
-        <p>Enter your CNFT details. The calculator fetches <strong>live spot silver</strong> and computes the current <strong>metal-backing value</strong> for a <strong>0.0025 oz</strong> shard (100 oz / 40,000).</p>
+        <h2>QD Silver Shard Calculator</h2>
+        <p>Start with your paid price, then click <strong>Calculate</strong>. This estimates your shard’s live metal-backing value using spot silver (live API or manual override).</p>
       </div>
-
       <div class="qd-badges" aria-label="Key facts">
         <span class="qd-badge" title="Shard size derived from 100 oz / 40,000 shards"><span class="dot"></span> Shard: <strong>0.0025 oz</strong> (≈ <strong>77.76 mg</strong>)</span>
         <span class="qd-badge" title="Bar size assumed for backing math"><span class="dot"></span> Bar: <strong>100 oz</strong></span>
@@ -217,67 +545,97 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       </div>
     </div>
 
-    <div class="qd-grid">
-      <div class="qd-card" role="group" aria-label="Inputs">
-        <h3>Inputs</h3>
-        <div class="qd-form">
+    <div class="qd-layout">
+      <section class="qd-card" role="group" aria-label="Calculator inputs">
+        <h3>1) Enter your details</h3>
+        <div class="qd-fields">
           <div class="qd-field">
-            <label class="qd-label" for="qdNftId">NFT ID</label>
-            <input class="qd-input" id="qdNftId" type="text" placeholder="qd-silver-0000001" autocomplete="off" />
-          </div>
-          <div class="qd-field">
-            <label class="qd-label" for="qdPaid">Price Paid (USD)</label>
+            <label class="qd-label" for="qdPaid">Price Paid (USD) *</label>
             <input class="qd-input" id="qdPaid" type="number" inputmode="decimal" step="0.01" placeholder="88.88" />
           </div>
           <div class="qd-field">
-            <label class="qd-label" for="qdApiKey">Metals.Dev API Key (recommended)</label>
-            <input class="qd-input" id="qdApiKey" type="password" placeholder="paste key here (kept in this browser)" />
-          </div>
-          <div class="qd-field">
-            <label class="qd-label" for="qdManualSpot">Manual Spot Override (USD/oz) (optional)</label>
-            <input class="qd-input" id="qdManualSpot" type="number" inputmode="decimal" step="0.0001" placeholder="leave blank to fetch live" />
+            <label class="qd-label" for="qdNftId">NFT ID (optional)</label>
+            <input class="qd-input" id="qdNftId" type="text" placeholder="qd-silver-0000001" autocomplete="off" />
           </div>
         </div>
+
+        <details class="qd-advanced">
+          <summary>2) Spot source settings (optional)</summary>
+          <div class="qd-advanced-body">
+            <p class="qd-help">Add your Metals.Dev API key for live spot updates, or use a manual spot override for quick checks.</p>
+            <div class="qd-fields">
+              <div class="qd-field full">
+                <label class="qd-label" for="qdApiKey">Metals.Dev API Key</label>
+                <input class="qd-input" id="qdApiKey" type="password" placeholder="Paste key here (saved in this browser)" />
+              </div>
+              <div class="qd-field full">
+                <label class="qd-label" for="qdManualSpot">Manual Spot Override (USD/oz)</label>
+                <input class="qd-input" id="qdManualSpot" type="number" inputmode="decimal" step="0.0001" placeholder="Leave blank to use live/cached spot" />
+              </div>
+            </div>
+          </div>
+        </details>
+
         <div class="qd-actions">
           <button class="qd-btn primary" id="qdCalcBtn" type="button">Calculate</button>
           <button class="qd-btn" id="qdRefreshBtn" type="button" title="Force refresh spot price">Refresh Spot</button>
           <button class="qd-btn ghost" id="qdResetBtn" type="button">Reset</button>
         </div>
-        <div id="qdStatus" class="qd-small" style="margin-top:10px;"></div>
-      </div>
+        <p id="qdStatus" class="qd-status" aria-live="polite"></p>
+      </section>
 
-      <div class="qd-card" role="group" aria-label="Results">
+      <section class="qd-card" role="group" aria-label="Calculator results">
         <h3>Results</h3>
-        <div class="qd-metrics" aria-label="Key metrics">
+        <div class="qd-hero-metric">
+          <div class="k">Metal-backing value (today)</div>
+          <div class="v" id="qdBackingVal">—</div>
+          <div class="s">Spot × 0.0025 oz</div>
+        </div>
+
+        <div class="qd-metric-grid" aria-label="Secondary metrics">
           <div class="qd-metric">
-            <div class="k">Metal-backing value (today)</div>
-            <div class="v" id="qdBackingVal">—</div>
-            <div class="s">Spot × 0.0025 oz</div>
-          </div>
-          <div class="qd-metric">
-            <div class="k">100 oz bar spot value (today)</div>
+            <div class="k">100 oz bar spot value</div>
             <div class="v" id="qdBarVal">—</div>
             <div class="s">Spot × 100 oz</div>
           </div>
+          <div class="qd-metric">
+            <div class="k">Your paid price</div>
+            <div class="v" id="qdPaidOut">—</div>
+            <div class="s">Input value</div>
+          </div>
+          <div class="qd-metric">
+            <div class="k">Premium over backing</div>
+            <div class="v" id="qdPremiumOut">—</div>
+            <div class="s">Paid − backing</div>
+          </div>
+          <div class="qd-metric">
+            <div class="k">Paid / backing multiple</div>
+            <div class="v" id="qdMultipleOut">—</div>
+            <div class="s">How many times above backing</div>
+          </div>
+          <div class="qd-metric">
+            <div class="k">Break-even spot (USD/oz)</div>
+            <div class="v" id="qdBreakEvenOut">—</div>
+            <div class="s">Spot where paid = backing</div>
+          </div>
         </div>
-        <div style="margin-top:12px;">
-          <div class="qd-row"><span>Your paid price</span><strong id="qdPaidOut">—</strong></div>
-          <div class="qd-row"><span>Premium over metal backing</span><strong id="qdPremiumOut">—</strong></div>
-          <div class="qd-row"><span>Paid / backing multiple</span><strong id="qdMultipleOut">—</strong></div>
-          <div class="qd-row"><span>Status</span><strong id="qdFlagOut">—</strong></div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="qd-foot">
-    <div>
-      <div><strong>Assumptions</strong></div>
-      <div class="qd-small">100 oz bar split into 40,000 equal shards ⇒ <code>0.0025 oz</code> per CNFT shard.</div>
+        <div class="qd-status-row">
+          <span>Status</span>
+          <strong id="qdFlagOut">—</strong>
+        </div>
+      </section>
     </div>
-    <div style="max-width:420px;">
-      <div><strong>Operational note</strong></div>
-      <div class="qd-small">Spot is cached for 60 seconds to reduce API calls. For heavy traffic, proxy and cache server-side.</div>
+
+    <div class="qd-foot-grid">
+      <div class="qd-foot-card">
+        <strong>Assumptions</strong>
+        <div class="qd-small">100 oz bar split into 40,000 equal shards ⇒ <code>0.0025 oz</code> per CNFT shard.</div>
+      </div>
+      <div class="qd-foot-card">
+        <strong>Operational note</strong>
+        <div class="qd-small">Spot is cached for 60 seconds to reduce API calls. For high traffic, proxy and cache server-side.</div>
+      </div>
     </div>
   </div>
 
@@ -308,6 +666,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 
       const qdBackingVal = el("qdBackingVal");
       const qdBarVal = el("qdBarVal");
+      const qdBreakEvenOut = el("qdBreakEvenOut");
 
       const qdPaidOut = el("qdPaidOut");
       const qdPremiumOut = el("qdPremiumOut");
@@ -330,7 +689,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       const now = () => Date.now();
 
       function setStatus(msg, kind){
-        qdStatus.className = "qd-small " + (kind === "error" ? "qd-error" : kind === "ok" ? "qd-ok" : "");
+        qdStatus.className = "qd-status " + (kind === "error" ? "qd-error" : kind === "ok" ? "qd-ok" : "");
         qdStatus.textContent = msg || "";
       }
 
@@ -390,6 +749,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         if (isFinite(manual) && manual > 0) {
           const obj = { spot: manual, fetchedAt: now(), manual: true };
           setSpotBadge(obj.spot, obj.fetchedAt);
+          setStatus("Using manual spot override.", "");
           return obj;
         }
 
@@ -403,6 +763,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         if (!apiKey) {
           if (cached) {
             setSpotBadge(cached.spot, cached.fetchedAt);
+            setStatus("Using cached spot price (no API key provided).", "");
             return cached;
           }
           throw new Error("Add a Metals.Dev API key, or enter a Manual Spot Override.");
@@ -421,9 +782,11 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         const barVal = spot * BAR_OZ;
         const premium = paid - backing;
         const multiple = backing > 0 ? (paid / backing) : NaN;
+        const breakEvenSpot = paid / OZ_PER_SHARD;
 
         qdBackingVal.textContent = fmtUSD(backing);
         qdBarVal.textContent = fmtUSD(barVal);
+        qdBreakEvenOut.textContent = isFinite(breakEvenSpot) ? ("$" + fmtNum(breakEvenSpot, 4) + " / oz") : "—";
 
         qdPaidOut.textContent = fmtUSD(paid);
         qdPremiumOut.textContent = fmtUSD(premium);
@@ -451,6 +814,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         qdManualSpot.value = "";
         qdBackingVal.textContent = "—";
         qdBarVal.textContent = "—";
+        qdBreakEvenOut.textContent = "—";
         qdPaidOut.textContent = "—";
         qdPremiumOut.textContent = "—";
         qdMultipleOut.textContent = "—";
@@ -500,7 +864,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       if (cached) setSpotBadge(cached.spot, cached.fetchedAt);
       else setSpotBadge(NaN, 0);
 
-      setStatus("Tip: paste your Metals.Dev API key once; it stays in this browser. Or use Manual Spot Override.", "");
+      setStatus("Tip: Enter Price Paid first, then calculate. Add API key once for live spot updates.", "");
     })();
   </script>
 </section>
