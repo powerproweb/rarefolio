@@ -134,6 +134,16 @@
       'Benedict Harrowvale',
     ],
   };
+  const FOUNDERS_PERSON_NAMES = {
+    'qd-silver-0000705': 'Anton Cherenko',
+    'qd-silver-0000706': 'Peter Mednik',
+    'qd-silver-0000707': 'Gregor Stoyan',
+    'qd-silver-0000708': 'Zina Astrakhan',
+    'qd-silver-0000709': 'Tanya Sokolova',
+    'qd-silver-0000710': 'Niko Bashnev',
+    'qd-silver-0000711': 'Misha Tolmach',
+    'qd-silver-0000712': 'Sev Pravdin',
+  };
 
   /* ---- Block slug map (block_id \u2192 URL slug for clean URLs) ---- */
   const BLOCK_SLUGS = {
@@ -890,6 +900,10 @@
       }
       if (isFoundersBlock) {
         topTitleName = topTitleName.replace(/^Founders\s*#/i, 'Founder #');
+        const founderPersonName = FOUNDERS_PERSON_NAMES[nft] || '';
+        if (founderPersonName && topTitleName.toLowerCase().indexOf(founderPersonName.toLowerCase()) === -1) {
+          topTitleName = `${topTitleName} — ${founderPersonName}`;
+        }
       }
       topTitleNameEl.textContent = topTitleName;
     }
