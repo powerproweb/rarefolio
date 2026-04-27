@@ -293,6 +293,16 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   var qs   = new URLSearchParams(location.search);
   var cnft = qs.get('nft') || qs.get('cnft') || '';
   var msg  = document.getElementById('rf-m-msg');
+  var FOUNDERS_PERSON_NAMES = {
+    'qd-silver-0000705': 'Anton Cherenko',
+    'qd-silver-0000706': 'Peter Mednik',
+    'qd-silver-0000707': 'Gregor Stoyan',
+    'qd-silver-0000708': 'Zina Astrakhan',
+    'qd-silver-0000709': 'Tanya Sokolova',
+    'qd-silver-0000710': 'Niko Bashnev',
+    'qd-silver-0000711': 'Misha Tolmach',
+    'qd-silver-0000712': 'Sev Pravdin'
+  };
   function set(id, v){ var el = document.getElementById(id); if (el) el.textContent = (v == null || v === '') ? '—' : v; }
 
   if (!cnft) {
@@ -310,7 +320,13 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       var isFounders = t.collection === 'silverbar-01-founders';
       var titlePart = t.title || '';
       if (isFounders) titlePart = titlePart.replace(/^Founders\s*#/i, 'Founder #');
-      var topTitleName = [titlePart, t.character_name].filter(Boolean).join(' — ');
+      var personName = isFounders ? (t.character_name || FOUNDERS_PERSON_NAMES[cnft] || '') : (t.character_name || '');
+      var topTitleNameParts = [];
+      if (titlePart) topTitleNameParts.push(titlePart);
+      if (personName && (!titlePart || titlePart.toLowerCase().indexOf(personName.toLowerCase()) === -1)) {
+        topTitleNameParts.push(personName);
+      }
+      var topTitleName = topTitleNameParts.join(' — ');
       if (topTitleName) set('qd-top-title-name', topTitleName);
       if (isFounders) {
         set('qd-top-block-label', 'Founders Block');
