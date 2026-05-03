@@ -4,6 +4,9 @@
 api/_config.php
 .env
 api/webhook/.env
+api/webhook/.env.old
+api/webhook/.env.production
+api/admin/run_migrations.php
 
 # ============================================================
 # WEBHOOK RUNTIME STATE  -- nonces, delivery logs (server-only)
@@ -46,6 +49,7 @@ desktop.ini
 # ============================================================
 *.log
 error_log
+.cache_ggshield
 
 # ============================================================
 # VENDOR / DEPENDENCIES  -- install via Composer, not git
@@ -63,3 +67,6 @@ assets/img/collection/scnft_zodiac_*/
 assets/img/collection/scnft_sp_*/
 assets/img/collection/scnft_new_series/
 assets/downloads/
+# Local source renders for Founders (runtime uses qd-silver-*.jpg files)
+assets/img/collection/scnft_founders/*_4000x4000_rbg_32bit_300dpi_png*.png
+assets/img/collection/scnft_founders/*_8000x_cmyk_16bit_300dpi.png
