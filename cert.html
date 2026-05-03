@@ -151,6 +151,8 @@
 
   <script src="/assets/js/main.js?v=20260412"></script>
   <script src="/assets/js/certificates.js"></script>
+  <script>window.RF_MARKET_BASE = 'https://market.rarefolio.io';</script>
+  <script src="/assets/js/rf-market.js?v=20260417"></script>
 
   <script>
     // Minimal bootstrap so cert page always works even if certificates.js expects IDs.
@@ -161,6 +163,7 @@
       const actionsEl = document.getElementById('qd-cert-actions');
       const dl = document.getElementById('qd-cert-download');
       const vr = document.getElementById('qd-cert-verify');
+      const esc = (v) => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       const claimUrl = (cert, cnft) =>
         '/claim-download.html?cert=' + encodeURIComponent(cert) + (cnft ? '&cnft=' + encodeURIComponent(cnft) : '');
 
@@ -176,7 +179,7 @@
 
       // If your certificates.js exposes a render function, it can hook in.
       // Otherwise we fetch and render basic info here as a fallback.
-      fetch('/api/cert.php?cert=' + encodeURIComponent(certId), { cache: 'no-store' })
+      fetch('/api/cert/?cert=' + encodeURIComponent(certId), { cache: 'no-store' })
         .then(r => r.json().then(j => ({ ok: r.ok, status: r.status, j })))
         .then(({ ok, status, j }) => {
           if (!ok) {
@@ -187,16 +190,61 @@
           const box = document.getElementById('qd-cert-render');
           const p = j.payload || j; // depending on your API shape
           const cnftId = p.cnft?.id || p.cnftId || p.cnft_id || '';
+          const barSerial = p.cnft?.barSerial || p.barSerial || p.bar_serial || '—';
+          const walletDisplay = p.holder?.wallet || p.walletDisplay || p.wallet_display || '—';
           dl.href = claimUrl(certId, cnftId);
           box.innerHTML = `
             <div class="panel pad" style="margin-top:12px;">
-              <div class="mono">certId: ${certId}</div>
-              <div class="mono">vaultRecordId: ${(p.vaultRecordId || p.vault_record_id || '—')}</div>
-              <div class="mono">cnftId: ${(p.cnftId || p.cnft_id || '—')}</div>
-              <div class="mono">barSerial: ${(p.barSerial || p.bar_serial || '—')}</div>
-              <div class="mono">wallet: ${(p.walletDisplay || p.wallet_display || '—')}</div>
+              <div class="mono">certId: ${esc(certId)}</div>
+              <div class="mono">vaultRecordId: ${esc(p.vaultRecordId || p.vault_record_id || '—')}</div>
+              <div class="mono">cnftId: ${esc(cnftId || '—')}</div>
+              <div class="mono">barSerial: ${esc(barSerial)}</div>
+              <div class="mono">wallet: ${esc(walletDisplay)}</div>
+            </div>
+            <div class="panel pad" id="qd-cert-stage2" style="margin-top:12px;">
+              <div class="mono">Companion FT: —</div>
+              <div class="mono">Companion tx: —</div>
+              <div class="mono">Proof manifest: —</div>
+              <div class="mono">Evidence pack: —</div>
             </div>
           `;
+          if (cnftId && window.RFMarket) {
+            window.RFMarket.getToken(cnftId)
+              .then(t => {
+                const companion = t.companion || {};
+                const proof = t.proof || {};
+                const delivery = companion.delivery || {};
+                const statusMap = {
+                  confirmed: 'delivered',
+                  submitted: 'submitted',
+                  pending: 'queued',
+                  failed: 'failed',
+                  awaiting_settlement: 'awaiting settlement',
+                  not_queued: 'not queued yet',
+                  not_enabled: 'not enabled'
+                };
+                const status = statusMap[delivery.status || ''] || delivery.status || (companion.enabled ? 'not queued yet' : 'not enabled');
+                const companionName = companion.asset_name || (companion.enabled ? 'Companion token' : 'Not enabled');
+                const txHref = delivery.tx_hash ? `https://cardanoscan.io/transaction/${encodeURIComponent(delivery.tx_hash)}` : '';
+                const manifestHref = proof.manifest_uri || '';
+                const evidenceHref = proof.evidence_public_url || '';
+                const stage2 = document.getElementById('qd-cert-stage2');
+                if (!stage2) return;
+                const txText = delivery.tx_hash ? `${esc(String(delivery.tx_hash).slice(0, 14))}…` : '—';
+                stage2.innerHTML = `
+                  <div class="mono">Companion FT: ${esc(companionName)} · ${esc(status)}</div>
+                  <div class="mono">Companion tx: ${txHref ? `<a href="${txHref}" target="_blank" rel="noopener">${txText}</a>` : '—'}</div>
+                  <div class="mono">Proof manifest: ${manifestHref ? `<a href="${esc(manifestHref)}" target="_blank" rel="noopener">Open manifest</a>` : '—'}</div>
+                  <div class="mono">Evidence pack: ${evidenceHref ? `<a href="${esc(evidenceHref)}" target="_blank" rel="noopener">Open evidence pack</a>` : '—'}</div>
+                `;
+              })
+              .catch(() => {
+                const stage2 = document.getElementById('qd-cert-stage2');
+                if (stage2) {
+                  stage2.innerHTML = '<div class="mono">Companion/proof live metadata is temporarily unavailable.</div>';
+                }
+              });
+          }
         })
         .catch(() => {
           statusEl.textContent = 'Could not load certificate record (network/API error).';

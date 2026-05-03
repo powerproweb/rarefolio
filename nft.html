@@ -251,6 +251,10 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         <div id="rf-market-panel" class="panel pad" style="margin:0; font-size:14px;">
           <div style="display:grid; grid-template-columns: 160px 1fr; gap:6px 10px;">
             <div style="opacity:.7;font-weight:800;">Mint Status</div>      <div id="rf-m-status">—</div>
+            <div style="opacity:.7;font-weight:800;">Companion FT</div>     <div id="rf-m-companion">—</div>
+            <div style="opacity:.7;font-weight:800;">Companion Tx</div>     <div id="rf-m-companion-tx" style="font-family:ui-monospace,monospace;overflow-wrap:anywhere;">—</div>
+            <div style="opacity:.7;font-weight:800;">Proof Manifest</div>   <div id="rf-m-proof-manifest" style="font-family:ui-monospace,monospace;overflow-wrap:anywhere;">—</div>
+            <div style="opacity:.7;font-weight:800;">Evidence Pack</div>    <div id="rf-m-proof-evidence" style="font-family:ui-monospace,monospace;overflow-wrap:anywhere;">—</div>
             <div style="opacity:.7;font-weight:800;">Listing</div>          <div id="rf-m-listing">—</div>
             <div style="opacity:.7;font-weight:800;">Current Owner</div>    <div id="rf-m-owner" style="font-family:ui-monospace,monospace;">—</div>
             <div style="opacity:.7;font-weight:800;">Network</div>          <div id="rf-m-network">—</div>
@@ -293,7 +297,36 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   var qs   = new URLSearchParams(location.search);
   var cnft = qs.get('nft') || qs.get('cnft') || '';
   var msg  = document.getElementById('rf-m-msg');
+  var FOUNDERS_PERSON_NAMES = {
+    'qd-silver-0000705': 'Anton Cherenko',
+    'qd-silver-0000706': 'Peter Mednik',
+    'qd-silver-0000707': 'Gregor Stoyan',
+    'qd-silver-0000708': 'Zina Astrakhan',
+    'qd-silver-0000709': 'Tanya Sokolova',
+    'qd-silver-0000710': 'Niko Bashnev',
+    'qd-silver-0000711': 'Misha Tolmach',
+    'qd-silver-0000712': 'Sev Pravdin'
+  };
   function set(id, v){ var el = document.getElementById(id); if (el) el.textContent = (v == null || v === '') ? '—' : v; }
+  function setLink(id, href, label){
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (!href) { el.textContent = '—'; return; }
+    try {
+      var u = new URL(href, window.location.origin);
+      if (!/^https?:$/.test(u.protocol)) { el.textContent = '—'; return; }
+      var a = document.createElement('a');
+      a.href = u.href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.style.color = '#00d4e7';
+      a.textContent = label;
+      el.textContent = '';
+      el.appendChild(a);
+    } catch (_) {
+      el.textContent = '—';
+    }
+  }
 
   if (!cnft) {
     msg.textContent = 'No CNFT ID in URL — live data unavailable.';
@@ -310,13 +343,48 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       var isFounders = t.collection === 'silverbar-01-founders';
       var titlePart = t.title || '';
       if (isFounders) titlePart = titlePart.replace(/^Founders\s*#/i, 'Founder #');
-      var topTitleName = [titlePart, t.character_name].filter(Boolean).join(' — ');
+      var roleName = t.character_name || '';
+      var topTitleNameParts = [];
+      if (titlePart) topTitleNameParts.push(titlePart);
+      if (roleName && (!titlePart || titlePart.toLowerCase().indexOf(roleName.toLowerCase()) === -1)) {
+        topTitleNameParts.push(roleName);
+      }
+      var topTitleName = topTitleNameParts.join(' — ');
+      if (isFounders) {
+        var founderPersonName = FOUNDERS_PERSON_NAMES[cnft] || '';
+        if (founderPersonName && (!topTitleName || topTitleName.toLowerCase().indexOf(founderPersonName.toLowerCase()) === -1)) {
+          topTitleName = topTitleName ? (topTitleName + ' — ' + founderPersonName) : founderPersonName;
+        }
+      }
       if (topTitleName) set('qd-top-title-name', topTitleName);
       if (isFounders) {
         set('qd-top-block-label', 'Founders Block');
         var h1 = document.getElementById('qd-nft-title');
         if (h1) h1.textContent = '';
       }
+      var companion = t.companion || {};
+      var proof = t.proof || {};
+      var delivery = companion.delivery || {};
+      var companionStatusMap = {
+        confirmed: 'delivered',
+        submitted: 'submitted',
+        pending: 'queued',
+        failed: 'failed',
+        awaiting_settlement: 'awaiting settlement',
+        not_queued: 'not queued yet',
+        not_enabled: 'not enabled'
+      };
+      var rawCompanionStatus = delivery.status || (companion.enabled ? 'not_queued' : 'not_enabled');
+      var companionStatus = companionStatusMap[rawCompanionStatus] || rawCompanionStatus;
+      var companionName = companion.asset_name || (companion.enabled ? 'Companion token' : '—');
+      set('rf-m-companion', companion.enabled ? (companionName + ' · ' + companionStatus) : 'Not enabled');
+      if (delivery.tx_hash) {
+        setLink('rf-m-companion-tx', 'https://cardanoscan.io/transaction/' + delivery.tx_hash, String(delivery.tx_hash).slice(0, 14) + '…');
+      } else {
+        set('rf-m-companion-tx', '—');
+      }
+      setLink('rf-m-proof-manifest', proof.manifest_uri || '', proof.manifest_uri ? 'Open manifest' : '');
+      setLink('rf-m-proof-evidence', proof.evidence_public_url || '', proof.evidence_public_url ? 'Open evidence pack' : '');
       set('rf-m-status',      (t.status && t.status.primary_sale) || '—');
       set('rf-m-listing',     (t.status && t.status.listing) || '—');
       set('rf-m-owner',       t.owner_display || '—');
