@@ -331,39 +331,50 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       border-color:rgba(0,211,255,.45);
       box-shadow:0 0 0 4px rgba(0,211,255,.12);
     }
-    .qd-advanced{
+    .qd-spot-tabs{
       margin-top:12px;
       border:1px solid rgba(255,255,255,.10);
       border-radius:12px;
       background:rgba(5,10,25,.28);
       overflow:hidden;
     }
-    .qd-advanced summary{
-      cursor:pointer;
-      list-style:none;
-      padding:10px 12px;
-      font-size:13px;
-      color:var(--text);
-      font-weight:600;
+    .qd-tablist{
+      display:flex;
+      gap:8px;
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:rgba(5,10,25,.36);
     }
-    .qd-advanced summary::-webkit-details-marker{
+    .qd-tab{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(12,19,48,.55);
+      color:var(--muted);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:600;
+      cursor:pointer;
+      transition:border-color .18s ease,background .18s ease,color .18s ease,transform .12s ease;
+    }
+    .qd-tab:hover{
+      transform:translateY(-1px);
+      border-color:rgba(0,211,255,.35);
+      color:var(--text);
+    }
+    .qd-tab.is-active,
+    .qd-tab[aria-selected="true"]{
+      color:var(--text);
+      border-color:rgba(0,211,255,.40);
+      background:linear-gradient(135deg, rgba(124,92,255,.42), rgba(0,211,255,.22));
+    }
+    .qd-tab-panel{
+      padding:12px;
+    }
+    .qd-tab-panel[hidden]{
       display:none;
     }
-    .qd-advanced summary::after{
-      content:"＋";
-      float:right;
-      color:var(--muted);
-      transition:transform .2s ease;
-    }
-    .qd-advanced[open] summary::after{
-      transform:rotate(45deg);
-    }
-    .qd-advanced-body{
-      padding:0 12px 12px;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
     .qd-help{
-      margin:10px 0;
+      margin:0 0 10px;
       color:var(--muted);
       font-size:12px;
     }
@@ -581,22 +592,30 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
           </div>
         </div>
 
-        <details class="qd-advanced">
-          <summary>2) Spot source settings (optional)</summary>
-          <div class="qd-advanced-body">
-            <p class="qd-help">Add your Metals.Dev API key for live spot updates, or use a manual spot override for quick checks.</p>
+        <div class="qd-spot-tabs" aria-label="Spot source settings">
+          <div class="qd-tablist" role="tablist" aria-label="Spot source mode">
+            <button class="qd-tab is-active" id="qdTabManual" type="button" role="tab" aria-selected="true" aria-controls="qdPanelManual">Manual</button>
+            <button class="qd-tab" id="qdTabApi" type="button" role="tab" aria-selected="false" aria-controls="qdPanelApi">API Key</button>
+          </div>
+          <div class="qd-tab-panel" id="qdPanelManual" role="tabpanel" aria-labelledby="qdTabManual">
+            <p class="qd-help">2) Manual mode: set your own silver spot value (USD/oz) for quick what-if testing.</p>
+            <div class="qd-fields">
+              <div class="qd-field full">
+                <label class="qd-label" for="qdManualSpot">Manual Spot (USD/oz)</label>
+                <input class="qd-input" id="qdManualSpot" type="number" inputmode="decimal" step="0.0001" placeholder="31.4500" />
+              </div>
+            </div>
+          </div>
+          <div class="qd-tab-panel" id="qdPanelApi" role="tabpanel" aria-labelledby="qdTabApi" hidden>
+            <p class="qd-help">2) API mode: enter a Metals.Dev API key to fetch live spot with a 60-second local cache fallback.</p>
             <div class="qd-fields">
               <div class="qd-field full">
                 <label class="qd-label" for="qdApiKey">Metals.Dev API Key</label>
                 <input class="qd-input" id="qdApiKey" type="password" placeholder="Paste key here (saved in this browser)" />
               </div>
-              <div class="qd-field full">
-                <label class="qd-label" for="qdManualSpot">Manual Spot Override (USD/oz)</label>
-                <input class="qd-input" id="qdManualSpot" type="number" inputmode="decimal" step="0.0001" placeholder="Leave blank to use live/cached spot" />
-              </div>
             </div>
           </div>
-        </details>
+        </div>
 
         <div class="qd-actions">
           <button class="qd-btn primary" id="qdCalcBtn" type="button">Calculate Now</button>
@@ -703,7 +722,8 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       const URL_PARAMS = {
         paid: "paid",
         nft: "nft",
-        spot: "spot"
+        spot: "spot",
+        mode: "mode"
       };
 
       const el = (id) => document.getElementById(id);
@@ -716,6 +736,10 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       const qdPaid = el("qdPaid");
       const qdApiKey = el("qdApiKey");
       const qdManualSpot = el("qdManualSpot");
+      const qdTabManual = el("qdTabManual");
+      const qdTabApi = el("qdTabApi");
+      const qdPanelManual = el("qdPanelManual");
+      const qdPanelApi = el("qdPanelApi");
 
       const qdBackingVal = el("qdBackingVal");
       const qdBarVal = el("qdBarVal");
@@ -744,7 +768,8 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       const state = {
         autoTimer: null,
         calcSequence: 0,
-        lastResult: null
+        lastResult: null,
+        spotMode: "manual"
       };
 
       const fmtUSD = (n) => {
@@ -762,6 +787,25 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       function setStatus(msg, kind){
         qdStatus.className = "qd-status " + (kind === "error" ? "qd-error" : kind === "ok" ? "qd-ok" : "");
         qdStatus.textContent = msg || "";
+      }
+
+      function getSpotMode(){
+        return state.spotMode === "api" ? "api" : "manual";
+      }
+
+      function setSpotMode(mode, { silent = false } = {}){
+        const normalized = mode === "api" ? "api" : "manual";
+        state.spotMode = normalized;
+        const isManual = normalized === "manual";
+
+        qdTabManual.classList.toggle("is-active", isManual);
+        qdTabApi.classList.toggle("is-active", !isManual);
+        qdTabManual.setAttribute("aria-selected", String(isManual));
+        qdTabApi.setAttribute("aria-selected", String(!isManual));
+        qdPanelManual.hidden = !isManual;
+        qdPanelApi.hidden = isManual;
+
+        if (!silent) scheduleAutoCalc();
       }
 
       function setSpotBadge(spot, fetchedAt){
@@ -816,12 +860,16 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       }
 
       async function getSpot({ force=false } = {}){
+        const spotMode = getSpotMode();
         const manual = Number(qdManualSpot.value);
-        if (isFinite(manual) && manual > 0) {
-          const obj = { spot: manual, fetchedAt: now(), manual: true };
-          setSpotBadge(obj.spot, obj.fetchedAt);
-          setStatus("Using manual spot override.", "");
-          return obj;
+        if (spotMode === "manual") {
+          if (isFinite(manual) && manual > 0) {
+            const obj = { spot: manual, fetchedAt: now(), manual: true };
+            setSpotBadge(obj.spot, obj.fetchedAt);
+            setStatus("Using manual spot input.", "");
+            return obj;
+          }
+          throw new Error("Enter a Manual Spot value (USD/oz), or switch to API Key mode.");
         }
 
         const cached = readCache();
@@ -834,10 +882,10 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         if (!apiKey) {
           if (cached) {
             setSpotBadge(cached.spot, cached.fetchedAt);
-            setStatus("Using cached spot price (no API key provided).", "");
+            setStatus("Using cached spot price (add API key for live refresh).", "");
             return cached;
           }
-          throw new Error("Add a Metals.Dev API key, or enter a Manual Spot Override.");
+          throw new Error("Add a Metals.Dev API key, or switch to Manual mode.");
         }
 
         setStatus("Fetching live spot silver…", "");
@@ -952,10 +1000,12 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         const paid = Number(qdPaid.value);
         const nftId = (qdNftId.value || "").trim();
         const manualSpot = Number(qdManualSpot.value);
+        const mode = getSpotMode();
 
         if (isFinite(paid) && paid > 0) params.set(URL_PARAMS.paid, String(paid));
         if (nftId) params.set(URL_PARAMS.nft, nftId);
-        if (isFinite(manualSpot) && manualSpot > 0) params.set(URL_PARAMS.spot, String(manualSpot));
+        params.set(URL_PARAMS.mode, mode);
+        if (mode === "manual" && isFinite(manualSpot) && manualSpot > 0) params.set(URL_PARAMS.spot, String(manualSpot));
 
         url.search = params.toString();
         url.hash = "";
@@ -967,10 +1017,12 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         const paid = Number(params.get(URL_PARAMS.paid));
         const nftId = (params.get(URL_PARAMS.nft) || "").trim();
         const manualSpot = Number(params.get(URL_PARAMS.spot));
+        const mode = (params.get(URL_PARAMS.mode) || "").trim().toLowerCase();
 
         if (isFinite(paid) && paid > 0) qdPaid.value = String(paid);
         if (nftId) qdNftId.value = nftId;
         if (isFinite(manualSpot) && manualSpot > 0) qdManualSpot.value = String(manualSpot);
+        setSpotMode(mode === "api" ? "api" : "manual", { silent: true });
       }
 
       async function copyText(text){
@@ -1060,7 +1112,8 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         } catch(err){
           if (auto) {
             clearResults();
-            setStatus("Auto-calc is on. Add API key, manual spot, or wait for cached spot.", "");
+            if (getSpotMode() === "manual") setStatus("Auto-calc is on. Enter a Manual Spot value (USD/oz) to calculate.", "");
+            else setStatus("Auto-calc is on. Add API key or wait for cached spot.", "");
             return null;
           }
           throw err;
@@ -1097,6 +1150,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
         qdNftId.value = "";
         qdPaid.value = "";
         qdManualSpot.value = "";
+        setSpotMode("manual", { silent: true });
         clearResults();
         setStatus("", "");
 
@@ -1117,8 +1171,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       qdRefreshBtn.addEventListener("click", async () => {
         try{
           saveApiKey();
-          await getSpot({ force: true });
-          await runCalculation({ auto: true });
+          await runCalculation({ auto: true, forceSpotRefresh: getSpotMode() === "api" });
         } catch(err){
           setStatus(err.message || String(err), "error");
         }
@@ -1160,6 +1213,9 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 
       qdResetBtn.addEventListener("click", () => resetUI());
 
+      qdTabManual.addEventListener("click", () => setSpotMode("manual"));
+      qdTabApi.addEventListener("click", () => setSpotMode("api"));
+
       [qdPaid, qdNftId, qdManualSpot].forEach((input) => {
         input.addEventListener("input", scheduleAutoCalc);
         input.addEventListener("change", scheduleAutoCalc);
@@ -1180,8 +1236,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       if (isFinite(Number(qdPaid.value)) && Number(qdPaid.value) > 0) {
         runCalculation({ auto: true }).catch(() => {});
       }
-
-      setStatus("Auto-calc is on. Edit inputs anytime; use Share Link, Copy Summary, or Download CSV after results load.", "");
+      setStatus("Auto-calc is on. Pick Manual or API Key tab, then edit inputs anytime.", "");
     })();
   </script>
 </section>
