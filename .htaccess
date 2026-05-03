@@ -33,6 +33,10 @@ ErrorDocument 403 /404.html
   RewriteCond %{HTTP_HOST} ^www\.rarefolio\.io$ [NC]
   RewriteRule ^(.*)$ https://rarefolio.io/$1 [L,R=301]
 
+  # --- Protect Silver Shard Calculator with HTTP Basic Auth (served via PHP gate) ---
+  RewriteRule ^collection-silverbar-calculator/?$ collection-silverbar-calculator-protected.php [QSA,L]
+  RewriteRule ^collection-silverbar-calculator\.html$ collection-silverbar-calculator-protected.php [QSA,L]
+
   # --- Collection block router (scalable sub-pages via single PHP template) ---
   # /collection/silverbar-01/aquarius?batch=13 -> _col/block.php?bar=01&block=aquarius&batch=13
   RewriteRule ^collection/silverbar-([0-9]{2})/([a-z0-9-]+)/?$ _col/block.php?bar=$1&block=$2 [QSA,L]
