@@ -614,6 +614,9 @@ a:hover { text-decoration: underline; }
   let walletProvider = '';
   let walletAddresses = [];
   const WALLET_PREFERRED_ORDER = ['eternl', 'lace', 'nami', 'typhon', 'flint', 'yoroi'];
+  const WALLET_DISCOVERY_INTERVAL_MS = 350;
+  const WALLET_DISCOVERY_MAX_ATTEMPTS = 24;
+  let walletDiscoveryTimer = null;
 
   function isAccountChangeError(err) {
     const code = Number(err && err.code);
@@ -678,6 +681,49 @@ a:hover { text-decoration: underline; }
     const preferred = providers.includes('eternl') ? 'eternl' : providers[0];
     select.value = providers.includes(previous) ? previous : preferred;
     select.disabled = false;
+  }
+
+  function delay(ms) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
+  }
+
+  function stopWalletDiscovery() {
+    if (!walletDiscoveryTimer) return;
+    window.clearInterval(walletDiscoveryTimer);
+    walletDiscoveryTimer = null;
+  }
+
+  function startWalletDiscovery() {
+    stopWalletDiscovery();
+    let attempts = 0;
+    const tick = () => {
+      attempts += 1;
+      const before = selectedWalletKey();
+      populateWalletProviderSelect();
+      const after = selectedWalletKey();
+      if (!walletApi && !before && after) {
+        setStatus($('wallet-status'), `Detected ${humanWalletName(after)}. Click Connect Wallet.`, '');
+      }
+      if (after || attempts >= WALLET_DISCOVERY_MAX_ATTEMPTS) {
+        stopWalletDiscovery();
+      }
+    };
+    tick();
+    if (!selectedWalletKey()) {
+      walletDiscoveryTimer = window.setInterval(tick, WALLET_DISCOVERY_INTERVAL_MS);
+    }
+  }
+
+  async function waitForWalletProvider(timeoutMs = 2100) {
+    const deadline = Date.now() + timeoutMs;
+    populateWalletProviderSelect();
+    let chosen = selectedWalletKey();
+    while (!chosen && Date.now() < deadline) {
+      await delay(WALLET_DISCOVERY_INTERVAL_MS);
+      populateWalletProviderSelect();
+      chosen = selectedWalletKey();
+    }
+    return chosen;
   }
 
   function escHtml(v) {
@@ -914,10 +960,16 @@ a:hover { text-decoration: underline; }
 
   async function connectWallet() {
     const walletStatus = $('wallet-status');
+    stopWalletDiscovery();
     populateWalletProviderSelect();
-    const chosen = selectedWalletKey();
+    let chosen = selectedWalletKey();
     if (!chosen) {
-      setStatus(walletStatus, 'No wallet extension detected. Install/unlock Eternl and try again.', 'err');
+      setStatus(walletStatus, 'Detecting wallet extensions…', 'loading');
+      chosen = await waitForWalletProvider();
+    }
+    if (!chosen) {
+      startWalletDiscovery();
+      setStatus(walletStatus, 'No wallet extension detected yet. Unlock/open Eternl, then click Connect Wallet again.', 'err');
       return;
     }
     $('btn-connect').disabled = true;
@@ -972,10 +1024,36 @@ a:hover { text-decoration: underline; }
   }
 
   function switchWalletAccount() {
-    const key = selectedWalletKey();
-    const walletLabel = key ? humanWalletName(key) : 'your wallet';
-    disconnectWallet(
-      `Session cleared. In ${walletLabel}, switch to the target account/wallet, then click Connect Wallet.`,
+    populateWalletProviderSelect();
+    const selectedKey = selectedWalletKey();
+    const key = selectedKey || walletProvider;
+    if (!key) {
+      startWalletDiscovery();
+      setStatus($('wallet-status'), 'No wallet provider detected yet. Unlock/open Eternl first.', 'err');
+      return;
+    }
+
+    const walletLabel = humanWalletName(key);
+    if (walletApi && walletProvider && selectedKey && selectedKey !== walletProvider) {
+      disconnectWallet(
+        `Provider changed to ${walletLabel}. Click Connect Wallet to continue with the selected provider.`,
+        'warn'
+      );
+      return;
+    }
+
+    $('btn-refresh').disabled = true;
+    $('btn-verify-owner').disabled = true;
+    setStatus(
+      $('wallet-status'),
+      `Browser security cannot open the ${walletLabel} account picker automatically. Open ${walletLabel}, switch account/wallet, then click Connect Wallet.`,
+      'warn'
+    );
+    const collectionStatus = $('collection-status');
+    collectionStatus.style.display = '';
+    setStatus(
+      collectionStatus,
+      'After switching account in your wallet extension, click Connect Wallet to bind the new account.',
       'warn'
     );
   }
@@ -1120,16 +1198,32 @@ a:hover { text-decoration: underline; }
   $('btn-disconnect').addEventListener('click', disconnectWallet);
   $('btn-lookup-token').addEventListener('click', lookupToken);
   $('btn-verify-owner').addEventListener('click', verifyConnectedWalletOwnership);
+  $('wallet-provider-select').addEventListener('pointerdown', () => {
+    if (walletApi) return;
+    populateWalletProviderSelect();
+  });
+  $('wallet-provider-select').addEventListener('focus', () => {
+    if (walletApi) return;
+    populateWalletProviderSelect();
+  });
   $('wallet-provider-select').addEventListener('change', () => {
     if (walletApi) return;
     const key = selectedWalletKey();
     if (!key) return;
     setStatus($('wallet-status'), `Selected ${humanWalletName(key)}. Click Connect Wallet.`, '');
   });
+  window.addEventListener('focus', () => {
+    if (walletApi) return;
+    startWalletDiscovery();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (walletApi || document.visibilityState !== 'visible') return;
+    startWalletDiscovery();
+  });
   $('ov-cnft').addEventListener('input', () => updateBridgeLinks(null));
-  populateWalletProviderSelect();
+  startWalletDiscovery();
   if (!selectedWalletKey()) {
-    setStatus($('wallet-status'), 'No wallet extension detected. Install/unlock Eternl and refresh.', 'warn');
+    setStatus($('wallet-status'), 'Detecting wallet extensions… unlock/open Eternl, then click Connect Wallet.', 'warn');
   }
 
   updateBridgeLinks(null);
