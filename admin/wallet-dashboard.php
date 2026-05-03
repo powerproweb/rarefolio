@@ -405,6 +405,23 @@ a:hover { text-decoration: underline; }
 .status.loading { background: var(--surface2); color: var(--muted); border-color: var(--border); }
 
 .controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.wallet-picker {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 210px;
+}
+.wallet-picker .section-label { margin: 0; }
+.wallet-picker select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  outline: none;
+}
+.wallet-picker select:focus { border-color: var(--gold); }
 
 .wallet-meta {
   margin-top: 10px;
@@ -513,7 +530,12 @@ a:hover { text-decoration: underline; }
   <h2>Wallet Dashboard</h2>
   <p class="muted">Connect a CIP-30 wallet to inspect holdings. This dashboard is read-only and does not submit transactions.</p>
   <div class="controls">
+    <label class="wallet-picker" for="wallet-provider-select">
+      <span class="section-label">Wallet Provider</span>
+      <select id="wallet-provider-select"></select>
+    </label>
     <button class="btn" id="btn-connect" type="button">Connect Wallet</button>
+    <button class="btn secondary" id="btn-switch-account" type="button">Switch Wallet / Account</button>
     <button class="btn secondary" id="btn-refresh" type="button" disabled>Refresh Holdings</button>
     <button class="btn secondary" id="btn-disconnect" type="button" disabled>Disconnect</button>
   </div>
@@ -591,6 +613,72 @@ a:hover { text-decoration: underline; }
   let walletApi = null;
   let walletProvider = '';
   let walletAddresses = [];
+  const WALLET_PREFERRED_ORDER = ['eternl', 'lace', 'nami', 'typhon', 'flint', 'yoroi'];
+
+  function isAccountChangeError(err) {
+    const code = Number(err && err.code);
+    const info = String((err && err.info) || (err && err.message) || err || '').toLowerCase();
+    return code === -4 || (info.includes('account') && info.includes('change'));
+  }
+
+  function humanWalletName(key) {
+    const cardano = window.cardano || {};
+    const injected = cardano[key];
+    const name = injected && typeof injected.name === 'string' ? injected.name.trim() : '';
+    return name || key;
+  }
+
+  function discoverWalletProviders() {
+    const cardano = window.cardano;
+    if (!cardano || typeof cardano !== 'object') return [];
+
+    const keys = Object.keys(cardano).filter((key) => {
+      const candidate = cardano[key];
+      return candidate && typeof candidate.enable === 'function';
+    });
+    const rank = new Map(WALLET_PREFERRED_ORDER.map((k, i) => [k, i]));
+    keys.sort((a, b) => {
+      const ai = rank.has(a) ? rank.get(a) : Number.MAX_SAFE_INTEGER;
+      const bi = rank.has(b) ? rank.get(b) : Number.MAX_SAFE_INTEGER;
+      if (ai !== bi) return ai - bi;
+      return a.localeCompare(b);
+    });
+    return keys;
+  }
+
+  function selectedWalletKey() {
+    const select = $('wallet-provider-select');
+    return (select && typeof select.value === 'string') ? select.value : '';
+  }
+
+  function populateWalletProviderSelect() {
+    const select = $('wallet-provider-select');
+    if (!select) return;
+
+    const providers = discoverWalletProviders();
+    const previous = select.value || '';
+    select.innerHTML = '';
+
+    if (!providers.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'No wallet extension detected';
+      select.appendChild(opt);
+      select.disabled = true;
+      return;
+    }
+
+    providers.forEach((key) => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = `${humanWalletName(key)} (${key})`;
+      select.appendChild(opt);
+    });
+
+    const preferred = providers.includes('eternl') ? 'eternl' : providers[0];
+    select.value = providers.includes(previous) ? previous : preferred;
+    select.disabled = false;
+  }
 
   function escHtml(v) {
     return String(v ?? '')
@@ -734,32 +822,31 @@ a:hover { text-decoration: underline; }
       meta.style.display = 'none';
       return;
     }
-    $('meta-wallet-provider').textContent = walletProvider || 'unknown';
+    $('meta-wallet-provider').textContent = walletProvider ? humanWalletName(walletProvider) : 'unknown';
     $('meta-wallet-address').textContent = shortValue(walletAddresses[0]);
     $('meta-wallet-count').textContent = String(walletAddresses.length);
     meta.style.display = 'grid';
   }
 
-  async function pickWallet() {
+  async function pickWallet(requestedKey = '') {
     const cardano = window.cardano;
     if (!cardano) throw new Error('No Cardano wallet extension detected.');
-    const preferred = ['eternl', 'lace', 'nami', 'typhon', 'flint', 'yoroi'];
-    for (const key of preferred) {
-      if (cardano[key] && typeof cardano[key].enable === 'function') {
-        return { key, api: await cardano[key].enable() };
-      }
-    }
-    const any = Object.keys(cardano).find((key) => cardano[key] && typeof cardano[key].enable === 'function');
-    if (!any) throw new Error('No CIP-30 compatible wallet was found.');
-    return { key: any, api: await cardano[any].enable() };
+    const providers = discoverWalletProviders();
+    if (!providers.length) throw new Error('No CIP-30 compatible wallet was found.');
+
+    const target = requestedKey && providers.includes(requestedKey)
+      ? requestedKey
+      : providers[0];
+    if (!target) throw new Error('No wallet provider is available for connection.');
+    return { key: target, api: await cardano[target].enable() };
   }
 
   async function collectAddresses(api) {
-    const [used, change, reward] = await Promise.all([
-      api.getUsedAddresses().catch(() => []),
-      api.getChangeAddress().catch(() => null),
-      typeof api.getRewardAddresses === 'function' ? api.getRewardAddresses().catch(() => []) : Promise.resolve([]),
-    ]);
+    const used = await api.getUsedAddresses();
+    const change = await api.getChangeAddress();
+    const reward = typeof api.getRewardAddresses === 'function'
+      ? await api.getRewardAddresses()
+      : [];
     const set = new Set();
     (Array.isArray(used) ? used : []).forEach((v) => {
       if (typeof v === 'string' && v.length >= 10) set.add(v);
@@ -769,6 +856,26 @@ a:hover { text-decoration: underline; }
     });
     if (typeof change === 'string' && change.length >= 10) set.add(change);
     return Array.from(set);
+  }
+
+  async function refreshConnectedAddresses() {
+    if (!walletApi) {
+      throw new Error('Wallet is not connected.');
+    }
+    try {
+      const addresses = await collectAddresses(walletApi);
+      if (!addresses.length) {
+        throw new Error('Wallet returned no addresses.');
+      }
+      walletAddresses = addresses;
+      updateWalletMeta();
+      return addresses;
+    } catch (err) {
+      if (isAccountChangeError(err)) {
+        throw new Error('Wallet account changed. Click "Switch Wallet / Account" then reconnect.');
+      }
+      throw err;
+    }
   }
 
   async function postAction(payload) {
@@ -785,7 +892,7 @@ a:hover { text-decoration: underline; }
   }
 
   async function loadCollection() {
-    if (!walletAddresses.length) throw new Error('No wallet addresses found.');
+    const addresses = await refreshConnectedAddresses();
 
     const statusEl = $('collection-status');
     statusEl.style.display = '';
@@ -793,7 +900,7 @@ a:hover { text-decoration: underline; }
 
     const data = await postAction({
       action: 'collection',
-      addresses: walletAddresses,
+      addresses,
     });
 
     renderCollection(data.tokens || [], data.orders || []);
@@ -807,10 +914,17 @@ a:hover { text-decoration: underline; }
 
   async function connectWallet() {
     const walletStatus = $('wallet-status');
+    populateWalletProviderSelect();
+    const chosen = selectedWalletKey();
+    if (!chosen) {
+      setStatus(walletStatus, 'No wallet extension detected. Install/unlock Eternl and try again.', 'err');
+      return;
+    }
     $('btn-connect').disabled = true;
+    $('btn-switch-account').disabled = true;
     setStatus(walletStatus, 'Connecting wallet…', 'loading');
     try {
-      const { key, api } = await pickWallet();
+      const { key, api } = await pickWallet(chosen);
       const addresses = await collectAddresses(api);
       if (!addresses.length) {
         throw new Error('Wallet returned no addresses.');
@@ -826,19 +940,23 @@ a:hover { text-decoration: underline; }
       updateWalletMeta();
 
       await loadCollection();
-      setStatus(walletStatus, `Connected (${key})`, 'ok');
+      setStatus(walletStatus, `Connected (${humanWalletName(key)}). Use "Switch Wallet / Account" to change Eternl account.`, 'ok');
     } catch (e) {
       walletApi = null;
       walletProvider = '';
       walletAddresses = [];
       updateWalletMeta();
-      setStatus(walletStatus, 'Error: ' + (e?.message || String(e)), 'err');
+      const msg = isAccountChangeError(e)
+        ? 'Wallet account changed. Click "Switch Wallet / Account" then reconnect.'
+        : 'Error: ' + (e?.message || String(e));
+      setStatus(walletStatus, msg, 'err');
     } finally {
       $('btn-connect').disabled = false;
+      $('btn-switch-account').disabled = false;
     }
   }
 
-  function disconnectWallet() {
+  function disconnectWallet(customMessage = 'Disconnected.', customKind = '') {
     walletApi = null;
     walletProvider = '';
     walletAddresses = [];
@@ -849,8 +967,17 @@ a:hover { text-decoration: underline; }
     $('collection-grid').innerHTML = '';
     $('collection-empty').style.display = '';
     $('collection-empty').textContent = 'Connect a wallet to load collection data.';
-    setStatus($('wallet-status'), 'Disconnected.', '');
+    setStatus($('wallet-status'), customMessage, customKind);
     setStatus($('collection-status'), 'No active wallet session.', '');
+  }
+
+  function switchWalletAccount() {
+    const key = selectedWalletKey();
+    const walletLabel = key ? humanWalletName(key) : 'your wallet';
+    disconnectWallet(
+      `Session cleared. In ${walletLabel}, switch to the target account/wallet, then click Connect Wallet.`,
+      'warn'
+    );
   }
 
   function currentCnftId() {
@@ -937,11 +1064,11 @@ a:hover { text-decoration: underline; }
       return;
     }
 
-    const signedAddress = walletAddresses[0];
-    const nonce = `Rarefolio admin ownership check\ncnft=${cnftId}\nnonce=${randomHex(16)}\nts=${Date.now()}`;
-
-    setStatus(verifyStatus, 'Requesting wallet signature…', 'loading');
     try {
+      const addresses = await refreshConnectedAddresses();
+      const signedAddress = addresses[0];
+      const nonce = `Rarefolio admin ownership check\ncnft=${cnftId}\nnonce=${randomHex(16)}\nts=${Date.now()}`;
+      setStatus(verifyStatus, 'Requesting wallet signature…', 'loading');
       const signature = await walletApi.signData(signedAddress, utf8ToHex(nonce));
       setStatus(verifyStatus, 'Verifying ownership against market backend…', 'loading');
 
@@ -984,15 +1111,26 @@ a:hover { text-decoration: underline; }
     }
     try {
       await loadCollection();
-      setStatus(walletStatus, `Connected (${walletProvider})`, 'ok');
+      setStatus(walletStatus, `Connected (${humanWalletName(walletProvider)}).`, 'ok');
     } catch (e) {
       setStatus(walletStatus, 'Refresh failed: ' + (e?.message || String(e)), 'err');
     }
   });
+  $('btn-switch-account').addEventListener('click', switchWalletAccount);
   $('btn-disconnect').addEventListener('click', disconnectWallet);
   $('btn-lookup-token').addEventListener('click', lookupToken);
   $('btn-verify-owner').addEventListener('click', verifyConnectedWalletOwnership);
+  $('wallet-provider-select').addEventListener('change', () => {
+    if (walletApi) return;
+    const key = selectedWalletKey();
+    if (!key) return;
+    setStatus($('wallet-status'), `Selected ${humanWalletName(key)}. Click Connect Wallet.`, '');
+  });
   $('ov-cnft').addEventListener('input', () => updateBridgeLinks(null));
+  populateWalletProviderSelect();
+  if (!selectedWalletKey()) {
+    setStatus($('wallet-status'), 'No wallet extension detected. Install/unlock Eternl and refresh.', 'warn');
+  }
 
   updateBridgeLinks(null);
 })();
