@@ -1,0 +1,12 @@
+name = "rarefolio/sovereign-reserve"
+version = "0.0.1"
+compiler = "v1.1.21"
+plutus = "v3"
+license = "Proprietary"
+description = "Sovereign Treasury Reserve contracts for Rarefolio"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
