@@ -176,6 +176,7 @@ body { background: var(--bg); color: var(--text); font-family: system-ui, -apple
 h1 { color: var(--gold); font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
 .topbar { display: flex; align-items: center; justify-content: space-between;
           flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.top-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
 .section-label { color: var(--muted); font-size: 11px; text-transform: uppercase;
                  letter-spacing: .07em; font-weight: 600; margin-bottom: 5px; }
@@ -386,7 +387,11 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 <!-- Top bar -->
 <div class="topbar">
   <h1>⬡ Rarefolio Story Editor</h1>
-  <button class="nb-toggle" onclick="toggleNewBlock()">+ Register New Block</button>
+  <div class="top-actions">
+    <a class="btn secondary sm" href="/admin/index.php">Admin Home</a>
+    <a class="btn secondary sm" href="/admin/wallet-dashboard.php">Wallet Dashboard</a>
+    <button class="nb-toggle" onclick="toggleNewBlock()">+ Register New Block</button>
+  </div>
 </div>
 
 <!-- New Block panel (collapsed by default) -->
