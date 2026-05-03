@@ -145,6 +145,10 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       <!-- Live marketplace data (only populated when ?cnft=... is present) -->
       <div class="qdv-row"><div class="qdv-k">Mint Status</div><div class="qdv-v" id="v-mintstatus">—</div></div>
       <div class="qdv-row"><div class="qdv-k">Listing</div><div class="qdv-v" id="v-listing">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Companion FT</div><div class="qdv-v" id="v-companion">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Companion Tx</div><div class="qdv-v mono" id="v-companion-tx">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Proof Manifest</div><div class="qdv-v mono" id="v-proof-manifest">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Evidence Pack</div><div class="qdv-v mono" id="v-proof-evidence">—</div></div>
       <div class="qdv-row"><div class="qdv-k">Current Owner</div><div class="qdv-v mono" id="v-owner">—</div></div>
       <div class="qdv-row"><div class="qdv-k">Asset Fingerprint</div><div class="qdv-v mono" id="v-fingerprint">—</div></div>
 
@@ -181,6 +185,34 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   const barQ = qs.get('bar') || '';
 
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || '—'; };
+  const setLink = (id, href, label) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!href) { el.textContent = '—'; return; }
+    try {
+      const u = new URL(href, window.location.origin);
+      if (!/^https?:$/.test(u.protocol)) { el.textContent = '—'; return; }
+      const a = document.createElement('a');
+      a.href = u.href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.style.color = '#00d4e7';
+      a.textContent = label || u.href;
+      el.textContent = '';
+      el.appendChild(a);
+    } catch (_) {
+      el.textContent = '—';
+    }
+  };
+  const companionStatusLabel = (status) => ({
+    confirmed: 'delivered',
+    submitted: 'submitted',
+    pending: 'queued',
+    failed: 'failed',
+    awaiting_settlement: 'awaiting settlement',
+    not_queued: 'not queued yet',
+    not_enabled: 'not enabled'
+  }[status] || status || '—');
   const badge = (state) => {
     const t = document.getElementById('qdv-badge-text');
     t.textContent = (state === 'verified') ? 'VERIFIED' : 'UNVERIFIED';
@@ -189,6 +221,52 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     certId
       ? `/claim-download.html?cert=${encodeURIComponent(certId)}${cnftId ? `&cnft=${encodeURIComponent(cnftId)}` : ''}`
       : '#';
+  const marketMsg = document.getElementById('v-market-msg');
+  let marketLoaded = false;
+
+  const applyMarketData = (t, cnftFallback = '', barFallback = '') => {
+    const resolvedCnft = t.cnft_id || cnftFallback || '—';
+    const resolvedBar = t.bar_serial || barFallback || '—';
+    set('v-cnft', resolvedCnft);
+    set('v-bar', resolvedBar);
+    set('v-net', (t.chain && t.chain.network) || '—');
+    set('v-tx', (t.chain && t.chain.mint_tx_hash) || '—');
+    set('v-fingerprint', (t.chain && t.chain.asset_fingerprint) || '—');
+    set('v-mintstatus', (t.status && t.status.primary_sale) || '—');
+    set('v-listing', (t.status && t.status.listing) || '—');
+    set('v-owner', t.owner_display || '—');
+
+    const companion = t.companion || {};
+    const delivery = companion.delivery || {};
+    const companionStatus = delivery.status || (companion.enabled ? 'not_queued' : 'not_enabled');
+    const companionName = companion.asset_name || (companion.enabled ? 'Companion token' : 'Not enabled');
+    set('v-companion', companion.enabled ? `${companionName} · ${companionStatusLabel(companionStatus)}` : companionName);
+    if (delivery.tx_hash) {
+      setLink('v-companion-tx', `https://cardanoscan.io/transaction/${delivery.tx_hash}`, `${String(delivery.tx_hash).slice(0, 14)}…`);
+    } else {
+      set('v-companion-tx', '—');
+    }
+
+    const proof = t.proof || {};
+    setLink('v-proof-manifest', proof.manifest_uri || '', proof.manifest_uri ? 'Open manifest' : '');
+    setLink('v-proof-evidence', proof.evidence_public_url || '', proof.evidence_public_url ? 'Open evidence pack' : '');
+    marketMsg.textContent = 'Live data from marketplace as of ' + (t.updated_at || 'now') + '.';
+  };
+
+  const enrichFromMarket = (cnftId, barFallback = '') => {
+    if (!cnftId || !window.RFMarket || marketLoaded) return;
+    marketLoaded = true;
+    marketMsg.textContent = 'Loading live marketplace data…';
+    window.RFMarket.getToken(cnftId)
+      .then(t => applyMarketData(t, cnftId, barFallback))
+      .catch(err => {
+        marketLoaded = false;
+        marketMsg.textContent =
+          (err && err.status === 404)
+            ? 'No marketplace record yet for ' + cnftId + '.'
+            : 'Marketplace temporarily unavailable.';
+      });
+  };
 
   set('v-cert', cert);
 
@@ -203,7 +281,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     return;
   }
 
-  fetch(`/api/cert.php?cert=${encodeURIComponent(cert)}`, { cache: 'no-store' })
+  fetch(`/api/cert/?cert=${encodeURIComponent(cert)}`, { cache: 'no-store' })
     .then(r => r.ok ? r.json() : Promise.reject(r))
     .then(p => {
       badge(p.status === 'verified' ? 'verified' : 'unverified');
@@ -216,6 +294,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       set('v-tx', p.chain?.txHash || '—');
 
       download.href = claimUrl(cert, p.cnft?.id || cnft);
+      enrichFromMarket(p.cnft?.id || cnft, p.cnft?.barSerial || barQ);
 
       document.getElementById('v-msg').textContent =
         (p.status === 'verified')
@@ -225,35 +304,16 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     .catch(() => {
       badge('unverified');
       document.getElementById('v-msg').textContent = 'No verification record found for this certificate ID.';
+      enrichFromMarket(cnft, barQ);
     });
 
   // ── Additive live enrichment: if ?cnft=... is present, call the
   //    marketplace API and fill in minting/listing/ownership fields.
   //    This does NOT change the cert-verification badge logic above.
-  const marketMsg = document.getElementById('v-market-msg');
   if (cnft && window.RFMarket) {
     if (barQ) set('v-bar', barQ);
     set('v-cnft', cnft);
-    marketMsg.textContent = 'Loading live marketplace data…';
-
-    window.RFMarket.getToken(cnft)
-      .then(t => {
-        set('v-cnft',        t.cnft_id || cnft);
-        set('v-bar',         t.bar_serial || barQ || '—');
-        set('v-net',         (t.chain && t.chain.network) || '—');
-        set('v-tx',          (t.chain && t.chain.mint_tx_hash) || '—');
-        set('v-fingerprint', (t.chain && t.chain.asset_fingerprint) || '—');
-        set('v-mintstatus',  (t.status && t.status.primary_sale) || '—');
-        set('v-listing',     (t.status && t.status.listing) || '—');
-        set('v-owner',       t.owner_display || '—');
-        marketMsg.textContent = 'Live data from marketplace as of ' + (t.updated_at || 'now') + '.';
-      })
-      .catch(err => {
-        marketMsg.textContent =
-          (err && err.status === 404)
-            ? 'No marketplace record yet for ' + cnft + '.'
-            : 'Marketplace temporarily unavailable.';
-      });
+    enrichFromMarket(cnft, barQ);
   }
 })();
 </script>
