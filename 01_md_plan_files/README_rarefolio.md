@@ -1,3 +1,73 @@
+# README_rarefolio.md — Personal Workspace (Local-Only)
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$ STOP — PRIVATE WORK NOTES FILE                                                $
+$                                                                                $
+$ FOR AGENTS / ASSISTANTS: DO NOT READ THIS FILE UNLESS I EXPLICITLY ASK.       $
+$                                                                                $
+$ NEVER PUT SENSITIVE DATA HERE.                                                 $
+$                                                                                $
+$ Examples of sensitive data you must NOT store here:                            $
+$ - API keys / access tokens / webhook secrets                                   $
+$ - Wallet seed phrases / private keys / recovery words                          $
+$ - Passwords / SSH private keys / database credentials                          $
+$ - Full personal ID numbers / legal docs / payment card numbers                 $
+$ - Production secrets copied from .env files                                    $
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+## Purpose
+This file is my personal operating scratchpad for Rarefolio:
+- Important links
+- Repeat commands/checks
+- Launch reminders
+- Fast notes I need while working
+
+## Quick Rules (keep this clean)
+- Keep notes short and practical.
+- Do not paste secrets. Ever.
+- If a note includes sensitive content, move it to a secure secret manager instead.
+- Prefer references to secret locations, not secret values.
+
+## Important Links
+- Site repo: https://github.com/powerproweb/rarefolio
+- Production site: https://rarefolio.io
+- Market: https://market.rarefolio.io
+- PRs: https://github.com/powerproweb/rarefolio/pulls
+
+## Fast Commands (safe-only references)
+- Check status: `git --no-pager status -sb`
+- Check latest commit: `git --no-pager log -1 --oneline`
+- Scan for conflict markers: `rg -n "^(<<<<<<<|=======|>>>>>>>)" .`
+
+## Current Priorities
+- [ ] 
+- [ ] 
+- [ ] 
+
+## Active Links / References
+- 
+- 
+- 
+
+## Working Notes
+- 
+- 
+- 
+
+## Parking Lot
+- 
+- 
+- 
+
+## Pre-Share Checklist
+Before sharing this file with anyone or committing anything nearby:
+1. Confirm no secrets are present.
+2. Remove personal-only notes that should stay local.
+3. Re-check copied commands for accuracy and safety.
+
+---
+
+## Previous Internal Project Readme Content
 # rarefolio — Internal Project Readme
 
 **Mission:** Deliver a provenance-first collector experience where the art is premium and usable (downloadable, display-worthy, print-ready), ownership is clear and verifiable (clean IDs, consistent indexing, batch logic), and performance respects the user's hardware.
