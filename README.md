@@ -156,6 +156,24 @@ The NFT detail page (`nft.html`) automatically shows **View Certificate**, **Ver
 - **Artist Application** (`rarefolio_showcased_artist_application.html`) — Showcased artist submission form
 - **Philosophy, Bio, Manifesto, Downloads, Contact, Terms, Privacy, 404**
 
+### Admin Pages (Basic Auth)
+- **Admin Hub** (`admin/index.php`) — Launch point for admin-only tools
+- **Wallet Dashboard** (`admin/wallet-dashboard.php`) — CIP-30 wallet operations panel for collection visibility and ownership tooling
+- **Story Editor** (`admin/story-editor.php`) — Story content management
+
+#### Wallet Dashboard Functionality
+- **Wallet provider selector** with preferred ordering (`eternl`, `lace`, `nami`, `typhon`, `flint`, `yoroi`) and retry-based detection on initial load/focus
+- **Connect Wallet** uses the selected provider and resolves used/change/reward addresses for ownership checks
+- **Refresh Holdings** re-queries ownership via the market collection bridge and updates token/order cards
+- **Disconnect** clears in-page wallet session state
+- **Switch Wallet / Account** provides guided account-switch flow without blind session clearing for same-provider account changes
+  1. Select provider (if needed)
+  2. Click **Switch Wallet / Account**
+  3. Change account/wallet in the extension UI (Eternl/Lace/etc.)
+  4. Click **Connect Wallet** to bind the new account
+
+> Browser security does not allow the page to force-open a wallet extension’s account picker. Account changes must be completed in the wallet extension UI, then reconnected from the dashboard.
+
 ### Backend API
 - `api/cert.php` — Static cert lookup (blocks 00–02, 24 CNFTs)
 - `api/cert/index.php` — DB-driven cert lookup (scales to all CNFTs)
@@ -197,6 +215,10 @@ rarefolio.io/
 ├── cert.html                     # Certificate viewer
 ├── verify.html                   # Public cert verification
 ├── .htaccess                     # URL rewrites, 301 redirects, security headers
+├── admin/
+│   ├── index.php                 # Admin hub (Basic Auth)
+│   ├── wallet-dashboard.php      # CIP-30 wallet operations dashboard
+│   └── story-editor.php          # Story content management
 ├── api/
 │   ├── _config.php               # DB credentials & auth (secrets)
 │   ├── cert.php                  # Static cert lookup (24 CNFTs)
