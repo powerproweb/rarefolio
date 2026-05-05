@@ -11,6 +11,22 @@ function respond(int $code, array $payload): void {
   echo json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
   exit;
 }
+function qd_normalize_no_emdash_text(string $text): string {
+  $normalized = preg_replace('/\s*\\\\u2014\s*/i', ', ', $text);
+  if (!is_string($normalized)) $normalized = $text;
+  $normalized = preg_replace('/\s*\\\\u2013\s*/i', ', ', $normalized);
+  if (!is_string($normalized)) $normalized = $text;
+  if (function_exists('mb_chr')) {
+    $emDash = mb_chr(8212, 'UTF-8');
+    $enDash = mb_chr(8211, 'UTF-8');
+    $normalized = str_replace([$emDash, $enDash], ', ', $normalized);
+  } else {
+    $tmp = preg_replace('/\x{2014}|\x{2013}/u', ', ', $normalized);
+    if (is_string($tmp)) $normalized = $tmp;
+  }
+  $collapsed = preg_replace('/\s{2,}/', ' ', $normalized);
+  return is_string($collapsed) ? trim($collapsed) : trim($normalized);
+}
 
 $bar   = trim($_GET['bar']   ?? '');
 $batch = trim($_GET['batch'] ?? '');
@@ -43,7 +59,12 @@ try {
   $characterNames = null;
   if ($row['character_names'] !== null) {
     $decoded = json_decode($row['character_names'], true);
-    if (is_array($decoded)) $characterNames = array_values($decoded);
+    if (is_array($decoded)) {
+      $characterNames = array_values(array_map(
+        static fn($name): string => qd_normalize_no_emdash_text((string)$name),
+        $decoded
+      ));
+    }
   }
 
   respond(200, [
