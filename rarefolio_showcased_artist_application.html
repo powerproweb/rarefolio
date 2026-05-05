@@ -475,6 +475,33 @@
     .check-error .error-msg {
       margin-top: 6px;
     }
+    .backtotop {
+      position: fixed;
+      right: 18px;
+      bottom: 20px;
+      z-index: 80;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity .22s ease, transform .22s ease;
+    }
+    .backtotop.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .backtotop a {
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8, 10, 14, 0.86);
+      color: #f8fafc;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: .86rem;
+    }
+    .backtotop a:hover {
+      border-color: rgba(212,175,99,0.45);
+      background: rgba(8, 10, 14, 0.96);
+    }
 
     @media (max-width: 1024px) {
       .hero-grid,
@@ -905,7 +932,9 @@ https://..." required></textarea>
       </div>
     </div>
   </footer>
+  <div class="backtotop"><a href="#top" aria-label="Back to top">Back to top</a></div>
 
+  <script src="/assets/js/main.js?v=20260412"></script>
   <script>
     const form = document.getElementById('artistApplicationForm');
 

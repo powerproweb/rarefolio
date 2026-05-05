@@ -294,6 +294,35 @@
 
   // Back-to-top button show/hide
   const btt = $(".backtotop");
+  const scrollToTopSlow = () => {
+    const startY = window.scrollY || window.pageYOffset || 0;
+    if (startY <= 0) {
+      try { history.replaceState(null, "", window.location.pathname + window.location.search); } catch {}
+      return;
+    }
+
+    const duration = 1200;
+    const start = performance.now();
+    const easeInOutCubic = (t) => (t < 0.5)
+      ? 4 * t * t * t
+      : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = easeInOutCubic(progress);
+      const nextY = Math.round(startY * (1 - eased));
+      window.scrollTo(0, nextY);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+        return;
+      }
+      try { history.replaceState(null, "", window.location.pathname + window.location.search); } catch {}
+    };
+
+    requestAnimationFrame(step);
+  };
+  window.__QD = window.__QD || {};
+  window.__QD.scrollToTopSlow = scrollToTopSlow;
   const onScroll = () => {
     if (!btt) return;
     if (window.scrollY > 420) btt.classList.add("show");
@@ -301,6 +330,13 @@
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+  const bttLink = btt ? btt.querySelector('a[href="#top"]') : null;
+  if (bttLink) {
+    bttLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      scrollToTopSlow();
+    });
+  }
 
   // Watermark all NFT images currently in the DOM, and keep up with any
   // CNFT grid re-renders (qd-wire.js injects cards dynamically).

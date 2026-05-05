@@ -732,9 +732,13 @@ It tells the story of who made it, where it has been, and how it got to you.
 
   a.addEventListener('click', function(e){
     e.preventDefault();
-    window.scrollTo({top:0, behavior:'smooth'});
-    // Keep URL clean (prevents layout quirks on some mobile browsers)
-    try{ history.replaceState(null,'', window.location.pathname + window.location.search); }catch(_){}
+    if (window.__QD && typeof window.__QD.scrollToTopSlow === 'function') {
+      window.__QD.scrollToTopSlow();
+    } else {
+      window.scrollTo({top:0, behavior:'smooth'});
+      // Keep URL clean (prevents layout quirks on some mobile browsers)
+      try{ history.replaceState(null,'', window.location.pathname + window.location.search); }catch(_){}
+    }
   });
 })();
 </script>
