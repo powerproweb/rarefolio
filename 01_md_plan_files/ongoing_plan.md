@@ -3,6 +3,14 @@
 ---
 
 ---
+## 2026-05-05 | UX Consistency Update
+### Global Back-to-top Slow Scroll
+- Added `Back to top` control coverage to pages that were missing it: `claim-download.html`, `under-development.html`, and `rarefolio_showcased_artist_application.html`.
+- Implemented shared slow-scroll behavior in `assets/js/main.js` with a 1200ms eased `requestAnimationFrame` animation and reusable helper `window.__QD.scrollToTopSlow`.
+- Updated custom page handlers (`rf_bio.html`, `rf_bus_philosophy.html`, `rf_manifesto.html`) to call the shared helper when available so behavior stays consistent.
+- Result: all public templates now use the same slower smooth-scroll experience for returning to top.
+
+---
 ## 2026-04-13 | NFT Wiring Phase
 ### What Needs to Happen After NFT Art Is Created
 

@@ -815,8 +815,12 @@
 
   a.addEventListener('click', function(e){
     e.preventDefault();
-    window.scrollTo({top:0, behavior:'smooth'});
-    try{ history.replaceState(null,'', window.location.pathname + window.location.search); }catch(_){}
+    if (window.__QD && typeof window.__QD.scrollToTopSlow === 'function') {
+      window.__QD.scrollToTopSlow();
+    } else {
+      window.scrollTo({top:0, behavior:'smooth'});
+      try{ history.replaceState(null,'', window.location.pathname + window.location.search); }catch(_){}
+    }
   });
 })();
 </script>
