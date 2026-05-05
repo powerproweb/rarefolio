@@ -152,7 +152,7 @@ The NFT detail page (`nft.html`) automatically shows **View Certificate**, **Ver
 - **Certificate Viewer** (`cert.html`) — Certificate of Authenticity display
 - **Verification** (`verify.html`) — Public cert verification with QR code
 - **Calculator** (`collection-silverbar-calculator.html`) — Silver shard calculator
-- **Prelaunch** (`collection-inventors-guild-prelaunch.html`) — Founders prelaunch for Block 01
+- **Founders Collection** (`/collection/silverbar-01/founders?batch=89`) — active Founders block page
 - **Artist Application** (`rarefolio_showcased_artist_application.html`) — Showcased artist submission form
 - **Philosophy, Bio, Manifesto, Downloads, Contact, Terms, Privacy, 404**
 
@@ -294,6 +294,19 @@ MySQL database `rarefolio_cnftcert` with four tables:
 | `/verify?cert=QDCERT-E101837-0000001` | Public verification |
 
 Old URLs (`collection-silverbar-01-aquarius.html`) are 301-redirected to new clean URLs via `.htaccess`.
+
+---
+
+## Navigation and Footer Guard Rails (Do Not Remove)
+
+- Never reintroduce `href="/collection-inventors-guild-prelaunch..."` in site navigation.
+- The old `/collection-inventors-guild-prelaunch` route is intentionally retired and hard-blocked in `.htaccess`.
+- Every page footer that uses `.footer-right` must include all four legal links:
+  - `Downloads`
+  - `Privacy`
+  - `Terms`
+  - `License`
+- The deploy workflow enforces these rules and blocks deployment if they are violated.
 
 ---
 

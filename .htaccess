@@ -33,6 +33,9 @@ ErrorDocument 403 /404.html
   RewriteCond %{HTTP_HOST} ^www\.rarefolio\.io$ [NC]
   RewriteRule ^(.*)$ https://rarefolio.io/$1 [L,R=301]
 
+  # Retired page hard-block: do not serve old Inventors prelaunch route
+  RewriteRule ^collection-inventors-guild-prelaunch(\\.html)?/?$ - [G,L,NC]
+
   # --- Protect Silver Shard Calculator with HTTP Basic Auth (served via PHP gate) ---
   RewriteRule ^collection-silverbar-calculator/?$ collection-silverbar-calculator-protected.php [QSA,L]
   RewriteRule ^collection-silverbar-calculator\.html$ collection-silverbar-calculator-protected.php [QSA,L]

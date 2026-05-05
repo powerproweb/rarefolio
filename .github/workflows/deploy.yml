@@ -50,6 +50,42 @@ jobs:
             echo "Deployment blocked: one or more required files are missing."
             exit 1
           fi
+          if grep -R --line-number --include="*.html" --include="*.php" 'collection-inventors-guild-prelaunch' .; then
+            echo "Deployment blocked: retired Inventors prelaunch route was reintroduced."
+            exit 1
+          fi
+          python - <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          root = pathlib.Path(".")
+          targets = list(root.glob("*.html")) + [root / "_col" / "block.php"]
+          required_links = (
+              'href="/downloads.html"',
+              'href="/privacy.html"',
+              'href="/terms.html"',
+              'href="/license"',
+          )
+
+          incomplete = []
+          for path in targets:
+              if not path.exists():
+                  continue
+              text = path.read_text(encoding="utf-8", errors="ignore")
+              match = re.search(r'<div class="footer-right">([\s\S]*?)</div>', text)
+              if not match:
+                  continue
+              footer_body = match.group(1)
+              if any(link not in footer_body for link in required_links):
+                  incomplete.append(str(path))
+
+          if incomplete:
+              print("Deployment blocked: footer legal links are incomplete in:")
+              for path in incomplete:
+                  print(f" - {path}")
+              sys.exit(1)
+          PY
 
       - name: Install SSH key
         run: |
