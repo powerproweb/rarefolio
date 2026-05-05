@@ -560,6 +560,24 @@
   //   from a single items.html that contains all 8 per-item articles.
   //   If data-story-item is 0 or absent, injects the full response.
   // ------------------------------------------------------------
+  const normalizeNoEmDashHtml = (rawHtml) => {
+    const emDash = String.fromCharCode(8212);
+    const enDash = String.fromCharCode(8211);
+    const doc = new DOMParser().parseFromString(String(rawHtml || ""), "text/html");
+    const root = doc.body;
+    if (!root) return String(rawHtml || "");
+    const showText = (window.NodeFilter && window.NodeFilter.SHOW_TEXT) ? window.NodeFilter.SHOW_TEXT : 4;
+    const walker = doc.createTreeWalker(root, showText);
+    let node = walker.nextNode();
+    while (node) {
+      node.nodeValue = String(node.nodeValue || "")
+        .split(emDash).join(", ")
+        .split(enDash).join(", ")
+        .replace(/\s{2,}/g, " ");
+      node = walker.nextNode();
+    }
+    return root.innerHTML;
+  };
   const loadStory = () => {
     const host = document.getElementById("qd-story");
     if (!host) return;
@@ -580,10 +598,11 @@
         return r.text();
       })
       .then((html) => {
+        const normalizedHtml = normalizeNoEmDashHtml(html);
         // Per-item extraction: parse and find article[data-item="N"]
         if (itemNum >= 1 && itemNum <= 8) {
           try {
-            const doc = new DOMParser().parseFromString(html, "text/html");
+            const doc = new DOMParser().parseFromString(normalizedHtml, "text/html");
             const article = doc.querySelector('article[data-item="' + itemNum + '"]');
             if (article) {
               host.innerHTML = article.outerHTML;
@@ -591,7 +610,7 @@
             }
           } catch { /* fall through to full content */ }
         }
-        host.innerHTML = html;
+        host.innerHTML = normalizedHtml;
       })
       .catch(() => {
         host.innerHTML = '<p class="muted small" style="margin:0;">Story unavailable.</p>';

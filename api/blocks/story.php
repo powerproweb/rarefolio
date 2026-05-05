@@ -2,6 +2,16 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../_config.php';
+function qd_normalize_no_emdash_html(string $html): string
+{
+  if (function_exists('mb_chr')) {
+    $emDash = mb_chr(8212, 'UTF-8');
+    $enDash = mb_chr(8211, 'UTF-8');
+    return str_replace([$emDash, $enDash], ', ', $html);
+  }
+  $normalized = preg_replace('/\x{2014}|\x{2013}/u', ', ', $html);
+  return is_string($normalized) ? $normalized : $html;
+}
 
 $blockId = trim($_GET['block'] ?? '');
 $itemRaw = trim($_GET['item']  ?? '0');
@@ -32,7 +42,7 @@ try {
     if ($row) {
       header('Content-Type: text/html; charset=utf-8');
       header('Cache-Control: public, max-age=3600');
-      echo $row['html_content'];
+      echo qd_normalize_no_emdash_html((string)$row['html_content']);
       exit;
     }
 
@@ -49,7 +59,7 @@ try {
   if ($row) {
     header('Content-Type: text/html; charset=utf-8');
     header('Cache-Control: public, max-age=3600');
-    echo $row['html_content'];
+    echo qd_normalize_no_emdash_html((string)$row['html_content']);
     exit;
   }
 
