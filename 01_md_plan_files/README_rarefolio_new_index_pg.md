@@ -1,4 +1,4 @@
-# rarefolio — Internal Project Readme for deciding which new index page we will have
+# rarefolio, Internal Project Readme for deciding which new index page we will have
 
 
 Version 1: The Vault Entrance

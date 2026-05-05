@@ -135,23 +135,23 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 
       <hr class="sep" />
 
-      <div class="qdv-row"><div class="qdv-k">Certificate ID</div><div class="qdv-v mono" id="v-cert">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">CNFT ID</div><div class="qdv-v" id="v-cnft">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Bar Serial #</div><div class="qdv-v" id="v-bar">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Vault Record ID</div><div class="qdv-v" id="v-vault">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Vault Location</div><div class="qdv-v" id="v-addr">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Network</div><div class="qdv-v" id="v-net">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Tx Hash</div><div class="qdv-v mono" id="v-tx">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Certificate ID</div><div class="qdv-v mono" id="v-cert">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">CNFT ID</div><div class="qdv-v" id="v-cnft">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Bar Serial #</div><div class="qdv-v" id="v-bar">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Vault Record ID</div><div class="qdv-v" id="v-vault">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Vault Location</div><div class="qdv-v" id="v-addr">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Network</div><div class="qdv-v" id="v-net">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Tx Hash</div><div class="qdv-v mono" id="v-tx">Not available</div></div>
 
       <!-- Live marketplace data (only populated when ?cnft=... is present) -->
-      <div class="qdv-row"><div class="qdv-k">Mint Status</div><div class="qdv-v" id="v-mintstatus">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Listing</div><div class="qdv-v" id="v-listing">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Companion FT</div><div class="qdv-v" id="v-companion">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Companion Tx</div><div class="qdv-v mono" id="v-companion-tx">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Proof Manifest</div><div class="qdv-v mono" id="v-proof-manifest">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Evidence Pack</div><div class="qdv-v mono" id="v-proof-evidence">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Current Owner</div><div class="qdv-v mono" id="v-owner">—</div></div>
-      <div class="qdv-row"><div class="qdv-k">Asset Fingerprint</div><div class="qdv-v mono" id="v-fingerprint">—</div></div>
+      <div class="qdv-row"><div class="qdv-k">Mint Status</div><div class="qdv-v" id="v-mintstatus">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Listing</div><div class="qdv-v" id="v-listing">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Companion FT</div><div class="qdv-v" id="v-companion">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Companion Tx</div><div class="qdv-v mono" id="v-companion-tx">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Proof Manifest</div><div class="qdv-v mono" id="v-proof-manifest">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Evidence Pack</div><div class="qdv-v mono" id="v-proof-evidence">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Current Owner</div><div class="qdv-v mono" id="v-owner">Not available</div></div>
+      <div class="qdv-row"><div class="qdv-k">Asset Fingerprint</div><div class="qdv-v mono" id="v-fingerprint">Not available</div></div>
 
       <div style="margin-top:12px;opacity:.8;font-size:13px;" id="v-msg"></div>
       <div style="margin-top:6px;opacity:.6;font-size:12px;" id="v-market-msg"></div>
@@ -186,15 +186,15 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   const cert = qs.get('cert') || '';
   const cnft = qs.get('cnft') || qs.get('nft') || '';
   const barQ = qs.get('bar') || '';
-
-  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || '—'; };
+  const NA = 'Not available';
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = (v == null || v === '') ? NA : v; };
   const setLink = (id, href, label) => {
     const el = document.getElementById(id);
     if (!el) return;
-    if (!href) { el.textContent = '—'; return; }
+    if (!href) { el.textContent = NA; return; }
     try {
       const u = new URL(href, window.location.origin);
-      if (!/^https?:$/.test(u.protocol)) { el.textContent = '—'; return; }
+      if (!/^https?:$/.test(u.protocol)) { el.textContent = NA; return; }
       const a = document.createElement('a');
       a.href = u.href;
       a.target = '_blank';
@@ -204,7 +204,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
       el.textContent = '';
       el.appendChild(a);
     } catch (_) {
-      el.textContent = '—';
+      el.textContent = NA;
     }
   };
   const companionStatusLabel = (status) => ({
@@ -215,7 +215,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     awaiting_settlement: 'awaiting settlement',
     not_queued: 'not queued yet',
     not_enabled: 'not enabled'
-  }[status] || status || '—');
+  }[status] || status || NA);
   const badge = (state) => {
     const t = document.getElementById('qdv-badge-text');
     t.textContent = (state === 'verified') ? 'VERIFIED' : 'UNVERIFIED';
@@ -228,16 +228,16 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
   let marketLoaded = false;
 
   const applyMarketData = (t, cnftFallback = '', barFallback = '') => {
-    const resolvedCnft = t.cnft_id || cnftFallback || '—';
-    const resolvedBar = t.bar_serial || barFallback || '—';
+    const resolvedCnft = t.cnft_id || cnftFallback || NA;
+    const resolvedBar = t.bar_serial || barFallback || NA;
     set('v-cnft', resolvedCnft);
     set('v-bar', resolvedBar);
-    set('v-net', (t.chain && t.chain.network) || '—');
-    set('v-tx', (t.chain && t.chain.mint_tx_hash) || '—');
-    set('v-fingerprint', (t.chain && t.chain.asset_fingerprint) || '—');
-    set('v-mintstatus', (t.status && t.status.primary_sale) || '—');
-    set('v-listing', (t.status && t.status.listing) || '—');
-    set('v-owner', t.owner_display || '—');
+    set('v-net', (t.chain && t.chain.network) || NA);
+    set('v-tx', (t.chain && t.chain.mint_tx_hash) || NA);
+    set('v-fingerprint', (t.chain && t.chain.asset_fingerprint) || NA);
+    set('v-mintstatus', (t.status && t.status.primary_sale) || NA);
+    set('v-listing', (t.status && t.status.listing) || NA);
+    set('v-owner', t.owner_display || NA);
 
     const companion = t.companion || {};
     const delivery = companion.delivery || {};
@@ -247,7 +247,7 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     if (delivery.tx_hash) {
       setLink('v-companion-tx', `https://cardanoscan.io/transaction/${delivery.tx_hash}`, `${String(delivery.tx_hash).slice(0, 14)}…`);
     } else {
-      set('v-companion-tx', '—');
+      set('v-companion-tx', NA);
     }
 
     const proof = t.proof || {};
@@ -289,12 +289,12 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
     .then(p => {
       badge(p.status === 'verified' ? 'verified' : 'unverified');
 
-      set('v-cnft', p.cnft?.id || '—');
-      set('v-bar', p.cnft?.barSerial || '—');
-      set('v-vault', p.custody?.vaultRecordId || '—');
-      set('v-addr', p.custody?.vaultAddress || '—');
-      set('v-net', p.chain?.network || '—');
-      set('v-tx', p.chain?.txHash || '—');
+      set('v-cnft', p.cnft?.id || NA);
+      set('v-bar', p.cnft?.barSerial || NA);
+      set('v-vault', p.custody?.vaultRecordId || NA);
+      set('v-addr', p.custody?.vaultAddress || NA);
+      set('v-net', p.chain?.network || NA);
+      set('v-tx', p.chain?.txHash || NA);
 
       download.href = claimUrl(cert, p.cnft?.id || cnft);
       enrichFromMarket(p.cnft?.id || cnft, p.cnft?.barSerial || barQ);

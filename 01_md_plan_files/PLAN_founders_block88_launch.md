@@ -1,4 +1,4 @@
-# Rarefolio Founders Block 88 — Launch Plan
+# Rarefolio Founders Block 88, Launch Plan
 
 ## Objective
 Create Block 88 on Silver Bar I as the "Founders" collection. Mint 8 CNFTs. The founder personally purchases all 8 to prove the chain end-to-end and bootstrap the secondary market with provenance from day one.
@@ -52,11 +52,11 @@ Global copy pass:
 - Add new nav dropdown item "Founders Collection (Block 88)" pointing at the Founders page
 - Top-right `qd-prelaunch-cta` button re-aimed at the Founders collection
 
-## Homepage Updates (index.html — Vault Entrance)
+## Homepage Updates (index.html, Vault Entrance)
 - **Section 3 "Now Exhibiting"**: swap spotlight from Taurus Zodiac to Founders (Block 88)
 - **Section 5 Collector Pathway "Step III · Collect"**: CTA becomes "View Founders Collection" pointing at Block 88
 - **Section 6 Archive Preview**: include 2 Founders pieces in the 6-tile strip (rotate one Taurus and one Aries out)
-- **Hero sub-copy**: replace "Founders Prelaunch" mention with "Founders Collection — Live"
+- **Hero sub-copy**: replace "Founders Prelaunch" mention with "Founders Collection, Live"
 
 ## Database Work
 
@@ -105,25 +105,25 @@ One HTML file per CNFT (per_item mode):
 
 ## Marketplace Bootstrap Flow
 
-### Step 1 — Mint on Cardano preprod
+### Step 1, Mint on Cardano preprod
 Mint all 8 Founders CNFTs through the marketplace admin dashboard + Node sidecar against Blockfrost preprod. Verify every `mint_tx_hash` lands and the `mint-complete` webhook reaches `uploads/webhook-log/mint-complete.log` on the main site.
 
-### Step 2 — Mint on Cardano mainnet
+### Step 2, Mint on Cardano mainnet
 Switch `BLOCKFROST_NETWORK=mainnet` in marketplace `.env`. Mint the same 8 CNFTs with identical `rarefolio_token_id`s on mainnet. Policy and network differ; asset names stay the same.
 
-### Step 3 — Founder purchase
+### Step 3, Founder purchase
 Founder wallet purchases all 8 at primary-sale price. `primary_sale_status` flips to `sold`, `custody_status` flips to `external`, `current_owner_wallet` set to founder address.
 
-### Step 4 — Secondary listing
+### Step 4, Secondary listing
 List all 8 at founder-set prices. `listing_status` flips to `listed_fixed`. `GET /api/v1/listings` starts returning them. Rarefolio secondary market is live.
 
-### Step 5 — First secondary sale
+### Step 5, First secondary sale
 One or more Founders pieces sell through the marketplace to real collectors. The `ownership-change` webhook fires. Royalty ledger records the 8% creator / 2.5% platform / seller-net split. Full-cycle validation complete.
 
 ## Founder Disclosure Copy (Founders Collection Page)
 Opening paragraph on `/collection-silverbar-01-founders.html`:
 
-> *The Founders collection is the first eight CNFTs in the Rarefolio Founders block, purchased by the founder at mint to bootstrap the secondary market and prove every link of the chain — mint, ownership, transfer, royalty settlement — against real collectors. They enter the secondary market with public provenance from day one.*
+> *The Founders collection is the first eight CNFTs in the Rarefolio Founders block, purchased by the founder at mint to bootstrap the secondary market and prove every link of the chain, mint, ownership, transfer, royalty settlement, against real collectors. They enter the secondary market with public provenance from day one.*
 
 ## Deliverables
 1. SQL INSERT for the `qd_blocks` Block 88 row

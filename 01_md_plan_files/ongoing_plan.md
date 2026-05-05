@@ -1,4 +1,4 @@
-# rarefolio.io — Ongoing Plan Log
+# rarefolio.io, Ongoing Plan Log
 
 ---
 
@@ -88,7 +88,7 @@ Once NFT artwork is finalized, each CNFT must be wired into multiple systems acr
 
 **Still To Do**
 
-**DB Setup — Deploy Blockers (do these first)**
+**DB Setup, Deploy Blockers (do these first)**
 1. Run `CERT_DB_SCHEMA.sql`, `BLOCKS_DB_SCHEMA.sql`, `ARTIST_APP_DB_SCHEMA.sql` in phpMyAdmin
 2. Hit `seed_blocks.php` to migrate the first 15 blocks + stories into DB
 3. Upload all new files to BlueHost
@@ -106,11 +106,11 @@ Once NFT artwork is finalized, each CNFT must be wired into multiple systems acr
 
 **Frontend**
 11. Build out Silver Bar II and III collection pages (currently placeholders / Coming Soon)
-12. Add `site.webmanifest` for PWA support — optional
+12. Add `site.webmanifest` for PWA support, optional
 
 **Polish**
 13. Test the full cert issuance flow end-to-end on production
 14. Test block API resolution for batches 16+ after seeding test blocks
-15. Consider templating/includes for duplicated nav/header/footer — optional
+15. Consider templating/includes for duplicated nav/header/footer, optional
 
 ---

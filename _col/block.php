@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * collections/block.php — Single template for all collection block sub-pages.
+ * collections/block.php, Single template for all collection block sub-pages.
  *
  * Replaces the 15+ static HTML files (collection-silverbar-01-taurus.html, etc.)
  * with one PHP template that resolves block metadata and renders the page.
@@ -20,22 +20,22 @@ $BAR_SERIALS = [
 
 // ---- Static block map (Bar I blocks 0–14, mirrors QD_BLOCKS in qd-wire.js) ----
 $STATIC_BLOCKS = [
-  'taurus'      => ['block_id' => 'block00', 'folder' => 'scnft_zodiac_taurus',      'label' => 'Zodiac — Taurus',              'story_mode' => 'shared',   'batch' => 1],
-  'inventors'   => ['block_id' => 'block01', 'folder' => 'scnft_sp_inventors',       'label' => 'Steampunk — Inventors',        'story_mode' => 'per_item', 'batch' => 2],
-  'aries'       => ['block_id' => 'block02', 'folder' => 'scnft_zodiac_aries',       'label' => 'Zodiac — Aries',               'story_mode' => 'shared',   'batch' => 3],
-  'robot-butler'=> ['block_id' => 'block03', 'folder' => 'scnft_sp_robot_butler',    'label' => 'Steampunk — Robot Butler',     'story_mode' => 'per_item', 'batch' => 4],
-  'gemini'      => ['block_id' => 'block04', 'folder' => 'scnft_zodiac_gemini',      'label' => 'Zodiac — Gemini',              'story_mode' => 'shared',   'batch' => 5],
-  'cancer'      => ['block_id' => 'block05', 'folder' => 'scnft_zodiac_cancer',      'label' => 'Zodiac — Cancer',              'story_mode' => 'shared',   'batch' => 6],
-  'leo'         => ['block_id' => 'block06', 'folder' => 'scnft_zodiac_leo',         'label' => 'Zodiac — Leo',                 'story_mode' => 'shared',   'batch' => 7],
-  'virgo'       => ['block_id' => 'block07', 'folder' => 'scnft_zodiac_virgo',       'label' => 'Zodiac — Virgo',               'story_mode' => 'shared',   'batch' => 8],
-  'libra'       => ['block_id' => 'block08', 'folder' => 'scnft_zodiac_libra',       'label' => 'Zodiac — Libra',               'story_mode' => 'shared',   'batch' => 9],
-  'scorpio'     => ['block_id' => 'block09', 'folder' => 'scnft_zodiac_scorpio',     'label' => 'Zodiac — Scorpio',             'story_mode' => 'shared',   'batch' => 10],
-  'sagittarius' => ['block_id' => 'block10', 'folder' => 'scnft_zodiac_sagittarius', 'label' => 'Zodiac — Sagittarius',         'story_mode' => 'shared',   'batch' => 11],
-  'capricorn'   => ['block_id' => 'block11', 'folder' => 'scnft_zodiac_capricorn',   'label' => 'Zodiac — Capricorn',           'story_mode' => 'shared',   'batch' => 12],
-  'aquarius'    => ['block_id' => 'block12', 'folder' => 'scnft_zodiac_aquarius',    'label' => 'Zodiac — Aquarius',            'story_mode' => 'shared',   'batch' => 13],
-  'pisces'      => ['block_id' => 'block13', 'folder' => 'scnft_zodiac_pisces',      'label' => 'Zodiac — Pisces',              'story_mode' => 'shared',   'batch' => 14],
+  'taurus'      => ['block_id' => 'block00', 'folder' => 'scnft_zodiac_taurus',      'label' => 'Zodiac, Taurus',              'story_mode' => 'shared',   'batch' => 1],
+  'inventors'   => ['block_id' => 'block01', 'folder' => 'scnft_sp_inventors',       'label' => 'Steampunk, Inventors',        'story_mode' => 'per_item', 'batch' => 2],
+  'aries'       => ['block_id' => 'block02', 'folder' => 'scnft_zodiac_aries',       'label' => 'Zodiac, Aries',               'story_mode' => 'shared',   'batch' => 3],
+  'robot-butler'=> ['block_id' => 'block03', 'folder' => 'scnft_sp_robot_butler',    'label' => 'Steampunk, Robot Butler',     'story_mode' => 'per_item', 'batch' => 4],
+  'gemini'      => ['block_id' => 'block04', 'folder' => 'scnft_zodiac_gemini',      'label' => 'Zodiac, Gemini',              'story_mode' => 'shared',   'batch' => 5],
+  'cancer'      => ['block_id' => 'block05', 'folder' => 'scnft_zodiac_cancer',      'label' => 'Zodiac, Cancer',              'story_mode' => 'shared',   'batch' => 6],
+  'leo'         => ['block_id' => 'block06', 'folder' => 'scnft_zodiac_leo',         'label' => 'Zodiac, Leo',                 'story_mode' => 'shared',   'batch' => 7],
+  'virgo'       => ['block_id' => 'block07', 'folder' => 'scnft_zodiac_virgo',       'label' => 'Zodiac, Virgo',               'story_mode' => 'shared',   'batch' => 8],
+  'libra'       => ['block_id' => 'block08', 'folder' => 'scnft_zodiac_libra',       'label' => 'Zodiac, Libra',               'story_mode' => 'shared',   'batch' => 9],
+  'scorpio'     => ['block_id' => 'block09', 'folder' => 'scnft_zodiac_scorpio',     'label' => 'Zodiac, Scorpio',             'story_mode' => 'shared',   'batch' => 10],
+  'sagittarius' => ['block_id' => 'block10', 'folder' => 'scnft_zodiac_sagittarius', 'label' => 'Zodiac, Sagittarius',         'story_mode' => 'shared',   'batch' => 11],
+  'capricorn'   => ['block_id' => 'block11', 'folder' => 'scnft_zodiac_capricorn',   'label' => 'Zodiac, Capricorn',           'story_mode' => 'shared',   'batch' => 12],
+  'aquarius'    => ['block_id' => 'block12', 'folder' => 'scnft_zodiac_aquarius',    'label' => 'Zodiac, Aquarius',            'story_mode' => 'shared',   'batch' => 13],
+  'pisces'      => ['block_id' => 'block13', 'folder' => 'scnft_zodiac_pisces',      'label' => 'Zodiac, Pisces',              'story_mode' => 'shared',   'batch' => 14],
   'new-series'  => ['block_id' => 'block14', 'folder' => 'scnft_new_series',         'label' => 'New Series',                   'story_mode' => 'shared',   'batch' => 15],
-  // Founders Block 88 — 8 unique tokens (qd-silver-0000705 through 0000712), batch 89 on Bar I
+  // Founders Block 88, 8 unique tokens (qd-silver-0000705 through 0000712), batch 89 on Bar I
   // Founders Block 88: batch=89 on Bar I, tokens 705-712.
   // total_batches=89 keeps batch 89 valid (no URL clamping). start_index=1 so the
   // standard formula (1 + (89-1)*8 = 705) gives the correct token range.
@@ -48,8 +48,8 @@ $STATIC_BLOCKS = [
 $VIDEO_FEATURES = [
   'founders' => [
     'kicker' => 'Launch Disclosure',
-    'title' => 'Founders Collection — Launch Brief',
-    'description' => 'The Founders collection is the first eight CNFTs in the Rarefolio Founders block, purchased by the founder at mint to bootstrap the secondary market and prove every link of the chain — mint, ownership, transfer, royalty settlement — against real collectors. They enter the secondary market with public provenance from day one.',
+    'title' => 'Founders Collection, Launch Brief',
+    'description' => 'The Founders collection is the first eight CNFTs in the Rarefolio Founders block, purchased by the founder at mint to bootstrap the secondary market and prove every link of the chain, mint, ownership, transfer, royalty settlement, against real collectors. They enter the secondary market with public provenance from day one.',
     'instructions' => [
       'Watch the launch briefing for context on this release.',
       'This launch validates mint, ownership, transfer, and royalty settlement end-to-end.',
@@ -121,7 +121,7 @@ if (!$block) {
       if ($batchParam === 0) $batchParam = $block['batch'];
     }
   } catch (Throwable $e) {
-    // DB unavailable — fall through to 404
+    // DB unavailable, fall through to 404
   }
 }
 
@@ -133,7 +133,7 @@ if (!$block) {
 
 // Redirect to canonical URL if no batch param was supplied.
 // Without it, qd-wire.js defaults to batch=1 which shows wrong tokens.
-// NOTE: use $slug here — $slugE is not yet defined at this point.
+// NOTE: use $slug here, $slugE is not yet defined at this point.
 if (!isset($_GET['batch'])) {
   $canonBatch = $batchParam ?: ($block['batch'] ?? 1);
   header('Location: /collection/silverbar-' . $barNum . '/' . rawurlencode($slug) . '?batch=' . $canonBatch, true, 302);
@@ -209,7 +209,7 @@ $cssVersion  = '20260505';
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
 
 <title><?= $pageTitle ?></title>
-<meta name="description" content="<?= $label ?> collection — tokenized silver bar CNFTs on Rarefolio.io, premium Cardano collectibles mapped to bar serial <?= $barSerialE ?>." />
+<meta name="description" content="<?= $label ?> collection, tokenized silver bar CNFTs on Rarefolio.io, premium Cardano collectibles mapped to bar serial <?= $barSerialE ?>." />
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
 
 <!-- Canonical -->
@@ -227,7 +227,7 @@ $cssVersion  = '20260505';
 <meta property="og:site_name" content="Rarefolio.io" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="<?= $pageTitle ?>" />
-<meta property="og:description" content="<?= $label ?> — tokenized silver bar CNFTs on Cardano, 40,000 CNFTs per bar, provenance-first collector experience." />
+<meta property="og:description" content="<?= $label ?>, tokenized silver bar CNFTs on Cardano, 40,000 CNFTs per bar, provenance-first collector experience." />
 <meta property="og:url" content="<?= $canonicalUrl ?>" />
 <meta property="og:image" content="https://rarefolio.io/assets/img/header/silver_bar_header_2400x1200_01.jpg" />
 <meta property="og:image:width" content="2400" />
@@ -237,7 +237,7 @@ $cssVersion  = '20260505';
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="<?= $pageTitle ?>" />
-<meta name="twitter:description" content="<?= $label ?> — tokenized silver bar CNFTs on Cardano with provenance-first presentation." />
+<meta name="twitter:description" content="<?= $label ?>, tokenized silver bar CNFTs on Cardano with provenance-first presentation." />
 <meta name="twitter:image" content="https://rarefolio.io/assets/img/header/silver_bar_header_2400x1200_01.jpg" />
 
 <!-- Styles -->
@@ -368,7 +368,7 @@ $totalBatches = (int) ($block['total_batches'] ?? 5000);
 <?php if ($slugE === 'founders'): ?>
 <div style="background:rgba(217,180,108,.10);border-bottom:1px solid rgba(217,180,108,.25);padding:10px 0;text-align:center;">
   <p style="margin:0;font-size:0.85rem;letter-spacing:0.06em;color:#d9b46c;">
-    <strong>&#9733; PREVIEW MODE</strong> &mdash; Founders Block 88 is live for browsing.
+    <strong>&#9733; PREVIEW MODE</strong>, Founders Block 88 is live for browsing.
     Mainnet minting opens soon. &nbsp;<a href="/contact.html" style="color:#d9b46c;text-decoration:underline;">Join the waitlist</a>
   </p>
 </div>

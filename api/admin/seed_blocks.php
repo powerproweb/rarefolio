@@ -47,20 +47,20 @@ require_basic_auth();
 $BAR_SERIAL = 'E101837';
 
 $blocks = [
-  ['batch' => 1,  'folder' => 'scnft_zodiac_taurus',      'label' => 'Zodiac — Taurus',              'mode' => 'shared'],
-  ['batch' => 2,  'folder' => 'scnft_sp_inventors',        'label' => 'Steampunk — Inventors',        'mode' => 'per_item'],
-  ['batch' => 3,  'folder' => 'scnft_zodiac_aries',        'label' => 'Zodiac — Aries',               'mode' => 'per_item'],
-  ['batch' => 4,  'folder' => 'scnft_sp_robot_butler',     'label' => 'Steampunk — Robot Butler',     'mode' => 'per_item'],
-  ['batch' => 5,  'folder' => 'scnft_zodiac_gemini',       'label' => 'Zodiac — Gemini',              'mode' => 'shared'],
-  ['batch' => 6,  'folder' => 'scnft_zodiac_cancer',       'label' => 'Zodiac — Cancer',              'mode' => 'shared'],
-  ['batch' => 7,  'folder' => 'scnft_zodiac_leo',          'label' => 'Zodiac — Leo',                 'mode' => 'shared'],
-  ['batch' => 8,  'folder' => 'scnft_zodiac_virgo',        'label' => 'Zodiac — Virgo',               'mode' => 'shared'],
-  ['batch' => 9,  'folder' => 'scnft_zodiac_libra',        'label' => 'Zodiac — Libra',               'mode' => 'shared'],
-  ['batch' => 10, 'folder' => 'scnft_zodiac_scorpio',      'label' => 'Zodiac — Scorpio',             'mode' => 'shared'],
-  ['batch' => 11, 'folder' => 'scnft_zodiac_sagittarius',  'label' => 'Zodiac — Sagittarius',         'mode' => 'shared'],
-  ['batch' => 12, 'folder' => 'scnft_zodiac_capricorn',    'label' => 'Zodiac — Capricorn',           'mode' => 'shared'],
-  ['batch' => 13, 'folder' => 'scnft_zodiac_aquarius',     'label' => 'Zodiac — Aquarius',            'mode' => 'shared'],
-  ['batch' => 14, 'folder' => 'scnft_zodiac_pisces',       'label' => 'Zodiac — Pisces',              'mode' => 'shared'],
+  ['batch' => 1,  'folder' => 'scnft_zodiac_taurus',      'label' => 'Zodiac, Taurus',              'mode' => 'shared'],
+  ['batch' => 2,  'folder' => 'scnft_sp_inventors',        'label' => 'Steampunk, Inventors',        'mode' => 'per_item'],
+  ['batch' => 3,  'folder' => 'scnft_zodiac_aries',        'label' => 'Zodiac, Aries',               'mode' => 'per_item'],
+  ['batch' => 4,  'folder' => 'scnft_sp_robot_butler',     'label' => 'Steampunk, Robot Butler',     'mode' => 'per_item'],
+  ['batch' => 5,  'folder' => 'scnft_zodiac_gemini',       'label' => 'Zodiac, Gemini',              'mode' => 'shared'],
+  ['batch' => 6,  'folder' => 'scnft_zodiac_cancer',       'label' => 'Zodiac, Cancer',              'mode' => 'shared'],
+  ['batch' => 7,  'folder' => 'scnft_zodiac_leo',          'label' => 'Zodiac, Leo',                 'mode' => 'shared'],
+  ['batch' => 8,  'folder' => 'scnft_zodiac_virgo',        'label' => 'Zodiac, Virgo',               'mode' => 'shared'],
+  ['batch' => 9,  'folder' => 'scnft_zodiac_libra',        'label' => 'Zodiac, Libra',               'mode' => 'shared'],
+  ['batch' => 10, 'folder' => 'scnft_zodiac_scorpio',      'label' => 'Zodiac, Scorpio',             'mode' => 'shared'],
+  ['batch' => 11, 'folder' => 'scnft_zodiac_sagittarius',  'label' => 'Zodiac, Sagittarius',         'mode' => 'shared'],
+  ['batch' => 12, 'folder' => 'scnft_zodiac_capricorn',    'label' => 'Zodiac, Capricorn',           'mode' => 'shared'],
+  ['batch' => 13, 'folder' => 'scnft_zodiac_aquarius',     'label' => 'Zodiac, Aquarius',            'mode' => 'shared'],
+  ['batch' => 14, 'folder' => 'scnft_zodiac_pisces',       'label' => 'Zodiac, Pisces',              'mode' => 'shared'],
   ['batch' => 15, 'folder' => 'scnft_new_series',          'label' => 'New Series',                   'mode' => 'shared'],
 ];
 
@@ -140,7 +140,7 @@ foreach ($blocks as $b) {
       if ($itemsHtml !== false && trim($itemsHtml) !== '') {
         // Wrap in a root element so DOMDocument parses it as a fragment.
         // IMPORTANT: prepend <?xml encoding="UTF-8"> so libxml treats the input
-        // as UTF-8, not Latin-1. Without this, multi-byte characters like — and ·
+        // as UTF-8, not Latin-1. Without this, multi-byte characters like, and ·
         // are mangled into mojibake (e.g. â€” and Â·) before being stored in the DB.
         $dom = new DOMDocument('1.0', 'utf-8');
         libxml_use_internal_errors(true);

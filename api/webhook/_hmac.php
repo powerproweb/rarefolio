@@ -10,8 +10,8 @@ declare(strict_types=1);
  *   X-RF-Signature : "sha256=<hex>" of HMAC_SHA256(secret, timestamp + "." + nonce + "." + body)
  *
  * Env:
- *   RF_WEBHOOK_SECRET  — shared secret (required; keep out of git)
- *   RF_WEBHOOK_MAX_SKEW— optional, default 300 seconds
+ *   RF_WEBHOOK_SECRET, shared secret (required; keep out of git)
+ *   RF_WEBHOOK_MAX_SKEW, optional, default 300 seconds
  *
  * Usage:
  *   require __DIR__ . '/_hmac.php';

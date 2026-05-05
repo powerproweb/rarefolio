@@ -1,17 +1,17 @@
-# rarefolio — Internal Project Readme for the Founders Pre-Sale BLOCK88: THE FOUNDERS COLLECTION
+# rarefolio, Internal Project Readme for the Founders Pre-Sale BLOCK88: THE FOUNDERS COLLECTION
 
 # BUILD_rarefolio_master.md
-**Master build log for rarefolio.io — newest plans go at the top.**
+**Master build log for rarefolio.io, newest plans go at the top.**
 
     The 8 Founder archetypes:
-      #1 The Archivist    — Keeper of the First Ledger
-      #2 The Cartographer — Drafter of the Vault Map
-      #3 The Sentinel     — Warden of the Inaugural Seal
-      #4 The Artisan      — Forger of the Foundational Die
-      #5 The Scholar      — Historian of the First Provenance
-      #6 The Ambassador   — Emissary of the Original Charter
-      #7 The Mentor       — Steward of the Collector's Path
-      #8 The Architect    — Builder of the Permanent Vault
+      #1 The Archivist, Keeper of the First Ledger
+      #2 The Cartographer, Drafter of the Vault Map
+      #3 The Sentinel, Warden of the Inaugural Seal
+      #4 The Artisan, Forger of the Foundational Die
+      #5 The Scholar, Historian of the First Provenance
+      #6 The Ambassador, Emissary of the Original Charter
+      #7 The Mentor, Steward of the Collector's Path
+      #8 The Architect, Builder of the Permanent Vault
     
     Validated via tests/test_founders_seed_static.php in the marketplace repo
     (16/16 static checks pass: statement counts, cross-file consistency,
@@ -46,7 +46,7 @@ Block Identity
 •  Collection: Founders
 •  Block ID: block88 · Batch: 89 · Bar serial: E101837 (Silver Bar I)
 •  Edition: 8 pieces, 1 of 8 through 8 of 8
-•  Story mode: per_item — each CNFT gets its own full story
+•  Story mode: per_item, each CNFT gets its own full story
 •  Collection slug: silverbar-01-founders
 
 
@@ -73,7 +73,7 @@ Each piece has a 3-paragraph stub:
 
 
 Shared Collection Overview (shown on the collection page)
-> The Rarefolio Founders collection is the first eight pieces of Block 88, anchored to Silver Bar I (Serial E101837). Purchased by the founder at mint to bootstrap the secondary market and prove every link of the chain — mint, ownership, transfer, royalty settlement — against real collectors. Each piece enters the permanent archive with public provenance from day one.
+> The Rarefolio Founders collection is the first eight pieces of Block 88, anchored to Silver Bar I (Serial E101837). Purchased by the founder at mint to bootstrap the secondary market and prove every link of the chain, mint, ownership, transfer, royalty settlement, against real collectors. Each piece enters the permanent archive with public provenance from day one.
 >
 > Eight archetypes. One ledger. A permanent record of how Rarefolio began.
 
@@ -89,28 +89,28 @@ I kept the tone **thought provoking, cinematic, mysterious, and fun to read**, w
 # BLOCK88: THE FOUNDERS COLLECTION - Short Blurbs
 
 #1 The Archivist
-> Before a vault can hold anything of value, someone must decide what to record and how. The Archivist draws the first line in the ledger — the act that turns a bar of silver into a named, traceable, permanent thing.
+> Before a vault can hold anything of value, someone must decide what to record and how. The Archivist draws the first line in the ledger, the act that turns a bar of silver into a named, traceable, permanent thing.
 
 #2 The Cartographer
-> Every collection needs an atlas. The Cartographer charts the territory of the archive: which bar, which block, which edition, which serial — and how a future collector will find their way back to the beginning.
+> Every collection needs an atlas. The Cartographer charts the territory of the archive: which bar, which block, which edition, which serial, and how a future collector will find their way back to the beginning.
 
 #3 The Sentinel
 > The Sentinel stands at the threshold between intent and permanence. When a piece is minted, signed, and sealed, the Sentinel has already decided it is worthy of the archive.
 
 #4 The Artisan
-> Every piece carries the shape of the one who made the mold. The Artisan carves the die — the deterministic logic that turns an idea into a consistent, repeatable piece of the permanent collection.
+> Every piece carries the shape of the one who made the mold. The Artisan carves the die, the deterministic logic that turns an idea into a consistent, repeatable piece of the permanent collection.
 
 #5 The Scholar
-> Provenance is not a feature. It is a discipline. The Scholar writes down where every piece came from, who owned it, and how it moved — so that a century from now, the chain of custody still reads as a single, continuous narrative.
+> Provenance is not a feature. It is a discipline. The Scholar writes down where every piece came from, who owned it, and how it moved, so that a century from now, the chain of custody still reads as a single, continuous narrative.
 
 #6 The Ambassador
-> The Ambassador carries the charter outward. Every early collector who trusts the archive with their wallet gets a direct line back to the Ambassador — the promise that the charter will be honored for as long as the collection exists.
+> The Ambassador carries the charter outward. Every early collector who trusts the archive with their wallet gets a direct line back to the Ambassador, the promise that the charter will be honored for as long as the collection exists.
 
 #7 The Mentor
 > The Mentor walks new collectors through Discover, Study, and Collect. Not a salesperson. A guide. The one who explains why the bar serial matters, why the edition number matters, and why the long horizon matters most of all.
 
 #8 The Architect
-> The final Founder. The Architect draws the walls of the vault itself — the infrastructure, the schema, the policies that make a permanent collection physically possible on Cardano and off-chain alike.
+> The final Founder. The Architect draws the walls of the vault itself, the infrastructure, the schema, the policies that make a permanent collection physically possible on Cardano and off-chain alike.
 
 #######################################
 

@@ -61,7 +61,7 @@ composer.lock
 # ============================================================
 # LARGE COLLECTION ASSETS  -- too big for git / GitHub
 # ============================================================
-# Founders (scnft_founders/) is intentionally tracked — 8 files, ~1.7 MB.
+# Founders (scnft_founders/) is intentionally tracked, 8 files, ~1.7 MB.
 # The large zodiac/steampunk series remain gitignored.
 assets/img/collection/scnft_zodiac_*/
 assets/img/collection/scnft_sp_*/

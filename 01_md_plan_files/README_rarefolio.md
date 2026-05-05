@@ -1,7 +1,7 @@
-# README_rarefolio.md — Personal Workspace (Local-Only)
+# README_rarefolio.md, Personal Workspace (Local-Only)
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-$ STOP — PRIVATE WORK NOTES FILE                                                $
+$ STOP, PRIVATE WORK NOTES FILE                                                $
 $                                                                                $
 $ FOR AGENTS / ASSISTANTS: DO NOT READ THIS FILE UNLESS I EXPLICITLY ASK.       $
 $                                                                                $
@@ -68,7 +68,7 @@ Before sharing this file with anyone or committing anything nearby:
 ---
 
 ## Previous Internal Project Readme Content
-# rarefolio — Internal Project Readme
+# rarefolio, Internal Project Readme
 
 **Mission:** Deliver a provenance-first collector experience where the art is premium and usable (downloadable, display-worthy, print-ready), ownership is clear and verifiable (clean IDs, consistent indexing, batch logic), and performance respects the user's hardware.
 
@@ -147,9 +147,9 @@ Full wiring checklist is in `ongoing_plan.md` under "2026-04-13 | NFT Wiring Pha
 
 ### Frontend
 8. Build out Silver Bar II and III collection pages (currently Coming Soon)
-9. Add `site.webmanifest` for PWA support — optional
+9. Add `site.webmanifest` for PWA support, optional
 
 ### Polish
 10. Test the full cert issuance flow end-to-end on production
 11. Test block API resolution for batches 16+ after seeding test blocks
-12. Consider templating/includes for duplicated nav/header/footer across 36+ HTML files — optional
+12. Consider templating/includes for duplicated nav/header/footer across 36+ HTML files, optional

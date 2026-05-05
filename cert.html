@@ -167,6 +167,7 @@
       const dl = document.getElementById('qd-cert-download');
       const vr = document.getElementById('qd-cert-verify');
       const esc = (v) => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      const NA = 'Not available';
       const claimUrl = (cert, cnft) =>
         '/claim-download.html?cert=' + encodeURIComponent(cert) + (cnft ? '&cnft=' + encodeURIComponent(cnft) : '');
 
@@ -193,22 +194,22 @@
           const box = document.getElementById('qd-cert-render');
           const p = j.payload || j; // depending on your API shape
           const cnftId = p.cnft?.id || p.cnftId || p.cnft_id || '';
-          const barSerial = p.cnft?.barSerial || p.barSerial || p.bar_serial || '—';
-          const walletDisplay = p.holder?.wallet || p.walletDisplay || p.wallet_display || '—';
+          const barSerial = p.cnft?.barSerial || p.barSerial || p.bar_serial || NA;
+          const walletDisplay = p.holder?.wallet || p.walletDisplay || p.wallet_display || NA;
           dl.href = claimUrl(certId, cnftId);
           box.innerHTML = `
             <div class="panel pad" style="margin-top:12px;">
               <div class="mono">certId: ${esc(certId)}</div>
-              <div class="mono">vaultRecordId: ${esc(p.vaultRecordId || p.vault_record_id || '—')}</div>
-              <div class="mono">cnftId: ${esc(cnftId || '—')}</div>
+              <div class="mono">vaultRecordId: ${esc(p.vaultRecordId || p.vault_record_id || NA)}</div>
+              <div class="mono">cnftId: ${esc(cnftId || NA)}</div>
               <div class="mono">barSerial: ${esc(barSerial)}</div>
               <div class="mono">wallet: ${esc(walletDisplay)}</div>
             </div>
             <div class="panel pad" id="qd-cert-stage2" style="margin-top:12px;">
-              <div class="mono">Companion FT: —</div>
-              <div class="mono">Companion tx: —</div>
-              <div class="mono">Proof manifest: —</div>
-              <div class="mono">Evidence pack: —</div>
+              <div class="mono">Companion FT: ${NA}</div>
+              <div class="mono">Companion tx: ${NA}</div>
+              <div class="mono">Proof manifest: ${NA}</div>
+              <div class="mono">Evidence pack: ${NA}</div>
             </div>
           `;
           if (cnftId && window.RFMarket) {
@@ -233,12 +234,12 @@
                 const evidenceHref = proof.evidence_public_url || '';
                 const stage2 = document.getElementById('qd-cert-stage2');
                 if (!stage2) return;
-                const txText = delivery.tx_hash ? `${esc(String(delivery.tx_hash).slice(0, 14))}…` : '—';
+                const txText = delivery.tx_hash ? `${esc(String(delivery.tx_hash).slice(0, 14))}…` : NA;
                 stage2.innerHTML = `
                   <div class="mono">Companion FT: ${esc(companionName)} · ${esc(status)}</div>
-                  <div class="mono">Companion tx: ${txHref ? `<a href="${txHref}" target="_blank" rel="noopener">${txText}</a>` : '—'}</div>
-                  <div class="mono">Proof manifest: ${manifestHref ? `<a href="${esc(manifestHref)}" target="_blank" rel="noopener">Open manifest</a>` : '—'}</div>
-                  <div class="mono">Evidence pack: ${evidenceHref ? `<a href="${esc(evidenceHref)}" target="_blank" rel="noopener">Open evidence pack</a>` : '—'}</div>
+                  <div class="mono">Companion tx: ${txHref ? `<a href="${txHref}" target="_blank" rel="noopener">${txText}</a>` : NA}</div>
+                  <div class="mono">Proof manifest: ${manifestHref ? `<a href="${esc(manifestHref)}" target="_blank" rel="noopener">Open manifest</a>` : NA}</div>
+                  <div class="mono">Evidence pack: ${evidenceHref ? `<a href="${esc(evidenceHref)}" target="_blank" rel="noopener">Open evidence pack</a>` : NA}</div>
                 `;
               })
               .catch(() => {

@@ -1,5 +1,5 @@
 -- =============================================================================
---  Rarefolio Main Site — Placeholder seed for bar E101837, batches 1–5000
+--  Rarefolio Main Site, Placeholder seed for bar E101837, batches 1–5000
 -- =============================================================================
 --  Pre-populates qd_blocks with 5,000 [TBD] rows so every block_id appears in
 --  the Story Editor dropdown (admin/story-editor.php). Each placeholder row is:
@@ -18,24 +18,24 @@
 --        FROM qd_blocks ORDER BY bar_serial, batch_num;
 --    (admin/story-editor.php lines 37–40). It has no LIMIT and no pagination,
 --    so whatever rows exist in qd_blocks are exactly what you can edit. Running
---    this script makes all 5,000 slots visible and editable immediately — you
+--    this script makes all 5,000 slots visible and editable immediately, you
 --    can open any block and start writing stories without pre-registering.
 --
 --  SAFETY:
 --    * Uses INSERT IGNORE keyed off the PRIMARY KEY (block_id) AND the unique
 --      key uq_bar_batch (bar_serial, batch_num). Any row already present is
---      left 100% untouched — no UPDATE, no overwrite. This means:
+--      left 100% untouched, no UPDATE, no overwrite. This means:
 --         - Real seeded blocks from seed_blocks.php (batches 1–15)   -> untouched
 --         - Founders row from seed_block88_blocks.sql (batch 89)     -> untouched
 --         - Any row authored via manage_blocks.php or the editor's
 --           "+ Register New Block" panel                              -> untouched
 --         - A previous run of THIS script                              -> untouched
---    * Fully idempotent — safe to re-run to top up any gaps after manual adds.
+--    * Fully idempotent, safe to re-run to top up any gaps after manual adds.
 --    * Does NOT touch qd_stories. Placeholder blocks start story-empty; the
 --      editor will happily save a first story against them.
 --
 --  PROMOTING A PLACEHOLDER LATER:
---    When block 47 becomes, say, "Mythic Beasts — Phoenix," POST to
+--    When block 47 becomes, say, "Mythic Beasts, Phoenix," POST to
 --    /api/admin/manage_blocks.php with the real folder_slug / label /
 --    story_mode / character_names. Its ON DUPLICATE KEY UPDATE clause
 --    (see api/admin/manage_blocks.php lines 82–87) will overwrite the [TBD]
@@ -93,7 +93,7 @@ SELECT
 -- -----------------------------------------------------------------------------
 
 -- 1) Total rows for bar E101837 after the run (should be 5000 if this is a
---    fresh DB, or 5000 regardless once any gaps are topped up — there are no
+--    fresh DB, or 5000 regardless once any gaps are topped up, there are no
 --    rows outside 1..5000 expected).
 SELECT COUNT(*) AS rows_after_total
   FROM qd_blocks

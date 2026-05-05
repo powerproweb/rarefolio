@@ -313,7 +313,7 @@ $marketBase = rf_admin_market_base();
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Wallet Operations — Rarefolio Admin</title>
+<title>Wallet Operations, Rarefolio Admin</title>
 <style>
 :root {
   --bg: #050a18;
@@ -543,11 +543,11 @@ a:hover { text-decoration: underline; }
   <div class="wallet-meta" id="wallet-meta" style="display:none;">
     <div class="meta-pill">
       <strong>Wallet Provider</strong>
-      <span id="meta-wallet-provider">—</span>
+      <span id="meta-wallet-provider">, </span>
     </div>
     <div class="meta-pill">
       <strong>Primary Address</strong>
-      <span class="mono" id="meta-wallet-address">—</span>
+      <span class="mono" id="meta-wallet-address">, </span>
     </div>
     <div class="meta-pill">
       <strong>Address Count</strong>
@@ -799,7 +799,7 @@ a:hover { text-decoration: underline; }
           <div class="card-sub">${escHtml(t.character_name || t.collection || '')}</div>
           <div class="badges">
             <span class="badge ok">Owned</span>
-            <span class="badge">${escHtml(t.cnft_id || '—')}</span>
+            <span class="badge">${escHtml(t.cnft_id || 'Not available')}</span>
             ${t.status ? `<span class="badge">${escHtml(statusLabel(t.status))}</span>` : ''}
             ${companion.enabled ? `<span class="badge warn">Companion: ${escHtml(statusLabel(companion.delivery?.status || 'not_queued'))}</span>` : ''}
           </div>
@@ -830,7 +830,7 @@ a:hover { text-decoration: underline; }
           <div class="card-sub">${escHtml(o.note || 'Ownership sync pending')}</div>
           <div class="badges">
             <span class="badge warn">Pending</span>
-            <span class="badge">${escHtml(o.cnft_id || '—')}</span>
+            <span class="badge">${escHtml(o.cnft_id || 'Not available')}</span>
             ${o.amount_ada != null ? `<span class="badge">${escHtml(String(o.amount_ada))} ₳</span>` : ''}
             ${companion.enabled ? `<span class="badge warn">Companion: ${escHtml(statusLabel(companion.delivery?.status || 'pending'))}</span>` : ''}
           </div>

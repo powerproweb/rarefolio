@@ -1,5 +1,5 @@
 /* ============================================================
-   qd-wire.js — Data-driven wiring for Rarefolio CNFT pages
+   qd-wire.js, Data-driven wiring for Rarefolio CNFT pages
 
    Architecture (Apr 2026):
    - Static QD_BLOCKS map: instant fallback for Bar I batches 1-15
@@ -53,28 +53,28 @@
      via the API (/api/blocks/resolve.php). This map is the instant offline fallback.
   */
   const QD_BLOCKS = {
-    block00: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac — Taurus',          story_mode: 'shared'   },
-    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk — Inventors',    story_mode: 'per_item' },
-    block02: { folder: 'scnft_zodiac_aries',       label: 'Zodiac — Aries',           story_mode: 'shared'   },
-    block03: { folder: 'scnft_sp_robot_butler',    label: 'Steampunk — Robot Butler', story_mode: 'per_item' },
-    block04: { folder: 'scnft_zodiac_gemini',      label: 'Zodiac — Gemini',          story_mode: 'shared'   },
-    block05: { folder: 'scnft_zodiac_cancer',      label: 'Zodiac — Cancer',          story_mode: 'shared'   },
-    block06: { folder: 'scnft_zodiac_leo',         label: 'Zodiac — Leo',             story_mode: 'shared'   },
-    block07: { folder: 'scnft_zodiac_virgo',       label: 'Zodiac — Virgo',           story_mode: 'shared'   },
-    block08: { folder: 'scnft_zodiac_libra',       label: 'Zodiac — Libra',           story_mode: 'shared'   },
-    block09: { folder: 'scnft_zodiac_scorpio',     label: 'Zodiac — Scorpio',         story_mode: 'shared'   },
-    block10: { folder: 'scnft_zodiac_sagittarius', label: 'Zodiac — Sagittarius',     story_mode: 'shared'   },
-    block11: { folder: 'scnft_zodiac_capricorn',   label: 'Zodiac — Capricorn',       story_mode: 'shared'   },
-    block12: { folder: 'scnft_zodiac_aquarius',    label: 'Zodiac — Aquarius',        story_mode: 'shared'   },
-    block13: { folder: 'scnft_zodiac_pisces',      label: 'Zodiac — Pisces',          story_mode: 'shared'   },
+    block00: { folder: 'scnft_zodiac_taurus',      label: 'Zodiac, Taurus',          story_mode: 'shared'   },
+    block01: { folder: 'scnft_sp_inventors',       label: 'Steampunk, Inventors',    story_mode: 'per_item' },
+    block02: { folder: 'scnft_zodiac_aries',       label: 'Zodiac, Aries',           story_mode: 'shared'   },
+    block03: { folder: 'scnft_sp_robot_butler',    label: 'Steampunk, Robot Butler', story_mode: 'per_item' },
+    block04: { folder: 'scnft_zodiac_gemini',      label: 'Zodiac, Gemini',          story_mode: 'shared'   },
+    block05: { folder: 'scnft_zodiac_cancer',      label: 'Zodiac, Cancer',          story_mode: 'shared'   },
+    block06: { folder: 'scnft_zodiac_leo',         label: 'Zodiac, Leo',             story_mode: 'shared'   },
+    block07: { folder: 'scnft_zodiac_virgo',       label: 'Zodiac, Virgo',           story_mode: 'shared'   },
+    block08: { folder: 'scnft_zodiac_libra',       label: 'Zodiac, Libra',           story_mode: 'shared'   },
+    block09: { folder: 'scnft_zodiac_scorpio',     label: 'Zodiac, Scorpio',         story_mode: 'shared'   },
+    block10: { folder: 'scnft_zodiac_sagittarius', label: 'Zodiac, Sagittarius',     story_mode: 'shared'   },
+    block11: { folder: 'scnft_zodiac_capricorn',   label: 'Zodiac, Capricorn',       story_mode: 'shared'   },
+    block12: { folder: 'scnft_zodiac_aquarius',    label: 'Zodiac, Aquarius',        story_mode: 'shared'   },
+    block13: { folder: 'scnft_zodiac_pisces',      label: 'Zodiac, Pisces',          story_mode: 'shared'   },
     block14: { folder: 'scnft_new_series',         label: 'New Series',               story_mode: 'shared'   },
-    // Founders Block 88 — 8 unique tokens (qd-silver-0000705 through 0000712)
+    // Founders Block 88, 8 unique tokens (qd-silver-0000705 through 0000712)
     block88: { folder: 'scnft_founders',            label: 'Founders Block 88',        story_mode: 'per_item' },
   };
 
   /* ---- Sold tokens (static fallback) ----
      The Purchase button is now driven by the live marketplace API.
-     This set is kept as an offline fallback only — add a token slug here
+     This set is kept as an offline fallback only, add a token slug here
      if you need an instant SOLD state before the API reflects it.
   */
   const QD_SOLD = new Set([
@@ -103,7 +103,7 @@
       if (status === 'sold' || status === 'sold_pre_marketplace') return 'sold';
       return 'available';
     } catch {
-      return null;  // network error — fall back to QD_SOLD
+      return null;  // network error, fall back to QD_SOLD
     }
   }
 
@@ -210,7 +210,7 @@
     return null;
   }
 
-  /** Sync resolution — static map only (Bar I batches 1-15). Used by legacy callers. */
+  /** Sync resolution, static map only (Bar I batches 1-15). Used by legacy callers. */
   function resolveBlockId(runtimeCfg, batchNum) {
     if (runtimeCfg.blockId && QD_BLOCKS[runtimeCfg.blockId]) return runtimeCfg.blockId;
 
@@ -429,7 +429,7 @@
     merged.imageBatchMap = safeJsonParse(getStrAttr(body, 'data-image-batch-map', ''), null);
     merged.imageBatchRules = safeJsonParse(getStrAttr(body, 'data-image-batch-rules', ''), null);
 
-    // Series batch rules (legacy — kept for backward compat but no longer triggers redirects)
+    // Series batch rules (legacy, kept for backward compat but no longer triggers redirects)
     merged.seriesBatchRules = safeJsonParse(getStrAttr(body, 'data-series-batch-rules', ''), null);
 
     // NEW: block routing
@@ -815,7 +815,7 @@
       if (targetMeta) {
         updatePageMeta(runtimeCfg, targetMeta, b);
       } else {
-        // No block meta — just update the batch in the URL
+        // No block meta, just update the batch in the URL
         setUrlBatch(b);
       }
 
@@ -894,15 +894,15 @@
         const hasPrefix = /^(founders\s*#\d+|item\s*\d+)/i.test(_dItemName);
         if (!hasPrefix) {
           topTitleName = isFoundersBlock
-            ? `Founder #${item} — ${_dItemName}`
-            : `Item ${item} — ${_dItemName}`;
+            ? `Founder #${item}, ${_dItemName}`
+            : `Item ${item}, ${_dItemName}`;
         }
       }
       if (isFoundersBlock) {
         topTitleName = topTitleName.replace(/^Founders\s*#/i, 'Founder #');
         const founderPersonName = FOUNDERS_PERSON_NAMES[nft] || '';
         if (founderPersonName && topTitleName.toLowerCase().indexOf(founderPersonName.toLowerCase()) === -1) {
-          topTitleName = `${topTitleName} — ${founderPersonName}`;
+          topTitleName = `${topTitleName}, ${founderPersonName}`;
         }
       }
       topTitleNameEl.textContent = topTitleName;

@@ -1,11 +1,11 @@
 # =============================================================================
-#  Founders Block 88 — Bulk nav + CTA retargeting across static HTML pages
+#  Founders Block 88, Bulk nav + CTA retargeting across static HTML pages
 # =============================================================================
 #  Rewrites the top-right "Prelaunch" button and the Collections dropdown
 #  Inventors item across every *.html at the main-site root.
 #
 #  Uses exact-string multi-line replacement so it will only match the intended
-#  nav block — canonical/og meta tags that reference the same URL are NOT
+#  nav block, canonical/og meta tags that reference the same URL are NOT
 #  affected because their surrounding context differs.
 #
 #  Re-run safe: after the first run, the "before" strings won't match again.

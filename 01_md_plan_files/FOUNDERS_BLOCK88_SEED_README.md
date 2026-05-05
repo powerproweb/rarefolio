@@ -1,18 +1,18 @@
-# Founders Block 88 — Seed Run Guide
+# Founders Block 88, Seed Run Guide
 This guide covers the database and file-structure pieces that were landed for
 the Founders Block 88 launch. Apply these once per environment (dev, staging,
 production). All SQL is idempotent, so re-running is safe.
 ## Files that were added
 ### Main site (`01_rarefolio.io`)
-- `api/sql/seed_block88_blocks.sql` — 1 row in `qd_blocks`
-- `api/sql/seed_block88_stories.sql` — 1 shared + 8 per-item rows in `qd_stories`
-- `assets/img/collection/scnft_founders/README.md` — artwork drop-in directory
-- `assets/stories/block88/shared.html` — shared fallback HTML
-- `assets/stories/block88/qd-silver-0000705.html` .. `0712.html` — 8 per-item fallbacks
+- `api/sql/seed_block88_blocks.sql`, 1 row in `qd_blocks`
+- `api/sql/seed_block88_stories.sql`, 1 shared + 8 per-item rows in `qd_stories`
+- `assets/img/collection/scnft_founders/README.md`, artwork drop-in directory
+- `assets/stories/block88/shared.html`, shared fallback HTML
+- `assets/stories/block88/qd-silver-0000705.html` .. `0712.html`, 8 per-item fallbacks
 ### Marketplace (`01a_rarefolio_marketplace`)
-- `db/migrations/007_seed_founders_block88_tokens.sql` — 8 rows in `qd_tokens`
+- `db/migrations/007_seed_founders_block88_tokens.sql`, 8 rows in `qd_tokens`
 ## Run order
-### Step 1 — Main site database
+### Step 1, Main site database
 Apply the two SQL files against your Rarefolio main-site database (the one
 `api/_config.php` connects to):
 ```powershell
@@ -20,7 +20,7 @@ mysql -h <DB_HOST> -u <DB_USER> -p <DB_NAME> < api\sql\seed_block88_blocks.sql
 mysql -h <DB_HOST> -u <DB_USER> -p <DB_NAME> < api\sql\seed_block88_stories.sql
 ```
 Or run them through phpMyAdmin by opening each file and clicking "Go."
-### Step 2 — Marketplace database
+### Step 2, Marketplace database
 Apply the token seed. The marketplace ships a migration runner:
 ```powershell
 cd M:\01_Warp_Projects\01_projects\01a_rarefolio_marketplace
@@ -29,19 +29,19 @@ php db\migrate.php
 The runner will pick up `007_seed_founders_block88_tokens.sql` alongside the
 existing six migrations. If migrations have already been applied, re-running
 is still safe thanks to `ON DUPLICATE KEY UPDATE`.
-### Step 3 — Artwork drop
+### Step 3, Artwork drop
 Place the 8 card images into `assets/img/collection/scnft_founders/`:
-- `qd-silver-0000705.jpg` — Founders #1 — The Archivist
-- `qd-silver-0000706.jpg` — Founders #2 — The Cartographer
-- `qd-silver-0000707.jpg` — Founders #3 — The Sentinel
-- `qd-silver-0000708.jpg` — Founders #4 — The Artisan
-- `qd-silver-0000709.jpg` — Founders #5 — The Scholar
-- `qd-silver-0000710.jpg` — Founders #6 — The Ambassador
-- `qd-silver-0000711.jpg` — Founders #7 — The Mentor
-- `qd-silver-0000712.jpg` — Founders #8 — The Architect
+- `qd-silver-0000705.jpg`, Founders #1, The Archivist
+- `qd-silver-0000706.jpg`, Founders #2, The Cartographer
+- `qd-silver-0000707.jpg`, Founders #3, The Sentinel
+- `qd-silver-0000708.jpg`, Founders #4, The Artisan
+- `qd-silver-0000709.jpg`, Founders #5, The Scholar
+- `qd-silver-0000710.jpg`, Founders #6, The Ambassador
+- `qd-silver-0000711.jpg`, Founders #7, The Mentor
+- `qd-silver-0000712.jpg`, Founders #8, The Architect
 See the directory's own `README.md` for recommended resolutions and the
 print-ready CMYK PNG conventions.
-### Step 4 — Verify wiring
+### Step 4, Verify wiring
 Open in a browser:
 ```
 http://<host>/collection/silverbar-01/founders?batch=89
@@ -87,7 +87,7 @@ Remove-Item api\sql\seed_block88_stories.sql
 Remove-Item M:\01_Warp_Projects\01_projects\01a_rarefolio_marketplace\db\migrations\007_seed_founders_block88_tokens.sql
 ```
 ## Related docs
-- `01_md_plan_files/PLAN_founders_block88_launch.md` — the overall launch plan
-- `README.md` — main site architecture overview
-- `../01a_rarefolio_marketplace/docs/API.md` — what the v1 endpoints return
-- `../01a_rarefolio_marketplace/docs/CONFIG.md` — env + deployment
+- `01_md_plan_files/PLAN_founders_block88_launch.md`, the overall launch plan
+- `README.md`, main site architecture overview
+- `../01a_rarefolio_marketplace/docs/API.md`, what the v1 endpoints return
+- `../01a_rarefolio_marketplace/docs/CONFIG.md`, env + deployment

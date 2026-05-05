@@ -25,7 +25,7 @@ if ($u !== ADMIN_USER || $p !== ADMIN_PASS) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Admin Home — Rarefolio</title>
+<title>Admin Home, Rarefolio</title>
 <style>
 :root {
   --bg: #050a18;
