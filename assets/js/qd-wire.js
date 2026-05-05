@@ -44,6 +44,8 @@
     const emDash = String.fromCharCode(8212);
     const enDash = String.fromCharCode(8211);
     return String(value ?? '')
+      .replace(/\s*\\u2014\s*/gi, ', ')
+      .replace(/\s*\\u2013\s*/gi, ', ')
       .split(emDash).join(', ')
       .split(enDash).join(', ')
       .replace(/\s{2,}/g, ' ')
