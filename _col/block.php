@@ -47,19 +47,19 @@ $STATIC_BLOCKS = [
 // Supported video URLs: YouTube (youtube.com, youtu.be) and X post links (x.com / twitter.com status URLs).
 $VIDEO_FEATURES = [
   'founders' => [
-    'kicker' => 'Founders Briefing',
-    'title' => 'Founders Collection Video',
-    'description' => 'A dedicated launch brief can live here with collector context, provenance notes, and any mint or marketplace updates for this block.',
+    'kicker' => 'Launch Disclosure',
+    'title' => 'Founders Collection — Launch Brief',
+    'description' => 'The Founders collection is the first eight CNFTs in the Rarefolio Founders block, purchased by the founder at mint to bootstrap the secondary market and prove every link of the chain — mint, ownership, transfer, royalty settlement — against real collectors. They enter the secondary market with public provenance from day one.',
     'instructions' => [
-      'Press play to view the latest Founders walkthrough.',
-      'Review the key notes first, then continue into the CNFT grid below.',
-      'Swap in a YouTube or X post URL to automatically render the matching player.',
+      'Watch the launch briefing for context on this release.',
+      'This launch validates mint, ownership, transfer, and royalty settlement end-to-end.',
+      'Continue below to review the Founders CNFT set.',
     ],
     // Set this to your live link when ready:
     // e.g. https://www.youtube.com/watch?v=VIDEO_ID
     // or   https://x.com/{handle}/status/{post_id}
     'video_platform' => 'youtube',
-    'video_url' => '',
+    'video_url' => 'https://www.youtube.com/watch?v=KaO8U70M9Hs',
     'video_title' => 'Founders Collection video',
   ],
 ];
@@ -196,7 +196,7 @@ if (is_array($videoFeature)) {
   ));
 }
 
-$cssVersion  = '20260424';
+$cssVersion  = '20260505';
 ?>
 <!doctype html>
 <html lang="en">
