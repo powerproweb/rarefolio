@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Rarefolio — page-level protection for Silver Shard Calculator
+ * Rarefolio, page-level protection for Silver Shard Calculator
  * URL remains /collection-silverbar-calculator(.html) via .htaccess rewrite.
  */
 

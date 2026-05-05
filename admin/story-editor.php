@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['ok' => true, 'html_content' => $row['html_content'], 'updated_at' => $row['updated_at']]);
             } else {
                 echo json_encode(['ok' => true, 'html_content' => '', 'updated_at' => null,
-                    'note' => 'No story found for this block/item — will be created on first save.']);
+                    'note' => 'No story found for this block/item, will be created on first save.']);
             }
         } catch (Throwable $e) {
             echo json_encode(['error' => $e->getMessage()]);
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Story Editor — Rarefolio Admin</title>
+<title>Story Editor, Rarefolio Admin</title>
 <style>
 :root {
   --bg:      #050a18;
@@ -272,7 +272,7 @@ textarea:focus { border-color: var(--gold); }
                      margin: 0 0 12px 14px; }
 .preview-placeholder { color: var(--muted); font-size: 13px; padding: 20px 0; }
 
-/* ---- Story Footer styles — mirrors site styles.css ---- */
+/* ---- Story Footer styles, mirrors site styles.css ---- */
 .preview-panel .owner-footer { margin: 36px auto 10px; clear: both; }
 .preview-panel .owner-footer-inner {
   position: relative; padding: 34px 30px 28px 38px;
@@ -304,7 +304,7 @@ textarea:focus { border-color: var(--gold); }
 .preview-panel .owner-signoff span { display:block; margin-top:2px; font-size:21px; font-weight:bold; color:#fff5d6; letter-spacing:.5px; text-shadow:0 2px 8px rgba(0,0,0,.50),0 0 20px rgba(217,180,108,.22); }
 .preview-panel .owner-signoff em { display:block; font-size:10px; font-style:normal; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:rgba(217,180,108,.65); border-top:1px solid rgba(217,180,108,.18); padding-top:8px; margin-top:10px; }
 
-/* ---- Blockquote styles — mirrors site styles.css so preview matches live ---- */
+/* ---- Blockquote styles, mirrors site styles.css so preview matches live ---- */
 .preview-panel blockquote,
 .preview-panel .blockquote {
   position: relative;
@@ -412,7 +412,7 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
     </div>
     <div class="field">
       <div class="section-label">Label</div>
-      <input name="label" id="nb-label" placeholder="Zodiac &mdash; Leo" />
+      <input name="label" id="nb-label" placeholder="Zodiac, Leo" />
     </div>
     <div class="field">
       <div class="section-label">Story Mode</div>
@@ -427,7 +427,7 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
   </div>
   <!-- Per-item character names (shown only when storyMode = per_item) -->
   <div id="nb-names-wrap" style="display:none; margin-top:12px;">
-    <div class="nb-names-label">Character Names (1 – 8) &mdash; shown on collection cards &amp; NFT detail</div>
+    <div class="nb-names-label">Character Names (1 – 8), shown on collection cards &amp; NFT detail</div>
     <div class="nb-names-grid" id="nb-names-grid"></div>
   </div>
   <div class="status" id="nb-status" style="margin-top:10px;"></div>

@@ -1,4 +1,4 @@
-# Founders Block 88 — Preprod → Mainnet Launch Runbook
+# Founders Block 88, Preprod → Mainnet Launch Runbook
 **Deliverable 9 of `PLAN_founders_block88_launch.md`**
 This document covers every step from first preprod mint through first real secondary sale.
 
@@ -22,7 +22,7 @@ This document covers every step from first preprod mint through first real secon
 
 ---
 
-## Phase 1 — Preprod Mint
+## Phase 1, Preprod Mint
 
 ### 1.1 Set network to preprod
 In `01a_rarefolio_marketplace/.env`:
@@ -47,7 +47,7 @@ For each token `qd-silver-0000705` … `qd-silver-0000712`:
 - Wait for `mint_tx_hash` to be populated in `qd_tokens`
 
 Bulk mint can also be triggered via curl. Credentials MUST be sourced from your
-password manager / marketplace `.env` — never hardcode them in this file:
+password manager / marketplace `.env`, never hardcode them in this file:
 ```powershell
 # Set these in your shell before running (values live in your password manager):
 $env:QD_ADMIN_USER = '<marketplace ADMIN_USER>'
@@ -79,7 +79,7 @@ Expected:
 
 ---
 
-## Phase 2 — Mainnet Mint
+## Phase 2, Mainnet Mint
 
 ### 2.1 Switch to mainnet
 In `01a_rarefolio_marketplace/.env`:
@@ -99,7 +99,7 @@ Ensure the Cardano mainnet minting wallet has enough ADA to cover:
 Same mint process as Phase 1.3 but against the production Blockfrost endpoint.
 Policy ID will differ from preprod. Asset names (`qd-silver-0000705` etc.) are the same.
 
-Record each `mint_tx_hash` — these go into the cert payload later.
+Record each `mint_tx_hash`, these go into the cert payload later.
 
 ### 2.4 Verify mainnet mint
 Check https://cardanoscan.io/ for each tx hash.
@@ -107,7 +107,7 @@ Confirm `uploads/webhook-log/mint-complete.log` has 8 new mainnet entries.
 
 ---
 
-## Phase 3 — Founder Purchase (Primary Sale)
+## Phase 3, Founder Purchase (Primary Sale)
 
 ### 3.1 Set primary sale price
 In the marketplace admin, set `asking_price_ada` on all 8 Founders tokens.
@@ -137,7 +137,7 @@ curl -s "https://rarefolio.io/cert?cert=QDCERT-E101837-0000705" | Select-String 
 
 ---
 
-## Phase 4 — Secondary Listings
+## Phase 4, Secondary Listings
 
 ### 4.1 List all 8 at founder-set prices
 In the marketplace admin, set `listing_status = listed_fixed` and `listing_price_ada` for each token.
@@ -159,7 +159,7 @@ Verify:
 
 ---
 
-## Phase 5 — First Secondary Sale (Full-Cycle Validation)
+## Phase 5, First Secondary Sale (Full-Cycle Validation)
 
 When the first real secondary sale occurs:
 1. `ownership-change` webhook fires → `api/webhook/ownership-change.php`

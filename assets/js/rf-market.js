@@ -1,5 +1,5 @@
 /**
- * rf-market.js — Rarefolio main-site client for the marketplace API.
+ * rf-market.js, Rarefolio main-site client for the marketplace API.
  *
  * Single point of contact for all fetch() calls to market.rarefolio.io.
  * Centralizes: base URL, timeouts, error handling, and light in-memory

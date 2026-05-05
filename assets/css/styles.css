@@ -53,7 +53,7 @@
       rgba(18, 12, 3, 1.00) 100%);
   border: 1px solid rgba(217, 180, 108, 0.28);
   border-left: 4px solid rgba(217, 180, 108, 0.70); /* left accent matching blockquote */
-  border-radius: 0 18px 18px 0; /* flat left, rounded right — matches blockquote shape */
+  border-radius: 0 18px 18px 0; /* flat left, rounded right, matches blockquote shape */
   box-shadow:
     0 20px 56px rgba(0, 0, 0, 0.60),
     0  6px 18px rgba(0, 0, 0, 0.40),
@@ -110,7 +110,7 @@
   color: rgba(28, 18, 4, 0.55);
 }
 
-/* Main heading — larger, more presence */
+/* Main heading, larger, more presence */
 .owner-title {
   margin: 0 0 18px 0;
   font-family: Georgia, "Times New Roman", serif;
@@ -213,7 +213,7 @@
 
 
 /* ============================================================
-   SOLD button — appears on NFT detail page when QD_SOLD contains the token
+   SOLD button, appears on NFT detail page when QD_SOLD contains the token
    ============================================================ */
 .btn-sold {
   position: relative;
@@ -1149,8 +1149,8 @@ hr.sep{
   }
   
 /* ============================================================
-   Rarefolio.io — Blockquotes for Stories (dark theme card style)
-   Usage: <blockquote><p>Quote text.</p><cite>— Attribution</cite></blockquote>
+   Rarefolio.io, Blockquotes for Stories (dark theme card style)
+   Usage: <blockquote><p>Quote text.</p><cite>, Attribution</cite></blockquote>
    Variants: add class bq-gold | bq-maroon | bq-lavender | bq-subtle
    ============================================================ */
 
@@ -1197,7 +1197,7 @@ blockquote p,
 blockquote p:last-of-type,
 .blockquote p:last-of-type { margin-bottom: 0; }
 
-/* Attribution line — <cite> or <footer> inside blockquote */
+/* Attribution line, <cite> or <footer> inside blockquote */
 blockquote cite,
 .blockquote cite,
 blockquote footer,
@@ -1249,7 +1249,7 @@ blockquote.bq-lavender::before,
 blockquote.bq-lavender cite,
 .blockquote.bq-lavender cite { color: #b9a7ff; border-top-color: rgba(185,167,255,.22); }
 
-/* Subtle / Minimal: no quote mark, minimal frame — for inline use */
+/* Subtle / Minimal: no quote mark, minimal frame, for inline use */
 blockquote.bq-subtle, blockquote.bq-minimal,
 .blockquote.bq-subtle, .blockquote.bq-minimal {
   padding: 16px 20px;
@@ -1261,7 +1261,7 @@ blockquote.bq-subtle::before, blockquote.bq-minimal::before,
 .blockquote.bq-subtle::before, .blockquote.bq-minimal::before { display: none; }
 
 /* ============================================================
-   Rarefolio.io — Custom Styles (consolidated from custom.css)
+   Rarefolio.io, Custom Styles (consolidated from custom.css)
    ============================================================ */
 
 /* Mobile / Desktop visibility toggles */
@@ -1584,7 +1584,7 @@ span.number-grey   { color: #666; }
 }
 
 /* ============================================================
-   NFT Detail — Main image sizing
+   NFT Detail, Main image sizing
    ============================================================ */
 #qd-nft-img {
   display: block;

@@ -1,6 +1,6 @@
-# rarefolio — Internal Project Readme for the Founders Pre-Sale BLOCK88: THE FOUNDERS COLLECTION
+# rarefolio, Internal Project Readme for the Founders Pre-Sale BLOCK88: THE FOUNDERS COLLECTION
 
-# Nano Banana Image Prompts for the Founders Collection **Master build log for rarefolio.io — newest plans go at the top.**
+# Nano Banana Image Prompts for the Founders Collection **Master build log for rarefolio.io, newest plans go at the top.**
 Excellent. Here is your **single paste-ready prompt pack** for **all 8 founders**, with **2 prompts each**, all written in one unified format so the collection feels coherent, sovereign, and collector-grade.
 
 I kept them aligned for:
@@ -29,7 +29,7 @@ Young, vibrant, wise, noble, creative, front-facing headshots
 					***=======<<<<<<< The Archivist >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#1 The Archivist — Prompt 1 - the_archivist
+#1 The Archivist, Prompt 1 - the_archivist
 
 Epic steampunk founder headshot portrait of The Archivist, facing directly forward and looking straight at the viewer, handsome noble male age 35, long dark chestnut hair flowing past the shoulders, softly groomed beard, warm pleasant smile, wise intelligent eyes full of memory and calm insight, youthful yet distinguished expression, dressed in a tailored black velvet coat with elegant silver embroidery, layered high-collar waistcoat, refined silk cravat, subtle crown-and-key insignia, artistic archival monocle with delicate rotating brass details, background of luminous ledgers, silver seals, polished archive shelves, warm amber light and soft brass machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant steampunk nobility
 
@@ -38,7 +38,7 @@ Epic steampunk founder headshot portrait of The Archivist, facing directly forwa
 
 Epic steampunk founder headshot portrait of The Archivist, facing directly forward and looking straight at the viewer, handsome noble male age 35, long dark chestnut hair flowing past the shoulders, softly groomed beard, warm pleasant smile, wise intelligent eyes full of memory and calm insight, youthful yet distinguished expression, dressed in a tailored black velvet coat with elegant silver embroidery, layered high-collar waistcoat, refined silk cravat, subtle crown-and-key insignia, artistic archival monocle with delicate rotating brass details, background of luminous ledgers, silver seals, polished archive shelves, warm amber light and soft brass machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant steampunk nobility, photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
-#1 The Archivist — Prompt 2
+#1 The Archivist, Prompt 2
 
 Epic steampunk founder headshot portrait of The Archivist, facing directly forward and looking straight at the viewer, charismatic founder male age 38, long wavy black hair with subtle silver shimmer, clean elegant features, gentle confident smile, bright wise eyes, youthful creative energy with noble poise, wearing a midnight-black tailored coat with oxidized silver trim, layered cravat, archival seal brooch shaped like a crowned keyhole, subtle royal lineage embroidery, refined mechanical lens near one eye, background of glowing parchment records, brass vault cabinets, soft floating script, and warm library-vault atmosphere, cinematic museum-quality lighting, ultra-detailed realism, luxurious textures, centered symmetrical composition, collector-grade founder portrait, intelligent steampunk elegance
 
@@ -49,14 +49,14 @@ Epic steampunk founder headshot portrait of The Archivist, facing directly forwa
 					***=======<<<<<<< The Cartographer >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#2 The Cartographer — Prompt 1
+#2 The Cartographer, Prompt 1
 
 Epic steampunk founder headshot portrait of The Cartographer, facing directly forward and looking straight at the viewer, noble adventurous male age 34, long dark blond hair loosely tied behind the shoulders, warm inviting smile, brilliant observant eyes, vibrant creative expression, youthful and wise, dressed in a deep emerald and navy coat with brass compass embroidery, elegant mapmaker cravat, celestial navigation monocle with fine gearwork, subtle royal insignia from ancient navigator kings and queens, background of glowing atlas lines, rotating astrolabes, brass instruments, star charts, and soft atmospheric light, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, epic steampunk explorer nobility
 
 # Midjourney
 Epic steampunk founder headshot portrait of The Cartographer, facing directly forward and looking straight at the viewer, noble adventurous male age 34, long dark blond hair loosely tied behind the shoulders, warm inviting smile, brilliant observant eyes, vibrant creative expression, youthful and wise, dressed in a deep emerald and navy coat with brass compass embroidery, elegant mapmaker cravat, celestial navigation monocle with fine gearwork, subtle royal insignia from ancient navigator kings and queens, background of glowing atlas lines, rotating astrolabes, brass instruments, star charts, and soft atmospheric light, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, epic steampunk explorer nobility, photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
-#2 The Cartographer — Prompt 2
+#2 The Cartographer, Prompt 2
 
 Epic steampunk founder headshot portrait of The Cartographer, facing directly forward and looking straight at the viewer, handsome steampunk scholar-explorer age 37, long chestnut hair flowing freely, slight pleasant smile, bright eyes filled with wonder and wisdom, youthful noble face, wearing a richly tailored navy coat with gold cartographic stitching, layered collar details, compass rose clasp, royal bloodline symbols hidden in the fabric, elegant brass eyepiece with rotating coordinate rings, background of illuminated parchment maps, celestial grids, suspended compass needles, and warm blue-amber atlas chamber light, cinematic museum-quality lighting, ultra-detailed realism, luxurious fabric and metal textures, centered symmetrical composition, collector-grade founder portrait, vibrant mythic steampunk energy
 
@@ -67,14 +67,14 @@ Epic steampunk founder headshot portrait of The Cartographer, facing directly fo
 					***=======<<<<<<< The Sentinel >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#3 The Sentinel — Prompt 1
+#3 The Sentinel, Prompt 1
 
 Epic steampunk founder headshot portrait of The Sentinel, facing directly forward and looking straight at the viewer, strong noble male age 36, long dark brown hair brushed back over the shoulders, trimmed beard, calm pleasant smile, clear wise eyes showing strength and kindness, youthful yet disciplined expression, dressed in a black and bronze high-collared founder coat with engraved threshold symbols, polished leather shoulder detailing, ceremonial seal chain, subtle royal gatekeeper lineage embroidery, refined mechanical inspection lens, background of monumental brass doors, elegant locking mechanisms, glowing threshold arches, and soft steam-lit atmosphere, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, heroic vibrant steampunk authority
 
 # Midjourney
 Epic steampunk founder headshot portrait of The Sentinel, facing directly forward and looking straight at the viewer, strong noble male age 36, long dark brown hair brushed back over the shoulders, trimmed beard, calm pleasant smile, clear wise eyes showing strength and kindness, youthful yet disciplined expression, dressed in a black and bronze high-collared founder coat with engraved threshold symbols, polished leather shoulder detailing, ceremonial seal chain, subtle royal gatekeeper lineage embroidery, refined mechanical inspection lens, background of monumental brass doors, elegant locking mechanisms, glowing threshold arches, and soft steam-lit atmosphere, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, heroic vibrant steampunk authority, photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
-#3 The Sentinel — Prompt 2
+#3 The Sentinel, Prompt 2
 
 Epic steampunk founder headshot portrait of The Sentinel, facing directly forward and looking straight at the viewer, handsome guardian-scholar age 39, long raven hair, noble face, warm restrained smile, intelligent eyes with deep discernment, confident youthful expression, wearing an oxblood and black ceremonial coat with bronze lock motifs, structured collar, archive threshold brooch, subtle royal bloodline patterns, elegant seal-reader eyepiece with delicate gearwork, background of glowing vault gates, brass pillars, mechanical lockwork, and warmly lit archive entrance halls, cinematic museum-quality lighting, ultra-detailed realism, rich metals and leather detail, centered symmetrical composition, collector-grade founder portrait, dignified creative steampunk presence
 
@@ -85,14 +85,14 @@ Epic steampunk founder headshot portrait of The Sentinel, facing directly forwar
 					***=======<<<<<<< The Artisan >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#4 The Artisan — Prompt 1
+#4 The Artisan, Prompt 1
 
 Epic steampunk founder headshot portrait of The Artisan, facing directly forward and looking straight at the viewer, beautiful noble woman age 33, long flowing auburn hair with soft waves, gentle radiant smile, luminous wise eyes full of creativity and invention, youthful vibrant expression, dressed in a burgundy and copper atelier coat with royal tailoring, engraved bronze collar, elegant miniature brass tool ornaments in the hair, subtle queenly lineage symbols, refined jeweler lens with delicate mechanical detail, background of warm forge glow, etched dies, polished molds, and artistic workshop machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, epic steampunk maker elegance
 
 # Midjourney
 Epic steampunk founder headshot portrait of The Artisan, facing directly forward and looking straight at the viewer, beautiful noble woman age 33, long flowing auburn hair with soft waves, gentle radiant smile, luminous wise eyes full of creativity and invention, youthful vibrant expression, dressed in a burgundy and copper atelier coat with royal tailoring, engraved bronze collar, elegant miniature brass tool ornaments in the hair, subtle queenly lineage symbols, refined jeweler lens with delicate mechanical detail, background of warm forge glow, etched dies, polished molds, and artistic workshop machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, epic steampunk maker elegance, photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
-#4 The Artisan — Prompt 2
+#4 The Artisan, Prompt 2
 
 Epic steampunk founder headshot portrait of The Artisan, facing directly forward and looking straight at the viewer, stunning steampunk founder woman age 37, long dark copper hair cascading over the shoulders, pleasant confident smile, sparkling intelligent eyes, youthful face with noble grace and creative power, wearing a dark velvet coat with copper embroidery, structured high-fashion collar, die-carver insignia, subtle royal bloodline jewelry, elegant precision drafting tool near one shoulder, background of engraved silver patterns, warm amber forge light, ornate workshop arches, and softly glowing mechanical instruments, cinematic museum-quality lighting, ultra-detailed realism, luxurious tactile textures, centered symmetrical composition, collector-grade founder portrait, vibrant sovereign steampunk artistry
 
@@ -103,14 +103,14 @@ Epic steampunk founder headshot portrait of The Artisan, facing directly forward
 					***=======<<<<<<< The Scholar >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#5 The Scholar — Prompt 1
+#5 The Scholar, Prompt 1
 
 Epic steampunk founder headshot portrait of The Scholar, facing directly forward and looking straight at the viewer, graceful noble woman age 35, long dark hair with soft silver-brown depth, gentle knowing smile, brilliant wise eyes full of thought and clarity, youthful elegant expression, dressed in a deep burgundy academic royal coat with antique gold embroidery, ivory collar, archival seal-stamp chains, subtle hidden heraldic symbols, refined multi-lens spectacles, background of provenance ledgers, glowing document seals, brass indexing wheels, and warm candlelit archive shelves, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant steampunk intellectual nobility
 
 # Midjourney
 Epic steampunk founder headshot portrait of The Scholar, facing directly forward and looking straight at the viewer, graceful noble woman age 35, long dark hair with soft silver-brown depth, gentle knowing smile, brilliant wise eyes full of thought and clarity, youthful elegant expression, dressed in a deep burgundy academic royal coat with antique gold embroidery, ivory collar, archival seal-stamp chains, subtle hidden heraldic symbols, refined multi-lens spectacles, background of provenance ledgers, glowing document seals, brass indexing wheels, and warm candlelit archive shelves, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant steampunk intellectual nobility, photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
-#5 The Scholar — Prompt 2
+#5 The Scholar, Prompt 2
 
 Epic steampunk founder headshot portrait of The Scholar, facing directly forward and looking straight at the viewer, beautiful queen-scholar age 39, long wavy dark plum-brown hair, pleasant composed smile, intelligent luminous eyes filled with wisdom and curiosity, youthful but authoritative presence, wearing a plum and antique gold tailored coat with layered archive ornamentation, elegant signet jewelry, provenance chain motifs, subtle royal lineage embroidery, folded archival side-lenses near the temples, background of ancient manuscripts, silver ownership chains, parchment ribbons, and softly glowing classification machinery, cinematic museum-quality lighting, ultra-detailed realism, rich material depth, centered symmetrical composition, collector-grade founder portrait, epic living steampunk scholarship
 
@@ -121,14 +121,14 @@ Epic steampunk founder headshot portrait of The Scholar, facing directly forward
 					***=======<<<<<<< The Ambassador >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#6 The Ambassador — Prompt 1
+#6 The Ambassador, Prompt 1
 
 Epic steampunk founder headshot portrait of The Ambassador, facing directly forward and looking straight at the viewer, handsome noble diplomat male age 36, long dark blond hair flowing neatly past the shoulders, refined features, warm engaging smile, bright wise eyes full of trust and intelligence, youthful confident expression, dressed in a sapphire and gold tailored diplomatic coat with brass seals, layered silk cravat, ceremonial chain of office, subtle bloodline insignia from treaty kings and queens, elegant mechanical correspondence earpiece, background of treaty hall banners, brass communication tubes, airship port windows, and warm lantern-lit city haze, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant steampunk diplomacy
 
 # Midjourney
 Epic steampunk founder headshot portrait of The Ambassador, facing directly forward and looking straight at the viewer, handsome noble diplomat male age 36, long dark blond hair flowing neatly past the shoulders, refined features, warm engaging smile, bright wise eyes full of trust and intelligence, youthful confident expression, dressed in a sapphire and gold tailored diplomatic coat with brass seals, layered silk cravat, ceremonial chain of office, subtle bloodline insignia from treaty kings and queens, elegant mechanical correspondence earpiece, background of treaty hall banners, brass communication tubes, airship port windows, and warm lantern-lit city haze, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant steampunk diplomacy, photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
-#6 The Ambassador — Prompt 2
+#6 The Ambassador, Prompt 2
 
 Epic steampunk founder headshot portrait of The Ambassador, facing directly forward and looking straight at the viewer, charismatic founder male age 39, long rich brown hair, noble jawline, pleasant welcoming smile, lively intelligent eyes, youthful polished expression, wearing a dark teal and bronze court-travel coat with open-seal collar pins, diplomatic medals, royal merchant lineage symbols, elegant precision listening device with brass detailing, background of collector salons, correspondence archives, ceremonial banners, and glowing civic architecture, cinematic museum-quality lighting, ultra-detailed realism, rich fabrics and metal textures, centered symmetrical composition, collector-grade founder portrait, epic young steampunk statesman energy
 
@@ -139,14 +139,14 @@ Epic steampunk founder headshot portrait of The Ambassador, facing directly forw
 					***=======<<<<<<< The Mentor >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#7 The Mentor — Prompt 1
+#7 The Mentor, Prompt 1
 
 Epic steampunk founder headshot portrait of The Mentor, facing directly forward and looking straight at the viewer, noble wise male age 40, long silver-brown hair flowing to the shoulders, neatly kept beard, soft pleasant smile, compassionate discerning eyes full of wisdom and encouragement, youthful but mature expression, dressed in a warm charcoal scholar-traveler coat with brass trim, layered waistcoat, lantern-shaped tie pin, subtle insignia from a royal academy bloodline, antique teaching spectacles, background of glowing study hall shelves, brass lanterns, collector charts, celestial diagrams, and soft amber archival haze, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant guiding steampunk nobility
 
 # Midjourney
 Epic steampunk founder headshot portrait of The Mentor, facing directly forward and looking straight at the viewer, noble wise male age 40, long silver-brown hair flowing to the shoulders, neatly kept beard, soft pleasant smile, compassionate discerning eyes full of wisdom and encouragement, youthful but mature expression, dressed in a warm charcoal scholar-traveler coat with brass trim, layered waistcoat, lantern-shaped tie pin, subtle insignia from a royal academy bloodline, antique teaching spectacles, background of glowing study hall shelves, brass lanterns, collector charts, celestial diagrams, and soft amber archival haze, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant guiding steampunk nobility, photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
-#7 The Mentor — Prompt 2
+#7 The Mentor, Prompt 2
 
 Epic steampunk founder headshot portrait of The Mentor, facing directly forward and looking straight at the viewer, handsome elder-young founder male age 38, long dark honey-brown hair, warm half-smile, clear thoughtful eyes shining with intelligence and kindness, noble face with creative energy, wearing an olive and dark bronze academic coat with gold thread, pocket watch chain, royal learning-house insignia, elegant reading lens tucked near the collar, background of archive classroom architecture, illuminated serial charts, collector shelves, drifting parchment notes, and warm lantern light, cinematic museum-quality lighting, ultra-detailed realism, rich tactile textures, centered symmetrical composition, collector-grade founder portrait, epic living steampunk guidance
 
@@ -157,7 +157,7 @@ Epic steampunk founder headshot portrait of The Mentor, facing directly forward 
 					***=======<<<<<<< The Architect >>>>>>>=======***
 <<<||||||||||||||||||\\\\\\\\\\\\\\\\\\\\-----  -----//////////////////||||||||||||||||||>>>
 
-#8 The Architect — Prompt 1
+#8 The Architect, Prompt 1
 
 Epic steampunk founder headshot portrait of The Architect, facing directly forward and looking straight at the viewer, noble visionary engineer male age 37, long dark hair swept back over the shoulders, refined beard, pleasant confident smile, intense wise eyes full of ideas and invention, youthful expression with sovereign poise, dressed in an obsidian tailored coat with copper framework embroidery, metallic collar inspired by vault geometry, interlocking key insignia, subtle royal lineage details from builder kings and queens, elegant drafting monocle, background of grand vault schematics, brass structural rings, blueprint geometry, and glowing archive machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass, steel, and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant epic steampunk genius. 
 
@@ -165,7 +165,7 @@ Epic steampunk founder headshot portrait of The Architect, facing directly forwa
 Epic steampunk founder headshot portrait of The Architect, facing directly forward and looking straight at the viewer, noble visionary engineer male age 37, long dark hair swept back over the shoulders, refined beard, pleasant confident smile, intense wise eyes full of ideas and invention, youthful expression with sovereign poise, dressed in an obsidian tailored coat with copper framework embroidery, metallic collar inspired by vault geometry, interlocking key insignia, subtle royal lineage details from builder kings and queens, elegant drafting monocle, background of grand vault schematics, brass structural rings, blueprint geometry, and glowing archive machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass, steel, and velvet textures, centered symmetrical composition, collector-grade founder portrait, vibrant epic steampunk genius. , photorealistic, hyper realistic, hyper detailed, 64k, UHD, 3d, --ar 2588:3375 --raw --stylize 180 --v 8.1
 
 
-#8 The Architect — Prompt 2
+#8 The Architect, Prompt 2
 
 Epic steampunk founder headshot portrait of The Architect, facing directly forward and looking straight at the viewer, handsome sovereign engineer-scholar age 35, long black hair, noble facial structure, friendly subtle smile, luminous intelligent eyes filled with creativity and long-range vision, youthful refined presence, wearing a dark steel and copper formal coat with structural seam lines, platinum cravat clasp shaped like vault keys, hidden bloodline embroidery from ancient builder monarchs, elegant mechanical drafting instrument near one temple, background of massive vault doors, suspended brass models, glowing schema diagrams, celestial observatory geometry, and warmly lit engineering chambers, cinematic museum-quality lighting, ultra-detailed realism, rich metal and fabric detail, centered symmetrical composition, collector-grade founder portrait, mythic living steampunk permanence.
 
@@ -223,96 +223,96 @@ Next smart move would be to make these even tighter by giving all 8 one shared f
 
 --- old prompts looking old angry white men
 
-## #1 The Archivist — Prompt 1
+## #1 The Archivist, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Archivist**, facing directly forward and looking straight at the viewer, distinguished noble elder male, late 60s, silver-streaked hair swept back, refined beard, calm penetrating eyes, wise and composed expression, dressed in a high-collared black velvet coat with oxidized silver embroidery, layered antique waistcoat, structured cravat, crown-and-key insignia at the throat, subtle royal lineage details from forgotten kings and queens, intricate archival monocle with rotating micro-gears, background of dim vault shelves, ancient ledgers, silver seals, and softly glowing brass archive machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary presence, permanent collection aesthetic
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #1 The Archivist — Prompt 2
+## #1 The Archivist, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Archivist**, facing directly forward and looking straight at the viewer, aristocratic wise male founder, early 70s, strong facial structure, silver hair, neatly groomed dark-and-silver beard, deep intelligent eyes, solemn noble expression, wearing a midnight-black tailored coat with silver-thread trim, archival clasp shaped like a crowned keyhole, layered silk cravat, subtle emblem of ancient royal bloodlines, mechanical ink-recording lens near one eye, background of brass filing vaults, floating parchment fragments, sealed silver bars, and shadowed archive corridors, cinematic museum-quality lighting, ultra-detailed realism, rich metal and fabric textures, symmetrical centered composition, collector-grade founder portrait, mythic steampunk authority
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
 ---
 
-## #2 The Cartographer — Prompt 1
+## #2 The Cartographer, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Cartographer**, facing directly forward and looking straight at the viewer, noble explorer-scholar male, late 50s, weathered elegant face, intelligent focused eyes, composed and wise expression, wearing a deep emerald and navy coat with brass mapwork embroidery, layered cravat with compass rose clasp, subtle insignia of ancient navigator kings and queens, celestial cartographic monocle with coordinate dials, background of rotating star charts, glowing atlas lines, antique astrolabes, compass needles, and brass navigation instruments, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary presence
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #2 The Cartographer — Prompt 2
+## #2 The Cartographer, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Cartographer**, facing directly forward and looking straight at the viewer, aristocratic mature male founder, early 60s, sharp cheekbones, subtle scar near eyebrow, noble and thoughtful expression, dressed in a dark navy military-tailored coat with gold and brass cartographic symbols, structured collar, leather mapmaker straps, royal insignia from a lost island bloodline, precision navigation lens with tiny mechanical rings, background of illuminated parchment maps, celestial grids, suspended brass instruments, and a softly glowing atlas chamber, cinematic museum-quality lighting, ultra-detailed realism, rich material detail, symmetrical centered composition, collector-grade founder portrait, mythic steampunk realism
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
 ---
 
-## #3 The Sentinel — Prompt 1
+## #3 The Sentinel, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Sentinel**, facing directly forward and looking straight at the viewer, powerful noble male guardian, late 50s, strong jawline, dark beard with silver strands, stern intelligent eyes, disciplined honorable expression, dressed in a black and bronze high-collared uniform with engraved threshold sigils, leather and metal shoulder mantle, ceremonial seal chain, subtle lineage marks of gatekeeping kings and queens, mechanical inspection lens near one eye, background of monumental vault doors, iron arches, locking mechanisms, and guarded threshold architecture, cinematic museum-quality lighting, ultra-detailed realism, polished brass, steel, and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary authority
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #3 The Sentinel — Prompt 2
+## #3 The Sentinel, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Sentinel**, facing directly forward and looking straight at the viewer, noble older warrior-scholar, early 60s, severe face, faint duty scars, piercing observant eyes, expression of judgment and integrity, wearing an oxblood and black ceremonial coat with bronze lock motifs, structured armor-inspired collar, archive threshold brooch, hidden royal bloodline embroidery, subtle mechanical seal-reader eyepiece, background of brass gates, sealed archive chambers, glowing runes, and dark steam-lit corridor stonework, cinematic museum-quality lighting, ultra-detailed realism, rich metals and leather detail, symmetrical centered composition, collector-grade founder portrait, mythic steampunk gravitas
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
 ---
 
-## #4 The Artisan — Prompt 1
+## #4 The Artisan, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Artisan**, facing directly forward and looking straight at the viewer, brilliant noble woman, mid 40s, luminous wise eyes, regal strong features, elegant auburn hair styled with miniature brass tools and jeweled gearwork, poised intelligent expression, dressed in a burgundy and copper atelier coat with royal tailoring, engraved bronze collar, subtle queenly lineage symbols, precision jeweler lens folded near one eye, background of glowing forge light, etched dies, suspended molds, and ornate workshop machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary maker presence
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #4 The Artisan — Prompt 2
+## #4 The Artisan, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Artisan**, facing directly forward and looking straight at the viewer, noble female maker and royal engineer, late 40s, composed face, sharp cheekbones, deeply intelligent eyes, expression of precision and calm brilliance, wearing a dark velvet coat with copper embroidery, structured corseted collar design, die-carver insignia, subtle hidden bloodline marks from maker queens, articulated drafting tool mounted near the shoulder, background of engraved silver patterns, molten amber forge glow, artisan cathedral workshop arches, and precision tools in soft shadow, cinematic museum-quality lighting, ultra-detailed realism, rich tactile textures, symmetrical centered composition, collector-grade founder portrait, mythic steampunk elegance
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
 ---
 
-## #5 The Scholar — Prompt 1
+## #5 The Scholar, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Scholar**, facing directly forward and looking straight at the viewer, formidable noble woman, early 50s, graceful mature beauty, dark hair with silver streaks, piercing observant eyes, calm exacting expression, dressed in a deep burgundy academic royal coat with antique gold embroidery, ivory high collar, archival seal-stamp chains, subtle heraldic symbols of kings and queens hidden in the fabric, elegant multi-lens spectacles, background of provenance ledgers, glowing document seals, brass indexing wheels, and candlelit archive shelves, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary intellectual presence
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #5 The Scholar — Prompt 2
+## #5 The Scholar, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Scholar**, facing directly forward and looking straight at the viewer, noble queen-scholar, late 50s, refined features, silver-threaded dark hair, severe but elegant expression, brilliant searching eyes, wearing a plum and antique gold tailored coat with layered legal-archive ornamentation, signet jewelry, provenance chain motifs, subtle royal lineage embroidery, folded archival side-lenses near the temples, background of ancient legal manuscripts, silver ownership chains, parchment ribbons, and mechanical classification systems, cinematic museum-quality lighting, ultra-detailed realism, rich material depth, symmetrical centered composition, collector-grade founder portrait, mythic steampunk scholarship
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
 ---
 
-## #6 The Ambassador — Prompt 1
+## #6 The Ambassador, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Ambassador**, facing directly forward and looking straight at the viewer, distinguished noble diplomat male, early 50s, refined features, warm intelligent eyes, elegant mustache, confident trustworthy expression, dressed in a sapphire and gold tailored diplomatic coat with brass seals, layered silk cravat, ceremonial chain of office, subtle bloodline insignia from treaty kings and queens, mechanical correspondence earpiece, background of treaty hall banners, brass communication tubes, airship port windows, and soft lantern-lit city haze, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary diplomatic presence
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #6 The Ambassador — Prompt 2
+## #6 The Ambassador, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Ambassador**, facing directly forward and looking straight at the viewer, noble charter-bearer male, late 50s, silver at the temples, handsome mature face, poised and sincere expression, wearing a dark teal and bronze court-travel coat with polished insignia, open-seal collar pins, diplomatic medals, subtle marks of royal merchant lineage, precision listening device with brass detailing, background of collector salons, correspondence archives, ceremonial banners, and softly glowing civic architecture, cinematic museum-quality lighting, ultra-detailed realism, rich fabrics and metals, symmetrical centered composition, collector-grade founder portrait, mythic steampunk authority
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
 ---
 
-## #7 The Mentor — Prompt 1
+## #7 The Mentor, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Mentor**, facing directly forward and looking straight at the viewer, wise noble elder male, late 60s, silver hair, well-kept beard, compassionate yet discerning eyes, calm guiding expression, dressed in a warm charcoal scholar-traveler coat with brass trim, layered waistcoat, lantern-shaped tie pin, subtle insignia from a royal academy bloodline, antique teaching spectacles, background of glowing study hall shelves, lanterns, collector charts, celestial diagrams, and soft archival steam haze, cinematic museum-quality lighting, ultra-detailed realism, polished brass and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary guiding presence
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #7 The Mentor — Prompt 2
+## #7 The Mentor, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Mentor**, facing directly forward and looking straight at the viewer, noble elder teacher, early 70s, lined face full of wisdom, soft but powerful gaze, subtle half-smile of deep understanding, wearing an olive and dark bronze Victorian academic coat with gold thread, pocket watch chain, royal learning-house insignia, articulated reading lens tucked near the collar, background of archive classroom architecture, illuminated serial charts, collector shelves, drifting parchment notes, and amber lantern light, cinematic museum-quality lighting, ultra-detailed realism, rich tactile textures, symmetrical centered composition, collector-grade founder portrait, mythic steampunk scholarship and guidance
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
 ---
 
-## #8 The Architect — Prompt 1
+## #8 The Architect, Prompt 1
 
 Epic steampunk founder headshot portrait of **The Architect**, facing directly forward and looking straight at the viewer, noble visionary engineer male, late 50s, strong regal features, silver-black hair swept back, intense intelligent eyes, expression of controlled genius and permanence, dressed in an obsidian tailored coat with copper framework embroidery, metallic collar inspired by vault geometry, interlocking key insignia, subtle royal lineage details from infrastructure queens and kings, precision drafting monocle, background of grand vault schematics, brass structural rings, blueprint geometry, and monumental archive machinery, cinematic museum-quality lighting, ultra-detailed realism, polished brass, steel, and velvet textures, symmetrical centered composition, collector-grade founder portrait, legendary systems-builder presence
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props
 
-## #8 The Architect — Prompt 2
+## #8 The Architect, Prompt 2
 
 Epic steampunk founder headshot portrait of **The Architect**, facing directly forward and looking straight at the viewer, sovereign engineer-scholar male, early 60s, refined beard, piercing gaze, noble severe expression, wearing a dark steel and copper formal coat with structural seam lines, platinum cravat clasp shaped like vault keys, hidden bloodline embroidery from ancient builder monarchs, elegant mechanical drafting instrument near one temple, background of massive vault doors, suspended brass models, glowing schema diagrams, celestial observatory geometry, and steam-lit engineering chambers, cinematic museum-quality lighting, ultra-detailed realism, rich metal and fabric detail, symmetrical centered composition, collector-grade founder portrait, mythic steampunk permanence
 **Negative prompt:** no side angle, no profile, no looking away, no smile, no cartoon, no anime, no blur, no extra limbs, no distortion, no modern fashion, no cyberpunk neon, no cheap cosplay, no cluttered background, no text, no watermark, no flat lighting, no goofy steampunk props

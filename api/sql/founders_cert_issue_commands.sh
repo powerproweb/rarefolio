@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  Rarefolio — Founders Block 88 Certificate Issuance Commands
+#  Rarefolio, Founders Block 88 Certificate Issuance Commands
 # =============================================================================
 #  Run AFTER Phase 2 (mainnet mint) is confirmed.
 #
@@ -25,7 +25,7 @@
 #    0000711  711   parchment   gold  (bg: parchment_03, seal: gold_07)
 #    0000712  712   parchment   gold  (bg: parchment_04, seal: gold_08)
 #
-#  All 8 use gold seals — the Founders collection uses full gold pool exhaustion
+#  All 8 use gold seals, the Founders collection uses full gold pool exhaustion
 #  across the 8-piece set, one per seal variant.
 # =============================================================================
 
@@ -33,7 +33,7 @@ BASE_URL="https://rarefolio.io"
 : "${ADMIN_USER:?ADMIN_USER env var required (see api/_config.php ADMIN_USER)}"
 : "${ADMIN_PASS:?ADMIN_PASS env var required (see api/_config.php ADMIN_PASS)}"
 BAR_SERIAL="E101837"
-COLLECTION="Founders Collection — Silver Bar I"
+COLLECTION="Founders Collection, Silver Bar I"
 NETWORK="mainnet"
 POLICY_ID="MAINNET_POLICY_ID"           # <-- replace after mint
 FOUNDER_WALLET="FOUNDER_WALLET_ADDR"    # <-- replace with actual wallet
@@ -66,7 +66,7 @@ issue_cert() {
       \"privacyEnabled\":          true,
       \"wallet\":                  \"${FOUNDER_WALLET}\",
       \"vaultRecordId\":           \"VAULT-${BAR_SERIAL}-${CNFT_NUM}\"
-    }" | python3 -m json.tool 2>/dev/null || echo "CERT ${CNFT_NUM}: response not JSON — check server"
+    }" | python3 -m json.tool 2>/dev/null || echo "CERT ${CNFT_NUM}: response not JSON, check server"
 
   echo ""
 }
@@ -75,14 +75,14 @@ echo "=== Founders Block 88 Certificate Issuance ==="
 echo "Bar: ${BAR_SERIAL}  |  Network: ${NETWORK}"
 echo ""
 
-issue_cert "qd-silver-0000705" "0000705" "Edition 1 of 8 — Founders" "MAINNET_TX_HASH_705" "qd-silver-0000705"
-issue_cert "qd-silver-0000706" "0000706" "Edition 2 of 8 — Founders" "MAINNET_TX_HASH_706" "qd-silver-0000706"
-issue_cert "qd-silver-0000707" "0000707" "Edition 3 of 8 — Founders" "MAINNET_TX_HASH_707" "qd-silver-0000707"
-issue_cert "qd-silver-0000708" "0000708" "Edition 4 of 8 — Founders" "MAINNET_TX_HASH_708" "qd-silver-0000708"
-issue_cert "qd-silver-0000709" "0000709" "Edition 5 of 8 — Founders" "MAINNET_TX_HASH_709" "qd-silver-0000709"
-issue_cert "qd-silver-0000710" "0000710" "Edition 6 of 8 — Founders" "MAINNET_TX_HASH_710" "qd-silver-0000710"
-issue_cert "qd-silver-0000711" "0000711" "Edition 7 of 8 — Founders" "MAINNET_TX_HASH_711" "qd-silver-0000711"
-issue_cert "qd-silver-0000712" "0000712" "Edition 8 of 8 — Founders" "MAINNET_TX_HASH_712" "qd-silver-0000712"
+issue_cert "qd-silver-0000705" "0000705" "Edition 1 of 8, Founders" "MAINNET_TX_HASH_705" "qd-silver-0000705"
+issue_cert "qd-silver-0000706" "0000706" "Edition 2 of 8, Founders" "MAINNET_TX_HASH_706" "qd-silver-0000706"
+issue_cert "qd-silver-0000707" "0000707" "Edition 3 of 8, Founders" "MAINNET_TX_HASH_707" "qd-silver-0000707"
+issue_cert "qd-silver-0000708" "0000708" "Edition 4 of 8, Founders" "MAINNET_TX_HASH_708" "qd-silver-0000708"
+issue_cert "qd-silver-0000709" "0000709" "Edition 5 of 8, Founders" "MAINNET_TX_HASH_709" "qd-silver-0000709"
+issue_cert "qd-silver-0000710" "0000710" "Edition 6 of 8, Founders" "MAINNET_TX_HASH_710" "qd-silver-0000710"
+issue_cert "qd-silver-0000711" "0000711" "Edition 7 of 8, Founders" "MAINNET_TX_HASH_711" "qd-silver-0000711"
+issue_cert "qd-silver-0000712" "0000712" "Edition 8 of 8, Founders" "MAINNET_TX_HASH_712" "qd-silver-0000712"
 
 echo "=== Done. Verify certs at: ==="
 echo "  ${BASE_URL}/cert?cert=QDCERT-${BAR_SERIAL}-0000705"

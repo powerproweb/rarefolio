@@ -1,9 +1,9 @@
-# Security Notes — rarefolio.io
+# Security Notes, rarefolio.io
 Internal log of security incidents, alerts, and triage decisions for the
 `powerproweb/rarefolio` repository (and its sibling
 `powerproweb/rarefolio-marketplace`). Kept under `01_md_plan_files/`,
 which is excluded from production deploy by `.github/workflows/deploy.yml`.
-## 2026-04-19 — Leaked admin + DB credentials (TRUE POSITIVE, RESOLVED)
+## 2026-04-19, Leaked admin + DB credentials (TRUE POSITIVE, RESOLVED)
 **Severity:** High. Publicly exposed live admin + database credentials across two public GitHub repos.
 **Detection:** GitGuardian alert + manual audit.
 **Resolution:** Credentials rotated, code hardened, git history rewritten, force-pushed.
@@ -116,7 +116,7 @@ gitignored), and the operator's password manager.
   `$HOME\Desktop\rf_rotated_credentials_2026-04-19.txt`.
 - Request GitHub Support cache purge for the pre-rewrite blobs (optional).
 - Keep an eye on `/admin/*` and MySQL slow/error logs for the next 7–14 days for
-  any login attempts using the rotated credentials — these would indicate an
+  any login attempts using the rotated credentials, these would indicate an
   attacker who scraped the public repos.
 ### Lessons & process changes
 - Never rely on a single detector's output. ggshield flagged one secret; manual
@@ -129,10 +129,10 @@ gitignored), and the operator's password manager.
   constants by name only.
 - Separate rotation lifecycles. DB password and UD gate password are no longer
   the same value; they now rotate independently.
-## Retracted: 2026-04-19 — "Curl Username Password" false-positive entry
+## Retracted: 2026-04-19, "Curl Username Password" false-positive entry
 An earlier version of this file (commit `813ca3f`, now rewritten to `62ac9ee`'s ancestor)
 classified incident `30479208` as a false positive based on CI-workflow review alone.
-That classification was **incorrect** — the same incident was triggered by a real
+That classification was **incorrect**, the same incident was triggered by a real
 literal credential in `PHASE_MAINNET_LAUNCH.md`, not by the workflow placeholders.
 The retraction and corrected analysis are the 2026-04-19 TRUE POSITIVE entry above.
 The CI-workflow analysis (sftp://user:pass@host URLs in deploy.yml) remains valid

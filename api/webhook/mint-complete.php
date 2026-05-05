@@ -55,7 +55,7 @@ $line = json_encode([
 ], JSON_UNESCAPED_SLASHES);
 @file_put_contents($logDir . '/mint-complete.log', $line . "\n", FILE_APPEND | LOCK_EX);
 
-// Per-token JSON cache — gives the main site a local proof of mint without
+// Per-token JSON cache, gives the main site a local proof of mint without
 // hitting the marketplace API. Keyed by cnft_id. Ownership-change events
 // merge into the same file. Fully server-side; never committed to git.
 $cacheDir = __DIR__ . '/../../uploads/webhook-cache';

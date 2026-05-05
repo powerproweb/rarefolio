@@ -12,18 +12,18 @@ Rarefolio.io is a provenance-first collector platform for tokenized silver bar C
 
 Three 100-ounce silver bars, each with 40,000 CNFTs. Every CNFT maps to a real bar serial number, carries its own art-directed PDF certificate, and belongs to a themed collection block (zodiac signs, special editions, and more).
 
-- **Silver Bar I** — Serial `E101837`, 40,000 CNFTs across 5,000 batches of 8
-- **Silver Bar II** — Coming Soon
-- **Silver Bar III** — Coming Soon
+- **Silver Bar I**, Serial `E101837`, 40,000 CNFTs across 5,000 batches of 8
+- **Silver Bar II**, Coming Soon
+- **Silver Bar III**, Coming Soon
 
 ### Collection Blocks (Silver Bar I)
 
 | Block | Collection | Story Mode | Batch |
 |-------|-----------|-----------|-------|
-| 00 | Zodiac — Taurus | shared | 1 |
-| 01 | Steampunk — Inventors Guild | per_item (8 lore articles) | 2 |
-| 02 | Zodiac — Aries | shared | 3 |
-| 03 | Steampunk — Robot Butler | per_item (8 lore articles) | 4 |
+| 00 | Zodiac, Taurus | shared | 1 |
+| 01 | Steampunk, Inventors Guild | per_item (8 lore articles) | 2 |
+| 02 | Zodiac, Aries | shared | 3 |
+| 03 | Steampunk, Robot Butler | per_item (8 lore articles) | 4 |
 | 04–13 | Gemini through Pisces (Zodiac Series) | shared | 5–14 |
 | 14 | New Series | shared (placeholder) | 15 |
 | 15–4999 | Future blocks (DB-driven) | configurable | 16–5000 |
@@ -36,7 +36,7 @@ Each block has its own collection artwork at multiple resolutions (web JPGs, pri
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Static HTML, vanilla CSS, vanilla ES6+ JavaScript — no framework, no bundler |
+| Frontend | Static HTML, vanilla CSS, vanilla ES6+ JavaScript, no framework, no bundler |
 | Collection Pages | Single PHP template (`collections/block.php`) + `.htaccess` rewrite |
 | Backend API | Plain PHP (no framework), MySQL |
 | PDF Generation | Dompdf 3.1.4 (vendored) |
@@ -51,7 +51,7 @@ Each block has its own collection artwork at multiple resolutions (web JPGs, pri
 
 The system is designed to scale from the current 15 blocks to 5,000+ per bar across three bars (15,000+ total) without creating additional files.
 
-### Collection Sub-Pages — Single PHP Template
+### Collection Sub-Pages, Single PHP Template
 
 Instead of one HTML file per block (which would mean 5,000 files in the root), a single `collections/block.php` template serves every block for every bar:
 
@@ -68,16 +68,16 @@ The PHP template:
 
 **Adding a new block = inserting one DB row.** No files to create.
 
-### Block Routing — Multi-Tier Resolution
+### Block Routing, Multi-Tier Resolution
 
 `qd-wire.js` resolves which block a batch belongs to through a 4-tier chain:
 
-1. **Page-level override** — `data-block-id` attribute on `<body>`
-2. **Batch rules** — `data-block-batch-rules` JSON attribute
-3. **Static `QD_BLOCKS` map** — Bar I batches 1–15, instant/offline, no network call
-4. **API fallback** — `GET /api/blocks/resolve.php?bar={serial}&batch={num}` — indexed DB query, session-cached in a JS `Map`
+1. **Page-level override**, `data-block-id` attribute on `<body>`
+2. **Batch rules**, `data-block-batch-rules` JSON attribute
+3. **Static `QD_BLOCKS` map**, Bar I batches 1–15, instant/offline, no network call
+4. **API fallback**, `GET /api/blocks/resolve.php?bar={serial}&batch={num}`, indexed DB query, session-cached in a JS `Map`
 
-When navigating between batches, the JS updates the page in-place via `history.pushState` — no page reload. Title, heading, URL, story, and images all swap dynamically.
+When navigating between batches, the JS updates the page in-place via `history.pushState`, no page reload. Title, heading, URL, story, and images all swap dynamically.
 
 ### Image Resolution
 
@@ -93,14 +93,14 @@ Fallback chain: clean folder path → prefixed folder (`01_scnft_...`) → place
 
 **Adding artwork for a new block** = dropping JPGs into a folder with the correct `qd-silver-NNNNNNN.jpg` naming.
 
-### Certificate Pipeline — Deterministic & Immutable
+### Certificate Pipeline, Deterministic & Immutable
 
 Each CNFT gets a 2-page art-directed PDF certificate:
 
 - **Two template styles:** Parchment (warm brown/gold) and Cream (navy/silver)
 - **6 background variants:** 4 parchment + 2 cream (2550×3300 JPG)
 - **20 wax seal variants:** 8 gold + 6 red + 6 blue (600×600 PNG with transparency)
-- **Deterministic rotation:** `(cnft_num - 1) % poolSize` — same CNFT always gets the same visual combo, adjacent CNFTs get different visuals, no DB columns or randomness needed
+- **Deterministic rotation:** `(cnft_num - 1) % poolSize`, same CNFT always gets the same visual combo, adjacent CNFTs get different visuals, no DB columns or randomness needed
 
 Certificate IDs: `QDCERT-{barSerial}-{cnftNum7}` (e.g., `QDCERT-E101837-0000009`)
 Vault Record IDs: `QD-VLT-{barSerial}-AG-{cnftNum7}`
@@ -112,10 +112,10 @@ PDFs are generated once via Dompdf and stored immutably outside the webroot. The
 ### Multi-Bar
 
 Bar serial is the partition key across the entire system:
-- `qd_blocks` — `WHERE bar_serial = ?`
-- `qd_certificates` — `WHERE bar_serial = ?`
-- `collections/block.php` — `$BAR_SERIALS['01'] => 'E101837'`
-- `.htaccess` — `/collection/silverbar-{NN}/` routes to the same PHP template
+- `qd_blocks`, `WHERE bar_serial = ?`
+- `qd_certificates`, `WHERE bar_serial = ?`
+- `collections/block.php`, `$BAR_SERIALS['01'] => 'E101837'`
+- `.htaccess`, `/collection/silverbar-{NN}/` routes to the same PHP template
 
 Adding Bar II = one entry in `$BAR_SERIALS`, one JSON config file, and DB rows. Same infrastructure, same template, same JS engine.
 
@@ -133,9 +133,9 @@ When new NFT artwork is created, each CNFT wires into the site through these tou
 | 4 | Author story | `POST /api/admin/manage_stories.php` or static `assets/stories/blockNN/shared.html` |
 
 **Currently wired (24 CNFTs):**
-- Block 00 — Taurus (`qd-silver-0000001` through `0000008`) — artwork + cert data + shared story
-- Block 01 — Inventors (`qd-silver-0000009` through `0000016`) — artwork + cert data + per-item stories
-- Block 02 — Aries (`qd-silver-0000017` through `0000024`) — artwork + cert data + shared story
+- Block 00, Taurus (`qd-silver-0000001` through `0000008`), artwork + cert data + shared story
+- Block 01, Inventors (`qd-silver-0000009` through `0000016`), artwork + cert data + per-item stories
+- Block 02, Aries (`qd-silver-0000017` through `0000024`), artwork + cert data + shared story
 
 The NFT detail page (`nft.html`) automatically shows **View Certificate**, **Verify**, and **Download PDF** buttons for any CNFT, linking to `cert.html?cert=QDCERT-E101837-NNNNNNN`.
 
@@ -144,22 +144,22 @@ The NFT detail page (`nft.html`) automatically shows **View Certificate**, **Ver
 ## Site Map
 
 ### Public Pages
-- **Homepage** (`index.html`) — Hero, featured CNFTs, collection overview
-- **Collections Hub** (`collections.html`) — Directory of all silver bars
-- **Silver Bar I** (`collection-silverbar-01.html`) — Batch-navigated CNFT grid with pill navigator
-- **Block Pages** (`/collection/silverbar-01/{slug}`) — PHP-driven, one template for all 5,000 blocks
-- **NFT Detail** (`nft.html`) — Individual CNFT with image, badge, story, and cert links
-- **Certificate Viewer** (`cert.html`) — Certificate of Authenticity display
-- **Verification** (`verify.html`) — Public cert verification with QR code
-- **Calculator** (`collection-silverbar-calculator.html`) — Silver shard calculator
-- **Founders Collection** (`/collection/silverbar-01/founders?batch=89`) — active Founders block page
-- **Artist Application** (`rarefolio_showcased_artist_application.html`) — Showcased artist submission form
+- **Homepage** (`index.html`), Hero, featured CNFTs, collection overview
+- **Collections Hub** (`collections.html`), Directory of all silver bars
+- **Silver Bar I** (`collection-silverbar-01.html`), Batch-navigated CNFT grid with pill navigator
+- **Block Pages** (`/collection/silverbar-01/{slug}`), PHP-driven, one template for all 5,000 blocks
+- **NFT Detail** (`nft.html`), Individual CNFT with image, badge, story, and cert links
+- **Certificate Viewer** (`cert.html`), Certificate of Authenticity display
+- **Verification** (`verify.html`), Public cert verification with QR code
+- **Calculator** (`collection-silverbar-calculator.html`), Silver shard calculator
+- **Founders Collection** (`/collection/silverbar-01/founders?batch=89`), active Founders block page
+- **Artist Application** (`rarefolio_showcased_artist_application.html`), Showcased artist submission form
 - **Philosophy, Bio, Manifesto, Downloads, Contact, Terms, Privacy, 404**
 
 ### Admin Pages (Basic Auth)
-- **Admin Hub** (`admin/index.php`) — Launch point for admin-only tools
-- **Wallet Dashboard** (`admin/wallet-dashboard.php`) — CIP-30 wallet operations panel for collection visibility and ownership tooling
-- **Story Editor** (`admin/story-editor.php`) — Story content management
+- **Admin Hub** (`admin/index.php`), Launch point for admin-only tools
+- **Wallet Dashboard** (`admin/wallet-dashboard.php`), CIP-30 wallet operations panel for collection visibility and ownership tooling
+- **Story Editor** (`admin/story-editor.php`), Story content management
 
 #### Wallet Dashboard Functionality
 - **Wallet provider selector** with preferred ordering (`eternl`, `lace`, `nami`, `typhon`, `flint`, `yoroi`) and retry-based detection on initial load/focus
@@ -175,21 +175,21 @@ The NFT detail page (`nft.html`) automatically shows **View Certificate**, **Ver
 > Browser security does not allow the page to force-open a wallet extension’s account picker. Account changes must be completed in the wallet extension UI, then reconnected from the dashboard.
 
 ### Backend API
-- `api/cert.php` — Static cert lookup (blocks 00–02, 24 CNFTs)
-- `api/cert/index.php` — DB-driven cert lookup (scales to all CNFTs)
-- `api/blocks/resolve.php` — Block metadata resolution by bar serial + batch number
-- `api/blocks/story.php` — Story HTML retrieval (shared or per-item)
-- `api/artist-application.php` — Artist application submissions with file uploads
-- `api/admin/issue_cert.php` — Cert issuance with art-directed PDF generation (Basic Auth)
-- `api/admin/seed_blocks.php` — One-time block seeding script
-- `api/admin/manage_blocks.php` — Block CRUD
-- `api/admin/manage_stories.php` — Story CRUD
+- `api/cert.php`, Static cert lookup (blocks 00–02, 24 CNFTs)
+- `api/cert/index.php`, DB-driven cert lookup (scales to all CNFTs)
+- `api/blocks/resolve.php`, Block metadata resolution by bar serial + batch number
+- `api/blocks/story.php`, Story HTML retrieval (shared or per-item)
+- `api/artist-application.php`, Artist application submissions with file uploads
+- `api/admin/issue_cert.php`, Cert issuance with art-directed PDF generation (Basic Auth)
+- `api/admin/seed_blocks.php`, One-time block seeding script
+- `api/admin/manage_blocks.php`, Block CRUD
+- `api/admin/manage_stories.php`, Story CRUD
 
 ### Marketplace Integration (signed webhooks)
-- `api/webhook/mint-complete.php` — Receives `mint.complete` events from the marketplace
-- `api/webhook/ownership-change.php` — Receives `ownership.change` events
-- `api/webhook/_hmac.php` — Shared HMAC verifier + replay protection (not web-reachable)
-- `assets/js/rf-market.js` — Browser client that `verify.html` and `nft.html` use to fetch live marketplace data
+- `api/webhook/mint-complete.php`, Receives `mint.complete` events from the marketplace
+- `api/webhook/ownership-change.php`, Receives `ownership.change` events
+- `api/webhook/_hmac.php`, Shared HMAC verifier + replay protection (not web-reachable)
+- `assets/js/rf-market.js`, Browser client that `verify.html` and `nft.html` use to fetch live marketplace data
 
 Full setup walkthrough lives in the marketplace repo:
 `../01a_rarefolio_marketplace/docs/CONFIG.md`
@@ -266,10 +266,10 @@ rarefolio.io/
 
 MySQL database `rarefolio_cnftcert` with four tables:
 
-- **`qd_certificates`** — Certificate records: cert_id, status (`verified`/`unverified`/`revoked`), payload JSON, PDF metadata (sha256, bytes, storage key). Schema: `api/CERT_DB_SCHEMA.sql`
-- **`qd_blocks`** — Block-to-batch mapping: `(bar_serial, batch_num)` → block_id, folder_slug, label, story_mode. Schema: `api/BLOCKS_DB_SCHEMA.sql`
-- **`qd_stories`** — Story HTML fragments: block_id + item_num (NULL = shared, 1–8 = per-item). Schema: `api/BLOCKS_DB_SCHEMA.sql`
-- **`qd_artist_applications`** — Artist submissions with 30+ columns across 6 sections. Status enum: `pending`/`reviewed`/`accepted`/`declined`. Schema: `api/ARTIST_APP_DB_SCHEMA.sql`
+- **`qd_certificates`**, Certificate records: cert_id, status (`verified`/`unverified`/`revoked`), payload JSON, PDF metadata (sha256, bytes, storage key). Schema: `api/CERT_DB_SCHEMA.sql`
+- **`qd_blocks`**, Block-to-batch mapping: `(bar_serial, batch_num)` → block_id, folder_slug, label, story_mode. Schema: `api/BLOCKS_DB_SCHEMA.sql`
+- **`qd_stories`**, Story HTML fragments: block_id + item_num (NULL = shared, 1–8 = per-item). Schema: `api/BLOCKS_DB_SCHEMA.sql`
+- **`qd_artist_applications`**, Artist submissions with 30+ columns across 6 sections. Status enum: `pending`/`reviewed`/`accepted`/`declined`. Schema: `api/ARTIST_APP_DB_SCHEMA.sql`
 
 ### Deploy: DB Setup
 
@@ -312,12 +312,12 @@ Old URLs (`collection-silverbar-01-aquarius.html`) are 301-redirected to new cle
 
 ## Design
 
-- **Dark theme** — Navy base `#050a18`, gold `#d9b46c`, maroon `#7a1f2a`, lavender `#b9a7ff`
+- **Dark theme**, Navy base `#050a18`, gold `#d9b46c`, maroon `#7a1f2a`, lavender `#b9a7ff`
 - **CSS custom properties** in `assets/css/styles.css`
-- **NFT watermarking** — CSS overlay via `data-watermark` attribute
-- **Card tilt effect** — Interactive 3D tilt on collection grid cards
-- **Responsive** — Mobile hamburger menu, fluid grid layouts
-- **No page reloads** — Batch navigation via `history.pushState` + dynamic DOM updates
+- **NFT watermarking**, CSS overlay via `data-watermark` attribute
+- **Card tilt effect**, Interactive 3D tilt on collection grid cards
+- **Responsive**, Mobile hamburger menu, fluid grid layouts
+- **No page reloads**, Batch navigation via `history.pushState` + dynamic DOM updates
 
 ---
 
@@ -332,12 +332,12 @@ Old URLs (`collection-silverbar-01-aquarius.html`) are 301-redirected to new cle
 
 Detailed build logs, plans, and technical docs are in [`01_md_plan_files/`](01_md_plan_files/):
 
-- `BUILD_rarefolio_master.md` — Full build history with go-live checklist
-- `ongoing_plan.md` — Current roadmap, NFT wiring checklist, and status
-- `AGENTS.md` — Technical reference for AI-assisted development (Warp)
-- `CHANGELOG.md` — Change history
-- `Art-Directed PDF Certificate Templates.md` — Cert PDF design spec
-- `README_rarefolio.md` — Internal project status & remaining to-do
+- `BUILD_rarefolio_master.md`, Full build history with go-live checklist
+- `ongoing_plan.md`, Current roadmap, NFT wiring checklist, and status
+- `AGENTS.md`, Technical reference for AI-assisted development (Warp)
+- `CHANGELOG.md`, Change history
+- `Art-Directed PDF Certificate Templates.md`, Cert PDF design spec
+- `README_rarefolio.md`, Internal project status & remaining to-do
 
 ---
 

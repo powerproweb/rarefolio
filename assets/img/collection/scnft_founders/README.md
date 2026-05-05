@@ -1,5 +1,5 @@
 
-# scnft_founders — Silver Bar I / Block 88 / Founders
+# scnft_founders, Silver Bar I / Block 88 / Founders
 
 # Artwork directory for the Rarefolio Founders collection.
 H:\01_RareFolio.io\01_nft_collections\02_cnft_blocks_of_8\04_1set-8_founders_series_blk88
@@ -7,14 +7,14 @@ H:\01_RareFolio.io\01_nft_collections\02_cnft_blocks_of_8\04_1set-8_founders_ser
 ## Expected files
 Eight card images (one per CNFT), named to match `rarefolio_token_id`:
 
-- `qd-silver-0000705.jpg` — Founders #1 — The Archivist
-- `qd-silver-0000706.jpg` — Founders #2 — The Cartographer
-- `qd-silver-0000707.jpg` — Founders #3 — The Sentinel
-- `qd-silver-0000708.jpg` — Founders #4 — The Artisan
-- `qd-silver-0000709.jpg` — Founders #5 — The Scholar
-- `qd-silver-0000710.jpg` — Founders #6 — The Ambassador
-- `qd-silver-0000711.jpg` — Founders #7 — The Mentor
-- `qd-silver-0000712.jpg` — Founders #8 — The Architect
+- `qd-silver-0000705.jpg`, Founders #1, The Archivist
+- `qd-silver-0000706.jpg`, Founders #2, The Cartographer
+- `qd-silver-0000707.jpg`, Founders #3, The Sentinel
+- `qd-silver-0000708.jpg`, Founders #4, The Artisan
+- `qd-silver-0000709.jpg`, Founders #5, The Scholar
+- `qd-silver-0000710.jpg`, Founders #6, The Ambassador
+- `qd-silver-0000711.jpg`, Founders #7, The Mentor
+- `qd-silver-0000712.jpg`, Founders #8, The Architect
 
 | Token   | Website field                                                |
 | ------- | ------------------------------------------------------------ |
@@ -59,7 +59,7 @@ A missing file falls back to `/assets/img/nfts/sys/placeholder.jpg`.
 
 What still needs to happen before the Founders launch
 
-These require artwork first — nothing can move without the 8 JPGs:
+These require artwork first, nothing can move without the 8 JPGs:
 
 1. Drop artwork → assets/img/collection/scnft_founders/qd-silver-0000705.jpg … 0000712.jpg + manifest.json (already created)
 2. Deploy → push to main, auto-deploys

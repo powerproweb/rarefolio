@@ -1,5 +1,5 @@
 -- =============================================================================
---  Rarefolio Main Site — Founders Block 88 seed (qd_blocks)
+--  Rarefolio Main Site, Founders Block 88 seed (qd_blocks)
 -- =============================================================================
 --  Registers Block 88 ("Founders") so the /collection/silverbar-01/founders
 --  URL resolves through api/blocks/resolve.php when loaded in collections/block.php.

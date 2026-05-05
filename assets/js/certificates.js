@@ -1,9 +1,10 @@
 (function(){
   const $=(s)=>document.querySelector(s);
   const getParam=(n)=>new URLSearchParams(location.search).get(n);
+  const NA='Not available';
 
-  function setText(id,val){const el=document.getElementById(id);if(!el) return;el.textContent=(val===undefined||val===null||val==='')?'—':String(val);}
-  function formatWallet(w){if(!w) return '—';w=String(w).trim();return w.length<=8?w:'…'+w.slice(-8);}
+  function setText(id,val){const el=document.getElementById(id);if(!el) return;el.textContent=(val===undefined||val===null||val==='')?NA:String(val);}
+  function formatWallet(w){if(!w) return NA;w=String(w).trim();return w.length<=8?w:'…'+w.slice(-8);}
 
   function badge(state){const b=$('.qd-badge');if(!b) return;b.dataset.state=state; b.querySelector('.state').textContent=state.toUpperCase();}
 
@@ -23,7 +24,7 @@
       certId,
       status:'unverified',
       template:getParam('template')||'parchment',
-      cnft:{id:cnft,collection:getParam('collection')||'Rarefolio Silver Bar — Series',barSerial:bar,edition:getParam('edition')||`Shard ${parseInt(n,10)} of 40,000`,silverAllocationTroyOz:getParam('silver')||'0.00025'},
+      cnft:{id:cnft,collection:getParam('collection')||'Rarefolio Silver Bar Series',barSerial:bar,edition:getParam('edition')||`Shard ${parseInt(n,10)} of 40,000`,silverAllocationTroyOz:getParam('silver')||'0.00025'},
       holder:{displayName:getParam('buyer')||'',privacyEnabled:(getParam('privacy')||'1')!=='0',wallet:getParam('wallet')||''},
       chain:{network:getParam('network')||'Cardano',contractAddress:getParam('contract')||'',tokenId:getParam('token')||'',txHash:getParam('tx')||'',blockNumber:getParam('block')||''},
       custody:{vaultRecordId:`QD-VLT-${bar}-AG-${n}`,vaultAddress:'50 CR 356, Shiner, TX 77984',statement:'Custody recorded; verify via QR reference.'}
@@ -31,7 +32,7 @@
   }
 
   function render(data){
-    const holder=data.holder?.privacyEnabled ? 'Private Holder' : (data.holder?.displayName||'—');
+    const holder=data.holder?.privacyEnabled ? 'Private Holder' : (data.holder?.displayName||NA);
     setText('certId', data.certId);
     setText('cnftId', data.cnft?.id);
     setText('collection', data.cnft?.collection);
@@ -46,7 +47,7 @@
     setText('contract', data.chain?.contractAddress);
     setText('token', data.chain?.tokenId);
     setText('tx', data.chain?.txHash);
-    setText('block', data.chain?.blockNumber||'—');
+    setText('block', data.chain?.blockNumber||NA);
 
     const isVerified = (data.status==='verified');
     badge(isVerified?'verified':'unverified');
@@ -76,7 +77,7 @@
     }catch(e){
       console.error(e);
       badge('unverified');
-      setText('certId', cert||'—');
+      setText('certId', cert||NA);
     }
   }
 

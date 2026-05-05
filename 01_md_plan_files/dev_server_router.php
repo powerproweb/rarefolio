@@ -1,6 +1,6 @@
 <?php
 /**
- * Dev router for `php -S` — replicates the main-site .htaccess rewrites so
+ * Dev router for `php -S`, replicates the main-site .htaccess rewrites so
  * URLs that normally go through Apache mod_rewrite work against the
  * built-in PHP server.
  *

@@ -1,5 +1,5 @@
 -- =============================================================================
---  Rarefolio — Migration: add character_names to qd_blocks
+--  Rarefolio, Migration: add character_names to qd_blocks
 -- =============================================================================
 --  Run once in phpMyAdmin (or via mysql CLI) against the Rarefolio main-site DB.
 --
@@ -11,7 +11,7 @@
 --    NULL for shared-mode blocks (no per-item names needed).
 --
 --  After running this migration, also run:
---    api/sql/seed_character_names.sql  — backfills the 3 existing per-item blocks
+--    api/sql/seed_character_names.sql, backfills the 3 existing per-item blocks
 -- =============================================================================
 
 SET @col_exists = (
@@ -28,7 +28,7 @@ SET @sql = IF(
      ADD COLUMN character_names TEXT NULL DEFAULT NULL
      COMMENT ''JSON-encoded array of up to 8 per-item display names. NULL for shared-mode blocks.''
      AFTER story_mode',
-  'SELECT ''character_names column already exists — skipped.'' AS info'
+  'SELECT ''character_names column already exists, skipped.'' AS info'
 );
 
 PREPARE stmt FROM @sql;

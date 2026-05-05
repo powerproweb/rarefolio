@@ -1,5 +1,5 @@
 # OPERATIONS.md
-**Rarefolio.io — Site Operations**
+**Rarefolio.io, Site Operations**
 *This repo is PUBLIC on GitHub. Do not put live credentials here.*
 *Credential values live ONLY in: (a) the server's gitignored `api/_config.php`, (b) the operator's password manager. See `SECURITY_NOTES.md` for the rotation runbook.*
 
@@ -15,7 +15,7 @@
 | PHP version | 8.1 (handler: `ea-php81`) |
 | PDF storage (outside webroot) | `/home/rarefolio/rf_storage/pdfs/` |
 | Upload directory | `uploads/artist_applications/` (must be chmod 755 or 775) |
-| Dompdf | Vendored in `dompdf/` — do not modify |
+| Dompdf | Vendored in `dompdf/`, do not modify |
 
 ## GitHub
 
@@ -23,11 +23,11 @@
 |---|---|
 | Repo | https://github.com/powerproweb/rarefolio.git |
 | Branch | `main` |
-| Deploy method | FTP files to BlueHost webroot — no build step |
+| Deploy method | FTP files to BlueHost webroot, no build step |
 
 ---
 
-## Credentials (references only — values live in `api/_config.php` on the server)
+## Credentials (references only, values live in `api/_config.php` on the server)
 
 ### Database (MySQL)
 Runtime file: `api/_config.php` (gitignored). Rotation: cPanel → MySQL Databases.
@@ -37,19 +37,19 @@ Runtime file: `api/_config.php` (gitignored). Rotation: cPanel → MySQL Databas
 | Host | `api/_config.php :: DB_HOST` |
 | Database | `api/_config.php :: DB_NAME` (user `rarefolio_cnftcert`) |
 | Username | `api/_config.php :: DB_USER` |
-| Password | `api/_config.php :: DB_PASS` — **never commit** |
+| Password | `api/_config.php :: DB_PASS`, **never commit** |
 
 ### Admin API (Basic Auth for `/api/admin/*` and `/admin/story-editor.php`)
 | Item | Source |
 |---|---|
 | Username | `api/_config.php :: ADMIN_USER` |
-| Password | `api/_config.php :: ADMIN_PASS` — **never commit** |
+| Password | `api/_config.php :: ADMIN_PASS`, **never commit** |
 
 ### Under-development gate (`api/login.php`)
 | Item | Source |
 |---|---|
 | Username | `api/_config.php :: UD_USER` |
-| Password | `api/_config.php :: UD_PASS` — **never commit** |
+| Password | `api/_config.php :: UD_PASS`, **never commit** |
 
 Operators: pull current values from your password manager. Rotation history + procedures live in `SECURITY_NOTES.md`.
 
@@ -72,7 +72,7 @@ Operators: pull current values from your password manager. Rotation history + pr
 | Philosophy | https://rarefolio.io/rf_bus_philosophy |
 | Silver shard calculator | https://rarefolio.io/collection-silverbar-calculator |
 
-### Admin (Basic Auth required — use admin credentials above)
+### Admin (Basic Auth required, use admin credentials above)
 | Tool | URL |
 |---|---|
 | **Story Editor** | https://rarefolio.io/admin/story-editor.php |
@@ -90,7 +90,7 @@ Operators: pull current values from your password manager. Rotation history + pr
 
 ---
 
-## Bar I — Silver Bar Reference
+## Bar I, Silver Bar Reference
 
 | Item | Value |
 |---|---|
@@ -102,24 +102,24 @@ Operators: pull current values from your password manager. Rotation history + pr
 | Block ID format | `{barSerial}-block{NNNN}` e.g. `E101837-block0001` |
 | Cert ID format | `QDCERT-{barSerial}-{cnftNum7}` e.g. `QDCERT-E101837-0000009` |
 
-### Block List (Bar I, Batches 1–15 — in DB)
+### Block List (Bar I, Batches 1–15, in DB)
 
 | Batch | Block ID | Label | Story Mode |
 |---|---|---|---|
-| 1 | E101837-block0001 | Zodiac — Taurus | shared |
-| 2 | E101837-block0002 | Steampunk — Inventors | per_item |
-| 3 | E101837-block0003 | Zodiac — Aries | per_item |
-| 4 | E101837-block0004 | Steampunk — Robot Butler | per_item |
-| 5 | E101837-block0005 | Zodiac — Gemini | shared |
-| 6 | E101837-block0006 | Zodiac — Cancer | shared |
-| 7 | E101837-block0007 | Zodiac — Leo | shared |
-| 8 | E101837-block0008 | Zodiac — Virgo | shared |
-| 9 | E101837-block0009 | Zodiac — Libra | shared |
-| 10 | E101837-block0010 | Zodiac — Scorpio | shared |
-| 11 | E101837-block0011 | Zodiac — Sagittarius | shared |
-| 12 | E101837-block0012 | Zodiac — Capricorn | shared |
-| 13 | E101837-block0013 | Zodiac — Aquarius | shared |
-| 14 | E101837-block0014 | Zodiac — Pisces | shared |
+| 1 | E101837-block0001 | Zodiac, Taurus | shared |
+| 2 | E101837-block0002 | Steampunk, Inventors | per_item |
+| 3 | E101837-block0003 | Zodiac, Aries | per_item |
+| 4 | E101837-block0004 | Steampunk, Robot Butler | per_item |
+| 5 | E101837-block0005 | Zodiac, Gemini | shared |
+| 6 | E101837-block0006 | Zodiac, Cancer | shared |
+| 7 | E101837-block0007 | Zodiac, Leo | shared |
+| 8 | E101837-block0008 | Zodiac, Virgo | shared |
+| 9 | E101837-block0009 | Zodiac, Libra | shared |
+| 10 | E101837-block0010 | Zodiac, Scorpio | shared |
+| 11 | E101837-block0011 | Zodiac, Sagittarius | shared |
+| 12 | E101837-block0012 | Zodiac, Capricorn | shared |
+| 13 | E101837-block0013 | Zodiac, Aquarius | shared |
+| 14 | E101837-block0014 | Zodiac, Pisces | shared |
 | 15 | E101837-block0015 | New Series | shared |
 
 Batches 16–5,000 are registered via the Story Editor or `manage_blocks.php` as NFTs are minted.
@@ -134,7 +134,7 @@ Batches 16–5,000 are registered via the Story Editor or `manage_blocks.php` as
 3. Select **Shared** or **Item 1–8** pill
 4. Click **↑ Load** to pull current content
 5. Edit HTML in the left pane (preview updates live on the right)
-6. Click **↓ Save** — changes are live immediately
+6. Click **↓ Save**, changes are live immediately
 
 ### Register a New Block (batch 16+)
 Use the **+ Register New Block** button in the Story Editor, or POST directly:
@@ -145,7 +145,7 @@ Body: {
   "barSerial":  "E101837",
   "batchNum":   16,
   "folderSlug": "scnft_zodiac_leo",
-  "label":      "Zodiac — Leo",
+  "label":      "Zodiac, Leo",
   "storyMode":  "shared"
 }
 ```
@@ -167,15 +167,15 @@ Body: {
 - `sealColor`: `"gold"`, `"red"`, or `"blue"`
 - Cert ID returned: `QDCERT-E101837-0000009`
 - PDF stored at: `/home/rarefolio/rf_storage/pdfs/`
-- Idempotent — returns existing cert if already issued
+- Idempotent, returns existing cert if already issued
 
 ### Deploy Files
 1. Edit files locally
 2. FTP changed files to BlueHost `public_html/`
-3. No build step — upload and it's live
+3. No build step, upload and it's live
 
-**CRITICAL — Editing `.htaccess` on Windows:**
-Never use PowerShell `Set-Content` or `[System.Text.Encoding]::UTF8` — both add a BOM that breaks Apache site-wide.
+**CRITICAL, Editing `.htaccess` on Windows:**
+Never use PowerShell `Set-Content` or `[System.Text.Encoding]::UTF8`, both add a BOM that breaks Apache site-wide.
 Always use:
 ```powershell
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
@@ -188,9 +188,9 @@ $bytes = [System.IO.File]::ReadAllBytes($path)
 ```
 
 ### Run seed_blocks.php (re-seed Bar I stories)
-Hit `https://rarefolio.io/api/admin/seed_blocks.php` in a browser — Basic Auth prompt will appear.
+Hit `https://rarefolio.io/api/admin/seed_blocks.php` in a browser, Basic Auth prompt will appear.
 Requires `assets/stories/block01/items.html` and `block03/items.html` on the server (restore from git if needed).
-Safe to re-run — uses `ON DUPLICATE KEY UPDATE`.
+Safe to re-run, uses `ON DUPLICATE KEY UPDATE`.
 
 ### Verify a Certificate
 Public URL: `https://rarefolio.io/verify?cert=QDCERT-E101837-0000009`
@@ -206,7 +206,7 @@ Public URL: `https://rarefolio.io/verify?cert=QDCERT-E101837-0000009`
 |---|---|
 | `qd_blocks` | One row per batch per bar. Maps batch → folder slug, label, story mode |
 | `qd_stories` | Story HTML fragments. `item_num` NULL = shared, 1–8 = per-item |
-| `qd_certificates` | Cert records — cert_id, payload JSON, PDF metadata |
+| `qd_certificates` | Cert records, cert_id, payload JSON, PDF metadata |
 | `qd_artist_applications` | Artist application submissions |
 
 SQL schemas in `api/BLOCKS_DB_SCHEMA.sql`, `api/CERT_DB_SCHEMA.sql`, `api/ARTIST_APP_DB_SCHEMA.sql`.
@@ -237,8 +237,8 @@ SQL schemas in `api/BLOCKS_DB_SCHEMA.sql`, `api/CERT_DB_SCHEMA.sql`, `api/ARTIST
 
 ## Post-Launch Remaining Tasks
 
-- [ ] Cert pipeline test — issue parchment + cream cert, verify, download PDF
-- [ ] Collection walkthrough — all 15 batches, sub-pages, NFT detail, story panels
+- [ ] Cert pipeline test, issue parchment + cream cert, verify, download PDF
+- [ ] Collection walkthrough, all 15 batches, sub-pages, NFT detail, story panels
 - [ ] Cross-browser + mobile spot-check (Chrome, Firefox, mobile)
 - [ ] Write per-item stories for Aries (block0003, items 1–8)
 - [ ] Register blocks 16–5,000 for Bar I (scriptable with curl to manage_blocks.php)

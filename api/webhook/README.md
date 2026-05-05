@@ -1,4 +1,4 @@
-# Rarefolio Main Site — Webhook Receivers
+# Rarefolio Main Site, Webhook Receivers
 These PHP endpoints receive signed notifications from the marketplace
 (`01a_rarefolio_marketplace`) when mints confirm or ownership changes.
 ## Files
@@ -12,22 +12,22 @@ These PHP endpoints receive signed notifications from the marketplace
 ## Required environment variable
 The receivers read one env var at runtime:
 ```
-RF_WEBHOOK_SECRET   (required — 64 hex characters recommended)
+RF_WEBHOOK_SECRET   (required, 64 hex characters recommended)
 ```
 This **must** match `PUBLIC_SITE_WEBHOOK_SECRET` on the marketplace.
 ### How to set it
 Pick the method that matches your hosting stack. Never commit the real value.
-**cPanel / Plesk / shared hosting** — Use the "Environment Variables" panel:
+**cPanel / Plesk / shared hosting**, Use the "Environment Variables" panel:
 ```
 RF_WEBHOOK_SECRET = <64-hex-secret>
 ```
-**Apache + mod_env** — Add to this directory's `.htaccess` at deploy time:
+**Apache + mod_env**, Add to this directory's `.htaccess` at deploy time:
 ```apache path=null start=null
 SetEnv RF_WEBHOOK_SECRET <64-hex-secret>
 ```
 Keep that line out of git by either templating it at deploy time or adding
 `api/webhook/.htaccess` to `.gitignore`.
-**nginx + php-fpm** — Add to your pool config:
+**nginx + php-fpm**, Add to your pool config:
 ```
 env[RF_WEBHOOK_SECRET] = <64-hex-secret>
 ```
@@ -63,6 +63,6 @@ uploads/webhook-log/ownership-change.log
 ```
 These files are gitignored. Rotate/archive them as part of your regular log hygiene.
 ## Full documentation
-- `docs/CONFIG.md` (marketplace) — end-to-end config walkthrough
-- `docs/WEBHOOKS.md` (marketplace) — signature format, events, payloads
-- `docs/API.md` (marketplace) — public read API (the other direction)
+- `docs/CONFIG.md` (marketplace), end-to-end config walkthrough
+- `docs/WEBHOOKS.md` (marketplace), signature format, events, payloads
+- `docs/API.md` (marketplace), public read API (the other direction)

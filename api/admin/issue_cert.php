@@ -176,14 +176,14 @@ function render_pdf_html(array $payload): string {
   $privacy = (bool)($payload['holder']['privacyEnabled'] ?? true);
   $holder = $privacy ? 'Private Holder' : htmlspecialchars((string)($payload['holder']['displayName'] ?? ''));
   $wallet = (string)($payload['holder']['wallet'] ?? '');
-  $walletTail = $wallet !== '' ? '…' . substr($wallet, -8) : '—';
+  $walletTail = $wallet !== '' ? '…' . substr($wallet, -8) : 'Not available';
   $walletTail = htmlspecialchars($walletTail);
 
   $network = htmlspecialchars((string)($payload['chain']['network'] ?? ''));
   $contract = htmlspecialchars((string)($payload['chain']['contractAddress'] ?? ''));
   $tokenId = htmlspecialchars((string)($payload['chain']['tokenId'] ?? ''));
   $tx = htmlspecialchars((string)($payload['chain']['txHash'] ?? ''));
-  $block = htmlspecialchars((string)($payload['chain']['blockNumber'] ?? '—'));
+  $block = htmlspecialchars((string)($payload['chain']['blockNumber'] ?? 'Not available'));
 
   $template = (string)($payload['template'] ?? 'parchment');
   $sealColor = (string)($payload['sealColor'] ?? 'gold');
@@ -407,7 +407,7 @@ function render_pdf_html(array $payload): string {
       <div class="logo-wrap"><img class="logo" src="{$logoUrl}" alt="Rarefolio.io logo" /></div>
       <div class="brand">Rarefolio.io</div>
       <div class="title">Certificate of Authenticity</div>
-      <div class="sub">Rarefolio Silver Shard CNFT — Provenance &amp; Verification</div>
+      <div class="sub">Rarefolio Silver Shard CNFT, Provenance &amp; Verification</div>
       <div class="meta-line">{$collectionLine}</div>
       <div class="badge-wrap"><span class="badge">Verified • {$templateLabel}</span></div>
 

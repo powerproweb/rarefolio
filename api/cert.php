@@ -14,7 +14,7 @@ if ($cert === "") {
 $blocks = [
   // block00: Taurus (batch 1, CNFTs 0000001–0000008)
   'block00' => [
-    'collection' => 'Zodiac — Taurus (Block 00)',
+    'collection' => 'Zodiac, Taurus (Block 00)',
     'folder'     => 'scnft_zodiac_taurus',
     'batch'      => 1,
     'start'      => 1,
@@ -22,7 +22,7 @@ $blocks = [
   ],
   // block01: Inventors Guild (batch 2, CNFTs 0000009–0000016)
   'block01' => [
-    'collection' => 'Founders Prelaunch — Inventors Guild (Block 01)',
+    'collection' => 'Founders Prelaunch, Inventors Guild (Block 01)',
     'folder'     => 'scnft_sp_inventors',
     'batch'      => 2,
     'start'      => 9,
@@ -30,7 +30,7 @@ $blocks = [
   ],
   // block02: Aries (batch 3, CNFTs 0000017–0000024)
   'block02' => [
-    'collection' => 'Zodiac — Aries (Block 02)',
+    'collection' => 'Zodiac, Aries (Block 02)',
     'folder'     => 'scnft_zodiac_aries',
     'batch'      => 3,
     'start'      => 17,
@@ -76,7 +76,7 @@ $data = [
   "holder" => [
     "displayName" => "",
     "privacyEnabled" => true,
-    "walletDisplay" => "—",
+    "walletDisplay" => ", ",
   ],
   "custody" => [
     "vaultRecordId" => "QD-VLT-E101837-AG-{$cnftNum}",
@@ -85,8 +85,8 @@ $data = [
   ],
   "chain" => [
     "network" => "Cardano",
-    "txHash" => "—",
-    "contractAddress" => "—",
+    "txHash" => ", ",
+    "contractAddress" => ", ",
     "tokenId" => $nftId,
   ],
   "pdf" => [

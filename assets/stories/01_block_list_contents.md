@@ -3,33 +3,33 @@
 
 # This is a list of all the blocks and contents
 
-# block00 - TAURUS 2026+ — The Bull Protocol
+# block00 - TAURUS 2026+, The Bull Protocol
 
-# block01 - Founders Pre-Sale Starts April 10th 2026 — Inventors Guild
+# block01 - Founders Pre-Sale Starts April 10th 2026, Inventors Guild
 
 # block02 - ARIES 2026+ The Ram Protocol
 
 # block03 - Aurelian Marquis Class Chamberlain - ROBOT BUTLER
 
-# block04 - GEMINI 2026+ — The Twin Protocol
+# block04 - GEMINI 2026+, The Twin Protocol
 
-# block05 - CANCER 2026+ — The Shell Protocol
+# block05 - CANCER 2026+, The Shell Protocol
 
-# block06 - LEO 2026+ — The Crown Protocol
+# block06 - LEO 2026+, The Crown Protocol
 
-# block07 - VIRGO 2026+ — The Precision Protocol
+# block07 - VIRGO 2026+, The Precision Protocol
 
-# block08 - LIBRA 2026+ — The Balance Protocol
+# block08 - LIBRA 2026+, The Balance Protocol
 
-# block09 - SCORPIO 2026+ — The Depth Protocol
+# block09 - SCORPIO 2026+, The Depth Protocol
 
-# block10 - SAGITTARIUS 2026+ — The Horizon Protocol
+# block10 - SAGITTARIUS 2026+, The Horizon Protocol
 
-# block11 - CAPRICORN 2026+ — The Summit Protocol
+# block11 - CAPRICORN 2026+, The Summit Protocol
 
-# block12 - AQUARIUS 2026+ — The Network Protocol
+# block12 - AQUARIUS 2026+, The Network Protocol
 
-# block13 - PISCES 2026+ — The Current Protocol
+# block13 - PISCES 2026+, The Current Protocol
 
 # block14 - Collection
 

@@ -1,4 +1,4 @@
-# Rarefolio.io — Technical Architecture
+# Rarefolio.io, Technical Architecture
 
 **How every system works and scales.**
 
@@ -6,11 +6,11 @@
 
 ## Overview
 
-Rarefolio.io is a static-first site with a PHP/MySQL backend that serves tokenized silver bar CNFT collections. The architecture is designed so that scaling from 15 blocks to 5,000+ per bar (across three bars, 15,000+ total) requires zero new files — only DB rows and image drops.
+Rarefolio.io is a static-first site with a PHP/MySQL backend that serves tokenized silver bar CNFT collections. The architecture is designed so that scaling from 15 blocks to 5,000+ per bar (across three bars, 15,000+ total) requires zero new files, only DB rows and image drops.
 
 ---
 
-## Collection Sub-Pages — Single PHP Template
+## Collection Sub-Pages, Single PHP Template
 
 ### Problem
 Silver Bar I has 5,000 blocks. Each block needs its own page with unique title, OG tags, heading, and `data-*` attributes. Static HTML files would mean 5,000 files in the root directory per bar.
@@ -24,15 +24,15 @@ One PHP template (`collections/block.php`) serves every block for every bar.
 2. `.htaccess` rewrites this to `collections/block.php?bar=01&block=aquarius&batch=13`
 3. The PHP template:
    - Looks up `bar=01` in `$BAR_SERIALS` → `E101837`
-   - Looks up `block=aquarius` in `$STATIC_BLOCKS` → `block12`, folder `scnft_zodiac_aquarius`, label "Zodiac — Aquarius", story_mode `shared`, batch 13
+   - Looks up `block=aquarius` in `$STATIC_BLOCKS` → `block12`, folder `scnft_zodiac_aquarius`, label "Zodiac, Aquarius", story_mode `shared`, batch 13
    - If the slug isn't in the static map, it queries the `qd_blocks` DB table
    - If neither resolves, it returns a 404
-4. The resolved metadata is injected into the HTML: `data-block-id="block12"`, `data-story-mode="shared"`, `data-collection-title="Bar 01 • Zodiac — Aquarius"`, plus `<title>`, `<meta>` OG tags, and canonical URL
+4. The resolved metadata is injected into the HTML: `data-block-id="block12"`, `data-story-mode="shared"`, `data-collection-title="Bar 01 • Zodiac, Aquarius"`, plus `<title>`, `<meta>` OG tags, and canonical URL
 5. The rest of the page (nav, grid container `#nftGrid`, story container `#qd-story`, footer) is identical for every block
-6. `qd-wire.js` takes over on the client side — renders the grid, loads stories, handles batch navigation
+6. `qd-wire.js` takes over on the client side, renders the grid, loads stories, handles batch navigation
 
 ### Static Fallback Map (blocks 0–14)
-The PHP template has a hardcoded `$STATIC_BLOCKS` array mirroring the JS `QD_BLOCKS` map. This means blocks 0–14 resolve instantly with no DB call. This is the pre-deployment fallback — works even before the DB schemas are run.
+The PHP template has a hardcoded `$STATIC_BLOCKS` array mirroring the JS `QD_BLOCKS` map. This means blocks 0–14 resolve instantly with no DB call. This is the pre-deployment fallback, works even before the DB schemas are run.
 
 ### Adding a New Block
 Insert one row into `qd_blocks`:
@@ -65,7 +65,7 @@ Determine which collection block a batch number belongs to, and resolve that blo
 If the `<body>` has `data-block-id="block00"`, use that block directly from the `QD_BLOCKS` map. This is what the PHP template sets.
 
 **Tier 2: Batch rules**
-If `data-block-batch-rules` is set (a JSON array on `<body>`), match the batch number against the ranges. Legacy mechanism — still supported but no longer used by the PHP template.
+If `data-block-batch-rules` is set (a JSON array on `<body>`), match the batch number against the ranges. Legacy mechanism, still supported but no longer used by the PHP template.
 
 **Tier 3: Static QD_BLOCKS map**
 For Bar I batches 1–15, the JS has a hardcoded map:
@@ -75,7 +75,7 @@ For Bar I batches 1–15, the JS has a hardcoded map:
 - ...
 - Batch 15 → `block14` (New Series)
 
-This is instant — no network call, works offline.
+This is instant, no network call, works offline.
 
 **Tier 4: API fallback**
 For batches 16–5,000+, the JS calls `GET /api/blocks/resolve.php?bar=E101837&batch=42`. The API does an indexed DB query on `(bar_serial, batch_num)` and returns JSON:
@@ -108,7 +108,7 @@ The JS has a `BLOCK_SLUGS` map that converts block IDs to URL slugs:
 ```js
 block00 → 'taurus', block01 → 'inventors', block02 → 'aries', ...
 ```
-For DB-driven blocks (16+), the slug is derived from `folder_slug` — e.g., `scnft_zodiac_gemini` → `gemini`.
+For DB-driven blocks (16+), the slug is derived from `folder_slug`, e.g., `scnft_zodiac_gemini` → `gemini`.
 
 ---
 
@@ -133,10 +133,10 @@ For DB-driven blocks (16+), the slug is derived from `folder_slug` — e.g., `sc
 Drop files into `assets/img/collection/{folder_slug}/` with the naming convention `qd-silver-NNNNNNN.jpg`. No code changes. The block metadata already knows the folder slug.
 
 ### Currently Wired
-- `scnft_zodiac_taurus/` — 8 JPGs (qd-silver-0000001 through 0000008) + 8 RGB variants
-- `scnft_sp_inventors/` — 8 JPGs (qd-silver-0000009 through 0000016) + 8 RGB variants
-- `scnft_zodiac_aries/` — 8 JPGs (qd-silver-0000017 through 0000024) + 8 RGB variants
-- 11 other block folders exist but are empty — they'll activate when artwork is dropped in
+- `scnft_zodiac_taurus/`, 8 JPGs (qd-silver-0000001 through 0000008) + 8 RGB variants
+- `scnft_sp_inventors/`, 8 JPGs (qd-silver-0000009 through 0000016) + 8 RGB variants
+- `scnft_zodiac_aries/`, 8 JPGs (qd-silver-0000017 through 0000024) + 8 RGB variants
+- 11 other block folders exist but are empty, they'll activate when artwork is dropped in
 
 ---
 
@@ -147,7 +147,7 @@ Drop files into `assets/img/collection/{folder_slug}/` with the naming conventio
 - Vault Record: `QD-VLT-{barSerial}-AG-{cnftNum7}` → `QD-VLT-E101837-AG-0000009`
 - CNFT slug: `qd-silver-{cnftNum7}` → `qd-silver-0000009`
 
-### Cert Lookup — Two Paths
+### Cert Lookup, Two Paths
 
 **Path A: Static fallback (`api/cert.php`)**
 A hardcoded `$blocks` array covers the first 24 CNFTs (blocks 00–02). The PHP loops over block definitions and builds a cert map. No DB needed. This is the pre-deployment fallback.
@@ -161,7 +161,7 @@ Queries `qd_certificates WHERE cert_id = ?`. Returns the stored `payload_json`. 
 - Generates a 2-page art-directed PDF via Dompdf
 - Stores PDF outside webroot at `PDF_STORAGE_DIR` (`/home/rarefolio/rf_storage/pdfs/`)
 - Inserts a row into `qd_certificates` with cert_id, status, payload JSON, PDF sha256/size
-- **Idempotent** — returns existing cert if cert_id already exists (won't overwrite)
+- **Idempotent**, returns existing cert if cert_id already exists (won't overwrite)
 
 ### Art-Directed PDF Templates
 The `render_pdf_html()` function builds a 2-page HTML document for Dompdf:
@@ -213,8 +213,8 @@ Then populates three link elements: View Certificate, Verify, Download PDF.
 ## Story System
 
 ### Two Modes Per Block
-- **shared** — One story for all 8 items in the block. File: `assets/stories/blockNN/shared.html`
-- **per_item** — Individual lore for each of the 8 items. File: `assets/stories/blockNN/items.html`
+- **shared**, One story for all 8 items in the block. File: `assets/stories/blockNN/shared.html`
+- **per_item**, Individual lore for each of the 8 items. File: `assets/stories/blockNN/items.html`
 
 ### items.html Format
 ```html
@@ -261,7 +261,7 @@ Bar serial is the partition key everywhere:
 2. Create `assets/data/collections/qd-silverbar-02.json` with the new serial, batch config, and slug prefix
 3. Insert block rows into `qd_blocks` for Bar II
 4. Drop artwork into new collection folders
-5. Everything else — routing, certs, stories, image resolution — works automatically
+5. Everything else, routing, certs, stories, image resolution, works automatically
 
 ---
 
@@ -272,7 +272,7 @@ When new artwork is created for a CNFT or block:
 ### For Existing Blocks (0–14)
 1. Drop card images: `assets/img/collection/{folder_slug}/qd-silver-NNNNNNN.jpg`
 2. Issue certificates: `POST /api/admin/issue_cert.php` with CNFT metadata
-3. That's it — routing, stories, and page rendering are already wired
+3. That's it, routing, stories, and page rendering are already wired
 
 ### For New Blocks (16+)
 1. Register the block: `POST /api/admin/manage_blocks.php`
@@ -299,7 +299,7 @@ When new artwork is created for a CNFT or block:
 - Apache on BlueHost shared hosting (cPanel)
 - `.htaccess` handles: HTTPS canonicalization, `.html` extension stripping, collection block routing, 301 redirects, security headers, browser caching, gzip compression
 - PDFs stored outside webroot: `/home/rarefolio/rf_storage/pdfs/`
-- No build step — deploy by FTP/cPanel file upload
+- No build step, deploy by FTP/cPanel file upload
 - Dompdf vendored in `dompdf/` (loaded via `dompdf/autoload.inc.php`)
 
 ### Deploy Checklist
@@ -316,11 +316,11 @@ When new artwork is created for a CNFT or block:
 
 ## Conventions
 
-- All JS is vanilla ES6+, wrapped in IIFEs — no modules, no bundler, no npm
+- All JS is vanilla ES6+, wrapped in IIFEs, no modules, no bundler, no npm
 - Pages communicate config to JS via `data-*` attributes on `<body>`
 - Image fallback chain: clean folder → prefixed folder → placeholder (`onerror`)
 - Dark theme colors: navy `#050a18`, gold `#d9b46c`, maroon `#7a1f2a`, lavender `#b9a7ff`
 - Nav/header/footer markup is duplicated across static HTML files (the PHP template has its own copy)
 - `window.__QD` namespace for cross-script communication (tilt rebinding, story loading)
-- Certificate PDFs are immutable — issuer endpoint refuses to overwrite
-- `api/_config.php` contains secrets — never commit credential changes
+- Certificate PDFs are immutable, issuer endpoint refuses to overwrite
+- `api/_config.php` contains secrets, never commit credential changes
