@@ -20,6 +20,16 @@ if ($u !== ADMIN_USER || $p !== ADMIN_PASS) {
     http_response_code(401);
     exit('Unauthorized');
 }
+function qd_normalize_no_emdash_text(string $text): string
+{
+    if (function_exists('mb_chr')) {
+        $emDash = mb_chr(8212, 'UTF-8');
+        $enDash = mb_chr(8211, 'UTF-8');
+        return str_replace([$emDash, $enDash], ', ', $text);
+    }
+    $normalized = preg_replace('/\x{2014}|\x{2013}/u', ', ', $text);
+    return is_string($normalized) ? $normalized : $text;
+}
 
 // ---- AJAX handlers (POST) ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -62,7 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $row = $stmt->fetch();
             if ($row) {
-                echo json_encode(['ok' => true, 'html_content' => $row['html_content'], 'updated_at' => $row['updated_at']]);
+                echo json_encode([
+                    'ok' => true,
+                    'html_content' => qd_normalize_no_emdash_text((string)$row['html_content']),
+                    'updated_at' => $row['updated_at'],
+                ]);
             } else {
                 echo json_encode(['ok' => true, 'html_content' => '', 'updated_at' => null,
                     'note' => 'No story found for this block/item, will be created on first save.']);
@@ -77,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'save') {
         $blockId     = trim((string)($in['blockId']     ?? ''));
         $itemNum     = isset($in['itemNum']) ? (int)$in['itemNum'] : 0;
-        $htmlContent = trim((string)($in['htmlContent'] ?? ''));
+        $htmlContent = trim(qd_normalize_no_emdash_text((string)($in['htmlContent'] ?? '')));
         if ($blockId === '')    { echo json_encode(['error' => 'Missing blockId']);     exit; }
         if ($htmlContent === '') { echo json_encode(['error' => 'Content is empty.']); exit; }
 
@@ -119,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (is_array($characterNames) && count($characterNames) > 0) {
             $sanitized = [];
             foreach (array_slice($characterNames, 0, 8) as $n) {
-                $sanitized[] = trim((string)$n);
+                $sanitized[] = trim(qd_normalize_no_emdash_text((string)$n));
             }
             $characterNamesJson = json_encode($sanitized, JSON_UNESCAPED_UNICODE);
         }
@@ -498,7 +512,7 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
   function populateBlockSelect(blocks) {
     const sel = $('block-select');
     const prev = sel.value;
-    sel.innerHTML = '<option value="">\u2014 Select a block \u2014</option>';
+    sel.innerHTML = '<option value="">Select a block</option>';
     blocks.forEach(b => {
       const opt = document.createElement('option');
       opt.value        = b.block_id;
@@ -563,7 +577,7 @@ hr.sep { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
       $('editor').value = d.html_content || '';
       $('meta-bar').textContent = d.updated_at
         ? 'Last saved: ' + d.updated_at
-        : (d.note || 'No story yet \u2014 write content and save.');
+        : (d.note || 'No story yet, write content and save.');
       showStatus(d.html_content ? 'Story loaded.' : 'No story yet.', 'ok');
       renderPreview();
     } catch (e) {

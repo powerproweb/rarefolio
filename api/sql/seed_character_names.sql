@@ -15,7 +15,7 @@
 -- ---- Steampunk, Inventors Guild (batch 2) -----------------------------------
 UPDATE qd_blocks
 SET
-  character_names = '["Miss Nyla Vantress \u2014 The Stormglass Prodigy","Elowen Thrice \u2014 Mistress of Clockwork Nerves","Clara Penhalwick \u2014 The Brassheart Aeronaut","Edmund Vale \u2014 The Iron Wit of Gallowmere","Vivienne Sloane \u2014 Keeper of the Ember Circuit","Octavius Bellmere \u2014 The Grand Old Gearsmith","Thaddeus Crowle \u2014 The Furnace Baron","Ludorian Marrow \u2014 Architect of the Impossible Hour"]',
+  character_names = '["Miss Nyla Vantress, The Stormglass Prodigy","Elowen Thrice, Mistress of Clockwork Nerves","Clara Penhalwick, The Brassheart Aeronaut","Edmund Vale, The Iron Wit of Gallowmere","Vivienne Sloane, Keeper of the Ember Circuit","Octavius Bellmere, The Grand Old Gearsmith","Thaddeus Crowle, The Furnace Baron","Ludorian Marrow, Architect of the Impossible Hour"]',
   updated_at = CURRENT_TIMESTAMP
 WHERE block_id = 'E101837-block0002';
 
@@ -29,7 +29,7 @@ WHERE block_id = 'E101837-block0004';
 -- ---- Founders Collection Block 88 (batch 89) ---------------------------------
 UPDATE qd_blocks
 SET
-  character_names = '["Founders #1 \u2014 The Archivist","Founders #2 \u2014 The Cartographer","Founders #3 \u2014 The Sentinel","Founders #4 \u2014 The Artisan","Founders #5 \u2014 The Scholar","Founders #6 \u2014 The Ambassador","Founders #7 \u2014 The Mentor","Founders #8 \u2014 The Architect"]',
+  character_names = '["Founders #1, The Archivist","Founders #2, The Cartographer","Founders #3, The Sentinel","Founders #4, The Artisan","Founders #5, The Scholar","Founders #6, The Ambassador","Founders #7, The Mentor","Founders #8, The Architect"]',
   updated_at = CURRENT_TIMESTAMP
 WHERE block_id = 'block88';
 

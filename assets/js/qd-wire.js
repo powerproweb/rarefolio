@@ -40,6 +40,15 @@
     const v = el.getAttribute(name);
     return (v == null || v === '') ? fallback : v;
   }
+  function normalizeNoEmDashText(value) {
+    const emDash = String.fromCharCode(8212);
+    const enDash = String.fromCharCode(8211);
+    return String(value ?? '')
+      .split(emDash).join(', ')
+      .split(enDash).join(', ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
 
   function parseTokenIndex(slug) {
     const m = String(slug || '').match(/-(\d{1,})$/);
@@ -113,17 +122,17 @@
      To add a new block: add a new entry keyed by its story_block_id.
   */
   const QD_ITEM_NAMES = {
-    'E101837-block0002': [ // Steampunk \u2014 Inventors Guild
-      'Miss Nyla Vantress \u2014 The Stormglass Prodigy',
-      'Elowen Thrice \u2014 Mistress of Clockwork Nerves',
-      'Clara Penhalwick \u2014 The Brassheart Aeronaut',
-      'Edmund Vale \u2014 The Iron Wit of Gallowmere',
-      'Vivienne Sloane \u2014 Keeper of the Ember Circuit',
-      'Octavius Bellmere \u2014 The Grand Old Gearsmith',
-      'Thaddeus Crowle \u2014 The Furnace Baron',
-      'Ludorian Marrow \u2014 Architect of the Impossible Hour',
+    'E101837-block0002': [ // Steampunk, Inventors Guild
+      'Miss Nyla Vantress, The Stormglass Prodigy',
+      'Elowen Thrice, Mistress of Clockwork Nerves',
+      'Clara Penhalwick, The Brassheart Aeronaut',
+      'Edmund Vale, The Iron Wit of Gallowmere',
+      'Vivienne Sloane, Keeper of the Ember Circuit',
+      'Octavius Bellmere, The Grand Old Gearsmith',
+      'Thaddeus Crowle, The Furnace Baron',
+      'Ludorian Marrow, Architect of the Impossible Hour',
     ],
-    'E101837-block0004': [ // Steampunk \u2014 Robot Butler
+    'E101837-block0004': [ // Steampunk, Robot Butler
       'Alistair Valecourt',
       'Edmund Aurellian',
       'Theodore Valemont',
@@ -719,15 +728,16 @@
         const slug = makeSlug(n);
         const itemIndex = i + 1;
         const { src: imgSrc, altSrc } = blockImageCandidates(runtimeCfg, batchNum, slug, blockMeta);
-        const title = `${runtimeCfg.title} \u2014 ${slug}`;
+        const title = `${runtimeCfg.title}, ${slug}`;
         const viewLink = buildViewLink(slug, batchNum, itemIndex);
 
         // Look up per-item character name.
         // Priority: DB-backed character_names from block meta → legacy hardcoded QD_ITEM_NAMES → empty.
         const _storyBlockId = blockMeta?.story_block_id || blockMeta?.block_id || '';
-        const _itemName = (blockMeta?.story_mode === 'per_item' && _storyBlockId)
+        const _rawItemName = (blockMeta?.story_mode === 'per_item' && _storyBlockId)
           ? (blockMeta.character_names?.[itemIndex - 1] || QD_ITEM_NAMES[_storyBlockId]?.[itemIndex - 1] || '')
           : '';
+        const _itemName = normalizeNoEmDashText(_rawItemName);
         const _cardDesc = _itemName
           ? `<p class="cnft-desc"><strong class="mas_txt_clr">${_itemName}</strong><br><span class="muted small">Cardano \u00b7 Blockchain data pending</span></p>`
           : `<p class="cnft-desc muted small">Cardano \u00b7 ${blockMeta?.label || 'Silver Bar I'} \u00b7 Blockchain data pending</p>`;
@@ -879,9 +889,10 @@
     // Title: use character name for per_item blocks, block label for shared, slug as final fallback
     const _dStoryBlockId = blockMeta?.story_block_id || blockMeta?.block_id || '';
     // Priority: DB-backed character_names → legacy hardcoded QD_ITEM_NAMES → null.
-    const _dItemName = (blockMeta?.story_mode === 'per_item' && item && _dStoryBlockId)
+    const _dItemNameRaw = (blockMeta?.story_mode === 'per_item' && item && _dStoryBlockId)
       ? (blockMeta.character_names?.[item - 1] || QD_ITEM_NAMES[_dStoryBlockId]?.[item - 1] || null)
       : null;
+    const _dItemName = _dItemNameRaw ? normalizeNoEmDashText(_dItemNameRaw) : null;
     const isFoundersBlock = /founders/i.test(blockMeta?.label || '') || String(blockMeta?.block_id || '').toLowerCase() === 'block88';
     titleEl.textContent = isFoundersBlock ? '' : (_dItemName || blockMeta?.label || nft).toUpperCase();
 
