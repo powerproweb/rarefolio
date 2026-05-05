@@ -87,6 +87,188 @@
       }
     });
   };
+  // ------------------------------------------------------------
+  // Reusable collection video embeds
+  // - Expects: .qd-video-embed[data-video-url]
+  // - Supports: YouTube URLs and X/Twitter status URLs
+  // ------------------------------------------------------------
+  let qdTwitterWidgetsPromise = null;
+
+  const parseUrlSafe = (raw) => {
+    try {
+      return new URL(String(raw || "").trim());
+    } catch {
+      return null;
+    }
+  };
+  const hostIs = (host, domain) => host === domain || host.endsWith(`.${domain}`);
+
+  const inferVideoPlatform = (rawPlatform, rawUrl) => {
+    const explicit = String(rawPlatform || "").trim().toLowerCase();
+    if (explicit === "youtube" || explicit === "x") return explicit;
+
+    const u = parseUrlSafe(rawUrl);
+    if (!u) return "";
+    const host = u.hostname.replace(/^www\./i, "").toLowerCase();
+    if (host === "youtu.be" || hostIs(host, "youtube.com") || hostIs(host, "youtube-nocookie.com")) return "youtube";
+    if (hostIs(host, "x.com") || hostIs(host, "twitter.com")) return "x";
+    return "";
+  };
+
+  const extractYoutubeId = (rawUrl) => {
+    const u = parseUrlSafe(rawUrl);
+    if (!u) return "";
+    const host = u.hostname.replace(/^www\./i, "").toLowerCase();
+    const pathParts = u.pathname.split("/").filter(Boolean);
+
+    if (host === "youtu.be") return pathParts[0] || "";
+
+    if (hostIs(host, "youtube.com") || hostIs(host, "youtube-nocookie.com")) {
+      if (u.pathname === "/watch") return u.searchParams.get("v") || "";
+      if (pathParts[0] === "embed" && pathParts[1]) return pathParts[1];
+      if (pathParts[0] === "shorts" && pathParts[1]) return pathParts[1];
+      if (pathParts[0] === "live" && pathParts[1]) return pathParts[1];
+    }
+
+    return "";
+  };
+
+  const youtubeEmbedUrlFor = (rawUrl) => {
+    const id = extractYoutubeId(rawUrl);
+    if (!id) return "";
+    return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0&modestbranding=1`;
+  };
+
+  const xPostUrlFor = (rawUrl) => {
+    const u = parseUrlSafe(rawUrl);
+    if (!u) return "";
+    const host = u.hostname.replace(/^www\./i, "").toLowerCase();
+    if (!(hostIs(host, "x.com") || hostIs(host, "twitter.com"))) return "";
+
+    const parts = u.pathname.split("/").filter(Boolean);
+    if (parts.length >= 3 && parts[1].toLowerCase() === "status") {
+      const handle = parts[0];
+      const statusId = parts[2];
+      if (handle && statusId) return `https://x.com/${encodeURIComponent(handle)}/status/${encodeURIComponent(statusId)}`;
+    }
+    if (parts.length >= 4 && parts[0].toLowerCase() === "i" && parts[1].toLowerCase() === "web" && parts[2].toLowerCase() === "status") {
+      const statusId = parts[3];
+      if (statusId) return `https://x.com/i/web/status/${encodeURIComponent(statusId)}`;
+    }
+    return "";
+  };
+
+  const ensureTwitterWidgets = () => {
+    if (window.twttr && window.twttr.widgets) return Promise.resolve(window.twttr);
+    if (qdTwitterWidgetsPromise) return qdTwitterWidgetsPromise;
+
+    const waitForWidgets = (resolve, reject, attemptsLeft) => {
+      if (window.twttr && window.twttr.widgets) {
+        resolve(window.twttr);
+        return;
+      }
+      if (attemptsLeft <= 0) {
+        reject(new Error("X widgets not available"));
+        return;
+      }
+      setTimeout(() => waitForWidgets(resolve, reject, attemptsLeft - 1), 50);
+    };
+
+    qdTwitterWidgetsPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[src="https://platform.twitter.com/widgets.js"]');
+      if (existing) {
+        waitForWidgets(resolve, reject, 120);
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://platform.twitter.com/widgets.js";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => waitForWidgets(resolve, reject, 120);
+      script.onerror = () => reject(new Error("Failed to load X widgets script"));
+      document.head.appendChild(script);
+    }).catch((err) => {
+      qdTwitterWidgetsPromise = null;
+      throw err;
+    });
+
+    return qdTwitterWidgetsPromise;
+  };
+
+  const renderVideoEmbed = (mount) => {
+    if (!mount || mount.dataset.embedReady === "true") return;
+
+    const rawUrl = String(mount.dataset.videoUrl || "").trim();
+    if (!rawUrl) return;
+
+    const platform = inferVideoPlatform(mount.dataset.videoPlatform || "", rawUrl);
+    if (!platform) return;
+
+    const title = String(mount.dataset.videoTitle || "Collection video").trim() || "Collection video";
+
+    if (platform === "youtube") {
+      const embedUrl = youtubeEmbedUrlFor(rawUrl);
+      if (!embedUrl) return;
+
+      mount.classList.add("is-youtube");
+      mount.classList.remove("is-x");
+      mount.innerHTML = "";
+
+      const iframe = document.createElement("iframe");
+      iframe.src = embedUrl;
+      iframe.title = title;
+      iframe.loading = "lazy";
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.setAttribute("allowfullscreen", "");
+      mount.appendChild(iframe);
+      mount.dataset.embedReady = "true";
+      return;
+    }
+
+    if (platform === "x") {
+      const postUrl = xPostUrlFor(rawUrl);
+      if (!postUrl) return;
+
+      mount.classList.remove("is-youtube");
+      mount.classList.add("is-x");
+      mount.innerHTML = "";
+
+      const blockquote = document.createElement("blockquote");
+      blockquote.className = "twitter-tweet";
+      blockquote.setAttribute("data-theme", "dark");
+      const postLink = document.createElement("a");
+      postLink.href = postUrl;
+      postLink.textContent = "View this post on X";
+      blockquote.appendChild(postLink);
+      mount.appendChild(blockquote);
+      mount.dataset.embedReady = "true";
+
+      ensureTwitterWidgets()
+        .then(() => {
+          if (window.twttr && window.twttr.widgets && typeof window.twttr.widgets.load === "function") {
+            window.twttr.widgets.load(mount);
+          }
+        })
+        .catch(() => {
+          const fallback = document.createElement("p");
+          fallback.className = "muted small qd-video-embed-fallback";
+          fallback.style.margin = "10px 0 0";
+          const fallbackLink = document.createElement("a");
+          fallbackLink.href = postUrl;
+          fallbackLink.target = "_blank";
+          fallbackLink.rel = "noopener";
+          fallbackLink.textContent = "Open this post on X";
+          fallback.appendChild(fallbackLink);
+          mount.appendChild(fallback);
+        });
+    }
+  };
+
+  const initVideoEmbeds = (root = document) => {
+    $$(".qd-video-embed", root).forEach(renderVideoEmbed);
+  };
 
   const nav = $(".nav");
   const toggle = $(".menu-toggle");
@@ -421,6 +603,9 @@
 
   // Load story content (if present) before binding effects.
   loadStory();
+
+  // Render any configured collection video embeds (YouTube or X).
+  initVideoEmbeds(document);
 
   // Subtle tilt for cards (optimized + guarded)
   setupTilt(document);
