@@ -42,6 +42,27 @@ $STATIC_BLOCKS = [
   // block.php has no batch navigator elements so the 1-89 range is invisible to users.
   'founders'    => ['block_id' => 'block88', 'folder' => 'scnft_founders',           'label' => 'Founders Block 88',            'story_mode' => 'per_item', 'batch' => 89, 'start_index' => 1, 'total_batches' => 89],
 ];
+// ---- Optional per-collection video feature block ----
+// Reuse anywhere by adding a slug key with title/description/instructions/video_url.
+// Supported video URLs: YouTube (youtube.com, youtu.be) and X post links (x.com / twitter.com status URLs).
+$VIDEO_FEATURES = [
+  'founders' => [
+    'kicker' => 'Founders Briefing',
+    'title' => 'Founders Collection Video',
+    'description' => 'A dedicated launch brief can live here with collector context, provenance notes, and any mint or marketplace updates for this block.',
+    'instructions' => [
+      'Press play to view the latest Founders walkthrough.',
+      'Review the key notes first, then continue into the CNFT grid below.',
+      'Swap in a YouTube or X post URL to automatically render the matching player.',
+    ],
+    // Set this to your live link when ready:
+    // e.g. https://www.youtube.com/watch?v=VIDEO_ID
+    // or   https://x.com/{handle}/status/{post_id}
+    'video_platform' => 'youtube',
+    'video_url' => '',
+    'video_title' => 'Founders Collection video',
+  ],
+];
 
 // ---- Read params ----
 $barNum   = preg_replace('/[^0-9]/', '', $_GET['bar'] ?? '01');
@@ -155,6 +176,25 @@ if (!$blockFromDb && $storyBatchNum > 0) {
   }
 }
 $storySrc    = '/api/blocks/story.php?block=' . urlencode($storyBlockId) . '&item=0';
+// Optional video feature content for this collection slug.
+$videoFeature = $VIDEO_FEATURES[$slug] ?? null;
+$videoKicker = '';
+$videoTitle = '';
+$videoDescription = '';
+$videoPlatform = '';
+$videoUrl = '';
+$videoInstructions = [];
+if (is_array($videoFeature)) {
+  $videoKicker = htmlspecialchars((string)($videoFeature['kicker'] ?? ''), ENT_QUOTES, 'UTF-8');
+  $videoTitle = htmlspecialchars((string)($videoFeature['title'] ?? ''), ENT_QUOTES, 'UTF-8');
+  $videoDescription = htmlspecialchars((string)($videoFeature['description'] ?? ''), ENT_QUOTES, 'UTF-8');
+  $videoPlatform = htmlspecialchars((string)($videoFeature['video_platform'] ?? ''), ENT_QUOTES, 'UTF-8');
+  $videoUrl = htmlspecialchars((string)($videoFeature['video_url'] ?? ''), ENT_QUOTES, 'UTF-8');
+  $videoInstructions = array_values(array_filter(
+    array_map(static fn($item): string => trim((string)$item), (array)($videoFeature['instructions'] ?? [])),
+    static fn(string $item): bool => $item !== ''
+  ));
+}
 
 $cssVersion  = '20260424';
 ?>
@@ -341,6 +381,36 @@ $totalBatches = (int) ($block['total_batches'] ?? 5000);
       <h2 id="qd-collection-heading"><?= $collTitle ?></h2>
       <p>Bar Serial: <strong><?= $barSerialE ?></strong> &#8226; Supply: 40,000 CNFTs &#8226; 5,000 batches &#215; 8</p>
     </div>
+    <?php if ($videoFeature): ?>
+    <section class="qd-video-feature-band" aria-label="<?= $videoTitle !== '' ? $videoTitle : 'Collection video' ?>">
+      <div class="qd-video-feature">
+        <div class="qd-video-feature__copy">
+          <?php if ($videoKicker !== ''): ?>
+            <p class="qd-video-feature__kicker"><?= $videoKicker ?></p>
+          <?php endif; ?>
+          <h3><?= $videoTitle !== '' ? $videoTitle : 'Collection Video' ?></h3>
+          <?php if ($videoDescription !== ''): ?>
+            <p><?= $videoDescription ?></p>
+          <?php endif; ?>
+          <?php if (!empty($videoInstructions)): ?>
+            <ol class="qd-video-feature__instructions">
+              <?php foreach ($videoInstructions as $instruction): ?>
+                <li><?= htmlspecialchars($instruction, ENT_QUOTES, 'UTF-8') ?></li>
+              <?php endforeach; ?>
+            </ol>
+          <?php endif; ?>
+        </div>
+        <div class="qd-video-feature__media">
+          <div class="qd-video-embed"
+               data-video-platform="<?= $videoPlatform ?>"
+               data-video-url="<?= $videoUrl ?>"
+               data-video-title="<?= $videoTitle !== '' ? $videoTitle : 'Collection video' ?>">
+            <p class="muted small" style="margin:0;">Video link coming soon.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <?php endif; ?>
 
     <div class="panel pad">
       <p class="lead" style="margin:0;">
