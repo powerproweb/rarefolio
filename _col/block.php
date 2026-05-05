@@ -270,8 +270,7 @@ $totalBatches = (int) ($block['total_batches'] ?? 5000);
         </a>
         <div class="dropmenu" role="menu" aria-label="CNFT Collections menu">
           <a href="/collection/silverbar-01/founders?batch=89" role="menuitem">Founders Collection (Block 88)</a>
-          <a href="/collection-inventors-guild-prelaunch.html" role="menuitem">Inventors Guild Prelaunch (Block 01)</a>
-          <a href="/collection-silverbar-calculator.html" role="menuitem">Silver Shard Calculator</a>
+<a href="/collection-silverbar-calculator.html" role="menuitem">Silver Shard Calculator</a>
           <a href="/collections.html" role="menuitem">All Tokenized Silver Bars</a>
           <a href="/collection-silverbar-01.html" role="menuitem">Silver Bar I (Live)</a>
           <a href="/collection-silverbar-02.html" role="menuitem">Silver Bar II (Coming Soon)</a>
@@ -375,6 +374,8 @@ $totalBatches = (int) ($block['total_batches'] ?? 5000);
       <a href="/downloads.html">Downloads</a>
       <a href="/privacy.html">Privacy</a>
       <a href="/terms.html">Terms</a>
+
+      <a href="/license">License</a>
     </div>
   </div>
 </footer>
