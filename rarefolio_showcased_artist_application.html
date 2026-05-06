@@ -887,7 +887,7 @@ https://..." required></textarea>
                   <textarea id="fileNotes" name="file_notes" placeholder="List titles, creation dates, dimensions, mediums, or any context needed for the review team."></textarea>
                 </div>
               </div>
-              <p class="form-note">Technical note: if you later connect this form to MailerLite, the text fields can map cleanly to custom fields. File uploads will usually need a separate upload workflow or storage endpoint unless you use an integration layer.</p>
+              <p class="form-note">Technical note: this form now submits to <code>/api/artist-application.php</code>. Optional MailerLite sync is already wired through server-side placeholders in <code>api/_mailerlite.php</code> and will activate once credentials/group IDs are configured.</p>
             </div>
 
             <div class="form-section">
@@ -923,7 +923,7 @@ https://..." required></textarea>
   <footer class="footer">
     <div class="wrap">
       <p>RareFolio Showcased Artist Application</p>
-      <p class="mini">Standalone landing page for root-level deployment. Replace the form action and field mapping when you connect your submission workflow.</p>
+      <p class="mini">Standalone landing page for root-level deployment. Submission is connected to the artist application API, with optional MailerLite sync activated through environment configuration.</p>
       <div class="footer-right">
         <a href="/downloads.html">Downloads</a>
         <a href="/privacy.html">Privacy</a>
