@@ -158,6 +158,7 @@ The NFT detail page (`nft.html`) automatically shows **View Certificate**, **Ver
 
 ### Admin Pages (Basic Auth)
 - **Admin Hub** (`admin/index.php`), Launch point for admin-only tools
+- **Catalog Registry** (`admin/catalog-registry.php`), Database catalog numbers for Silver Bars I, II, III plus NFT and FT entries
 - **Wallet Dashboard** (`admin/wallet-dashboard.php`), CIP-30 wallet operations panel for collection visibility and ownership tooling
 - **Story Editor** (`admin/story-editor.php`), Story content management
 
@@ -217,6 +218,7 @@ rarefolio.io/
 ├── .htaccess                     # URL rewrites, 301 redirects, security headers
 ├── admin/
 │   ├── index.php                 # Admin hub (Basic Auth)
+│   ├── catalog-registry.php      # Catalog numbers registry for bars, NFTs, and FTs
 │   ├── wallet-dashboard.php      # CIP-30 wallet operations dashboard
 │   └── story-editor.php          # Story content management
 ├── api/
@@ -234,6 +236,7 @@ rarefolio.io/
 │   │   └── manage_stories.php    # Story CRUD
 │   ├── CERT_DB_SCHEMA.sql        # qd_certificates table
 │   ├── BLOCKS_DB_SCHEMA.sql      # qd_blocks + qd_stories tables
+│   ├── CATALOG_REGISTRY_DB_SCHEMA.sql # qd_catalog_registry table
 │   └── ARTIST_APP_DB_SCHEMA.sql  # qd_artist_applications table
 ├── assets/
 │   ├── css/                      # Stylesheets (dark theme, custom properties)
@@ -264,21 +267,31 @@ rarefolio.io/
 
 ## Database
 
-MySQL database `rarefolio_cnftcert` with four tables:
+MySQL database `rarefolio_cnftcert` with five tables:
 
 - **`qd_certificates`**, Certificate records: cert_id, status (`verified`/`unverified`/`revoked`), payload JSON, PDF metadata (sha256, bytes, storage key). Schema: `api/CERT_DB_SCHEMA.sql`
 - **`qd_blocks`**, Block-to-batch mapping: `(bar_serial, batch_num)` → block_id, folder_slug, label, story_mode. Schema: `api/BLOCKS_DB_SCHEMA.sql`
 - **`qd_stories`**, Story HTML fragments: block_id + item_num (NULL = shared, 1–8 = per-item). Schema: `api/BLOCKS_DB_SCHEMA.sql`
+- **`qd_catalog_registry`**, Catalog number registry for Silver Bars I, II, III plus NFT and FT token entries (manual + sync from cert/webhook sources). Schema: `api/CATALOG_REGISTRY_DB_SCHEMA.sql`
 - **`qd_artist_applications`**, Artist submissions with 30+ columns across 6 sections. Status enum: `pending`/`reviewed`/`accepted`/`declined`. Schema: `api/ARTIST_APP_DB_SCHEMA.sql`
+
+### Catalog Number Convention (month-year)
+
+- Silver bars use: `RF-SLVBAR-{MM-YYYY}-{weight}-{barSerial}-{item}`
+  - Example: `RF-SLVBAR-05-2026-100oz-E101837-01`
+- NFT and FT entries use: `RF-{collectionCode}-{MM-YYYY}-B{block}-{sequence7}`
+  - Example: `RF-FND-05-2026-B88-0000001`
+- The date segment is always `month-year` for all catalog types.
 
 ### Deploy: DB Setup
 
 ```
 1. Run CERT_DB_SCHEMA.sql in phpMyAdmin
 2. Run BLOCKS_DB_SCHEMA.sql
-3. Run ARTIST_APP_DB_SCHEMA.sql
-4. Hit /api/admin/seed_blocks.php (Basic Auth) to populate blocks 00–14
-5. Ensure uploads/artist_applications/ is writable
+3. Run CATALOG_REGISTRY_DB_SCHEMA.sql
+4. Run ARTIST_APP_DB_SCHEMA.sql
+5. Hit /api/admin/seed_blocks.php (Basic Auth) to populate blocks 00–14
+6. Ensure uploads/artist_applications/ is writable
 ```
 
 ---

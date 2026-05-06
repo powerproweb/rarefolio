@@ -129,6 +129,14 @@ a:hover { text-decoration: underline; }
       <a class="btn primary" href="/admin/wallet-dashboard.php">Open Wallet Operations</a>
     </div>
   </article>
+
+  <article class="card">
+    <h2>Catalog Registry</h2>
+    <p class="muted">Database-backed catalog numbers for all 3 silver bars, plus every NFT and FT tracked by admin.</p>
+    <div class="row">
+      <a class="btn primary" href="/admin/catalog-registry.php">Open Catalog Registry</a>
+    </div>
+  </article>
 </section>
 
 <section class="info">
