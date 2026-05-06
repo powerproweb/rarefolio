@@ -49,6 +49,107 @@
 <!-- Optional performance hints (safe; keep or remove) -->
 <link rel="preload" as="style" href="/assets/css/styles.css?v=20260412" />
 <link rel="stylesheet" href="/assets/css/styles.css?v=20260412" />
+<style>
+  .qd-contact-card {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .qd-contact-form {
+    display: grid;
+    gap: 12px;
+  }
+  .qd-fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .qd-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .qd-chip {
+    position: relative;
+    display: inline-flex;
+  }
+  .qd-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .qd-chip span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(240,215,161,.16);
+    background: rgba(255,255,255,.03);
+    color: var(--text-1);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .qd-chip input:checked + span {
+    background: rgba(240,215,161,.16);
+    border-color: rgba(240,215,161,.42);
+    color: var(--text-0);
+  }
+  .qd-check {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    color: var(--text-1);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .qd-check input {
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+  }
+  .qd-support-only {
+    display: none;
+    border-top: 1px solid rgba(240,215,161,.12);
+    margin-top: 6px;
+    padding-top: 12px;
+  }
+  .qd-contact-form[data-mode="support"] .qd-support-only {
+    display: block;
+  }
+  .qd-support-hint {
+    margin: 0 0 8px;
+  }
+  .qd-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .qd-status {
+    margin: 0;
+    min-height: 20px;
+  }
+  .qd-status.pending {
+    color: var(--text-1);
+  }
+  .qd-status.success {
+    color: #a7f0ca;
+  }
+  .qd-status.error {
+    color: #ffb2b2;
+  }
+  @media (max-width: 700px) {
+    .qd-contact-card {
+      max-width: none;
+    }
+    .qd-form-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
 
 <!-- Structured Data (Organization) -->
 <script type="application/ld+json">
@@ -125,6 +226,7 @@
         </a>
         <div class="dropmenu" role="menu" aria-label="Contact menu">
           <a href="/contact.html" role="menuitem">Contact Form</a>
+          <a href="/rarefolio_showcased_artist_application" role="menuitem">Showcased Artist Application</a>
           <a href="/contact.html#support" role="menuitem">Support</a>
         </div>
       </div>
@@ -182,19 +284,76 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 <section class="section">
   <div class="container">
     <div class="section-title">
-      <h2 class="mas_txt_clr">Contact</h2>
-      <p class="muted">This page is wired so navigation works end-to-end. Replace this content with your real copy when ready.</p>
+      <h2 class="mas_txt_clr">Contact &amp; Support</h2>
+      <p class="muted">Use this form for general contact requests or support tickets.</p>
     </div>
 
-    <div class="panel pad">
-      <p class="lead" style="margin:0;">Placeholder content for <strong>contact.html</strong>.</p>
-      <hr class="sep" />
-      <p class="muted small" style="margin:0;">Tip: keep these pages lightweight and consistent; the nav is already standardized across the site.</p>
-    </div>
+    <div class="panel pad qd-contact-card">
+      <form id="contactSupportForm" class="qd-contact-form" action="/api/contact-support.php" method="post" novalidate data-mode="contact">
+        <fieldset class="qd-fieldset">
+          <legend class="label">Inquiry Type</legend>
+          <div class="qd-chip-row" role="radiogroup" aria-label="Inquiry type">
+            <label class="qd-chip">
+              <input type="radio" name="inquiry_type" value="contact" checked />
+              <span>General Contact</span>
+            </label>
+            <label class="qd-chip">
+              <input type="radio" name="inquiry_type" value="support" />
+              <span>Support Request</span>
+            </label>
+          </div>
+        </fieldset>
 
-    <div class="cnft-actions" style="margin-top:16px;">
-      <a class="btn primary" href="/index.html">Home</a>
-      <a class="btn" href="/collections.html">Collections</a>
+        <div class="field-row">
+          <div>
+            <label class="label" for="csFullName">Full Name *</label>
+            <input class="input" id="csFullName" name="full_name" type="text" required maxlength="120" autocomplete="name" />
+          </div>
+          <div>
+            <label class="label" for="csEmail">Email *</label>
+            <input class="input" id="csEmail" name="email" type="email" required maxlength="160" autocomplete="email" />
+          </div>
+        </div>
+
+        <div>
+          <label class="label" for="csSubject">Subject *</label>
+          <input class="input" id="csSubject" name="subject" type="text" required maxlength="180" />
+        </div>
+
+        <div>
+          <label class="label" for="csMessage">Message *</label>
+          <textarea class="textarea" id="csMessage" name="message" required></textarea>
+        </div>
+
+        <div id="support" class="qd-support-only">
+          <p class="muted small qd-support-hint">Support details (optional): include wallet and order references to speed up resolution.</p>
+          <div class="field-row">
+            <div>
+              <label class="label" for="csWalletId">Wallet ID</label>
+              <input class="input" id="csWalletId" name="wallet_id" type="text" maxlength="120" />
+            </div>
+            <div>
+              <label class="label" for="csOrderReference">Order Reference</label>
+              <input class="input" id="csOrderReference" name="order_reference" type="text" maxlength="120" />
+            </div>
+          </div>
+        </div>
+
+        <label class="qd-check">
+          <input id="csConsentContact" name="consent_contact" type="checkbox" required />
+          <span>I consent to being contacted about this inquiry. *</span>
+        </label>
+        <label class="qd-check">
+          <input id="csOptInUpdates" name="opt_in_updates" type="checkbox" />
+          <span>I want updates about Rarefolio releases and announcements.</span>
+        </label>
+
+        <div class="qd-form-actions">
+          <button id="contactSupportSubmit" class="btn primary" type="submit">Send Message</button>
+          <p id="contactSupportStatus" class="small muted qd-status" role="status" aria-live="polite"></p>
+        </div>
+        <p class="muted small" style="margin:0;">MailerLite sync is enabled automatically when API credentials and group IDs are configured on the server.</p>
+      </form>
     </div>
   </div>
 </section>
@@ -215,5 +374,149 @@ https://qdls.io/qdcnft-fb --- https://fb.com/
 <div class="backtotop"><a href="#top" aria-label="Back to top">Back to top</a></div>
 
 <script src="assets/js/main.js?v=20260412"></script>
+<script>
+  (() => {
+    const form = document.getElementById('contactSupportForm');
+    if (!form) return;
+
+    const submitButton = document.getElementById('contactSupportSubmit');
+    const statusEl = document.getElementById('contactSupportStatus');
+    const inquiryInputs = form.querySelectorAll('input[name="inquiry_type"]');
+    const supportInput = form.querySelector('input[name="inquiry_type"][value="support"]');
+    const contactInput = form.querySelector('input[name="inquiry_type"][value="contact"]');
+
+    function getMode() {
+      const selected = form.querySelector('input[name="inquiry_type"]:checked');
+      return selected ? selected.value : 'contact';
+    }
+
+    function setMode(mode) {
+      form.setAttribute('data-mode', mode === 'support' ? 'support' : 'contact');
+    }
+
+    function setStatus(message, type) {
+      if (!statusEl) return;
+      statusEl.className = 'small muted qd-status';
+      if (type) {
+        statusEl.classList.add(type);
+      }
+      statusEl.textContent = message || '';
+    }
+
+    function valueFor(name) {
+      const element = form.elements[name];
+      if (!element || typeof element.value !== 'string') {
+        return '';
+      }
+      return element.value.trim();
+    }
+
+    function validate(payload) {
+      const errors = [];
+      if (!payload.full_name) errors.push('Full name is required.');
+      if (!payload.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) errors.push('A valid email is required.');
+      if (!payload.subject) errors.push('Subject is required.');
+      if (!payload.message) errors.push('Message is required.');
+      if (!payload.consent_contact) errors.push('Consent is required before submitting.');
+      return errors;
+    }
+
+    function buildPayload() {
+      return {
+        inquiry_type: getMode(),
+        full_name: valueFor('full_name'),
+        email: valueFor('email'),
+        subject: valueFor('subject'),
+        message: valueFor('message'),
+        wallet_id: valueFor('wallet_id'),
+        order_reference: valueFor('order_reference'),
+        consent_contact: form.querySelector('input[name="consent_contact"]').checked ? 1 : 0,
+        opt_in_updates: form.querySelector('input[name="opt_in_updates"]').checked ? 1 : 0
+      };
+    }
+
+    function applyHashMode() {
+      if (window.location.hash.toLowerCase() === '#support' && supportInput) {
+        supportInput.checked = true;
+      }
+      setMode(getMode());
+    }
+
+    inquiryInputs.forEach((input) => {
+      input.addEventListener('change', () => {
+        setMode(getMode());
+      });
+    });
+
+    window.addEventListener('hashchange', applyHashMode);
+    applyHashMode();
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const payload = buildPayload();
+      const errors = validate(payload);
+      if (errors.length) {
+        setStatus(errors[0], 'error');
+        return;
+      }
+
+      const originalButtonText = submitButton ? submitButton.textContent : 'Send Message';
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending...';
+      }
+      setStatus('Sending your message...', 'pending');
+
+      try {
+        const response = await fetch('/api/contact-support.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        let data = null;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          data = null;
+        }
+
+        if (!response.ok || !data || !data.success) {
+          if (data && Array.isArray(data.errors) && data.errors.length) {
+            setStatus(data.errors[0], 'error');
+          } else if (data && typeof data.message === 'string' && data.message.trim() !== '') {
+            setStatus(data.message, 'error');
+          } else {
+            setStatus('Could not send your message right now. Please try again.', 'error');
+          }
+          return;
+        }
+
+        let successMessage = 'Message sent successfully. Ticket reference: ' + data.ticket_ref + '.';
+        if (data.mailerlite && typeof data.mailerlite.status === 'string') {
+          successMessage += ' MailerLite status: ' + data.mailerlite.status + '.';
+        }
+        setStatus(successMessage, 'success');
+
+        const keepSupport = getMode() === 'support';
+        form.reset();
+        if (keepSupport && supportInput) {
+          supportInput.checked = true;
+        } else if (contactInput) {
+          contactInput.checked = true;
+        }
+        setMode(getMode());
+      } catch (error) {
+        setStatus('Network error. Please check your connection and try again.', 'error');
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = originalButtonText;
+        }
+      }
+    });
+  })();
+</script>
 </body>
 </html>

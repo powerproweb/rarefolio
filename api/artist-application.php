@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/_config.php';
+require_once __DIR__ . '/_mailerlite.php';
 
 // ── CORS & method gate ───────────────────────────────────────────────
 header('Content-Type: application/json; charset=utf-8');
@@ -95,6 +96,8 @@ if ($errors) {
     exit;
 }
 
+$consentContact = !empty($_POST['consent_contact']);
+
 // ── Generate unique reference & file sub-folder ──────────────────────
 $app_ref = generate_app_ref();
 $fileDir = $app_ref;
@@ -161,14 +164,43 @@ try {
         ':sample_works_paths'     => $sample_works_paths ? json_encode($sample_works_paths) : null,
         ':file_notes'             => txt('file_notes'),
         ':consent_review'         => 1,
-        ':consent_contact'        => !empty($_POST['consent_contact']) ? 1 : 0,
+        ':consent_contact'        => $consentContact ? 1 : 0,
         ':ip_address'             => $_SERVER['REMOTE_ADDR'] ?? null,
     ]);
+
+    $mailerliteSync = ['success' => false, 'reason' => 'skipped_no_opt_in'];
+    if ($consentContact) {
+        $mailerLiteFields = [];
+        qd_ml_add_field($mailerLiteFields, 'MAILERLITE_FIELD_ARTIST_APP_REF', '{{MAILERLITE_FIELD_ARTIST_APP_REF}}', $app_ref);
+        qd_ml_add_field($mailerLiteFields, 'MAILERLITE_FIELD_ARTIST_MEDIUM', '{{MAILERLITE_FIELD_ARTIST_MEDIUM}}', $primary_medium);
+        qd_ml_add_field($mailerLiteFields, 'MAILERLITE_FIELD_ARTIST_PORTFOLIO', '{{MAILERLITE_FIELD_ARTIST_PORTFOLIO}}', $portfolio_url);
+
+        $groupId = qd_ml_config_value('MAILERLITE_GROUP_ID_ARTIST_APPLICATION', '{{MAILERLITE_GROUP_ID_ARTIST_APPLICATION}}');
+        $displayName = txt('artist_name') ?? $full_name;
+        $mailerliteSync = qd_ml_subscribe([
+            'email'    => (string) $email,
+            'name'     => (string) $displayName,
+            'group_id' => $groupId,
+            'fields'   => $mailerLiteFields,
+        ]);
+
+        if (!$mailerliteSync['success'] && !in_array($mailerliteSync['reason'], ['not_configured', 'missing_email'], true)) {
+            error_log('Artist application MailerLite sync failed: ' . json_encode([
+                'reason'    => $mailerliteSync['reason'],
+                'http_code' => $mailerliteSync['http_code'] ?? null,
+                'app_ref'   => $app_ref,
+            ]));
+        }
+    }
 
     echo json_encode([
         'success' => true,
         'message' => 'Application submitted successfully.',
         'app_ref' => $app_ref,
+        'mailerlite' => [
+            'synced' => $mailerliteSync['success'],
+            'status' => $mailerliteSync['reason'],
+        ],
     ]);
 
 } catch (PDOException $e) {
